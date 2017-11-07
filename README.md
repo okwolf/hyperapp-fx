@@ -8,7 +8,7 @@
 
 ### Implemented
 
-#### `effects.Action`
+#### `Action`
 
 Fires another action, optionally with `data`.
 
@@ -23,7 +23,7 @@ actionName: () => [
 ]
 ```
 
-#### `effects.Update`
+#### `Update`
 
 Updates `state` immediately, useful for combining with effects that will change `state` later.
 
@@ -38,7 +38,7 @@ actionName: () => [
 ]
 ```
 
-#### `effect.Frame`
+#### `Frame`
 
 Calls an action from inside `requestAnimationFrame`, which is also where the render triggered by the action will run, optionally with `data`.
 
@@ -53,7 +53,7 @@ actionName: () => [
 ]
 ```
 
-#### `effects.Delay`
+#### `Delay`
 
 Calls an action after a delay using `setTimeout`, optionally with `data`.
 
