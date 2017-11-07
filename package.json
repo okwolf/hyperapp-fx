@@ -1,0 +1,40 @@
+{
+  "name": "hyperapp-effects",
+  "version": "0.0.1",
+  "description": "Effects as data for Hyperapp",
+  "main": "dist/effects.js",
+  "jsnext:main": "src/index.js",
+  "module": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/okwolf/hyperapp-effects.git"
+  },
+  "peerDependencies": {
+    "hyperapp": "^0.16.0"
+  },
+  "devDependencies": {
+    "babel-preset-env": "1.6.0",
+    "hyperapp": "^0.16.0",
+    "jest": "^21.2.1",
+    "prettier": "~1.7.4",
+    "rollup": "^0.50.0",
+    "uglify-js": "^2.7.5"
+  },
+  "scripts": {
+    "test": "jest --coverage --no-cache",
+    "build": "npm run bundle && npm run minify",
+    "bundle": "rollup -i src/index.js -o dist/effects.js -m -f umd -n effects",
+    "minify": "uglifyjs dist/effects.js -o dist/effects.js --mangle --compress warnings=false --pure-funcs=Object.defineProperty -p relative --in-source-map dist/effects.js.map --source-map dist/effects.js.map",
+    "prepare": "npm run build",
+    "format": "prettier --semi false --write '{src,test}/**/*.js'"
+  },
+  "babel": {
+    "presets": "env"
+  },
+  "author": "Wolfgang Wedemeyer <wolf@okwolf.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/okwolf/hyperapp-effects/issues"
+  },
+  "homepage": "https://github.com/okwolf/hyperapp-effects"
+}
