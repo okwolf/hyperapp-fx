@@ -1,10 +1,10 @@
 import { app } from "hyperapp"
-import effects from "../src"
+import { withEffects, Action, Update, Frame, Delay } from "../src"
 
 test("fire a chained action", done =>
-  effects(app)({
+  withEffects(app)({
     actions: {
-      foo: () => [effects.action("bar", { some: "data" })],
+      foo: () => [Action({ name: "bar", data: { some: "data" } })],
       bar: () => data => {
         expect(data).toEqual({ some: "data" })
         done()
@@ -13,12 +13,12 @@ test("fire a chained action", done =>
   }).foo())
 
 test("update with effects", () => {
-  const actions = effects(app)({
+  const actions = withEffects(app)({
     actions: {
       get: state => state,
       foo: () => [
-        effects.update({ key: "value" }),
-        effects.update({ some: "other value" })
+        Update({ state: { key: "value" } }),
+        Update({ state: { some: "other value" } })
       ]
     }
   })
@@ -30,13 +30,13 @@ test("update with effects", () => {
 })
 
 test("mix action and update effects", done =>
-  effects(app)({
+  withEffects(app)({
     actions: {
       foo: () => [
-        effects.update({ key: "value" }),
-        effects.action("bar", { some: "data" }),
-        effects.update({ some: "other value" }),
-        effects.action("baz", { moar: "stuff" })
+        Update({ state: { key: "value" } }),
+        Action({ name: "bar", data: { some: "data" } }),
+        Update({ state: { some: "other value" } }),
+        Action({ name: "baz", data: { moar: "stuff" } })
       ],
       bar: state => data => {
         expect(state).toEqual({
@@ -57,9 +57,9 @@ test("mix action and update effects", done =>
 
 test("calls animation frame", done => {
   global.requestAnimationFrame = jest.fn(cb => cb())
-  const actions = effects(app)({
+  const actions = withEffects(app)({
     actions: {
-      foo: () => [effects.frame("bar", { frame: "data" })],
+      foo: () => [Frame({ action: "bar", data: { frame: "data" } })],
       bar: () => data => {
         expect(data).toEqual({ frame: "data" })
         done()
@@ -73,10 +73,12 @@ test("calls animation frame", done => {
 
 test("fire an action after a delay", () => {
   jest.useFakeTimers()
-  const actions = effects(app)({
+  const actions = withEffects(app)({
     actions: {
       get: state => state,
-      foo: () => [effects.delay(1000, "bar", { updated: "data" })],
+      foo: () => [
+        Delay({ duration: 1000, action: "bar", data: { updated: "data" } })
+      ],
       bar: () => data => data
     }
   })

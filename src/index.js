@@ -1,29 +1,27 @@
 function makeRunEffect(actions) {
   return function(effect) {
-    var type = effect[0]
-    var params = effect[1]
-    switch (type) {
+    switch (effect.type) {
       case "action":
-        actions[params.name](params.data)
+        actions[effect.name](effect.data)
         break
       case "update":
-        actions.update(params.state)
+        actions.update(effect.state)
         break
       case "frame":
         requestAnimationFrame(function() {
-          actions[params.name](params.data)
+          actions[effect.action](effect.data)
         })
         break
       case "delay":
         setTimeout(function() {
-          actions[params.name](params.data)
-        }, params.duration)
+          actions[effect.action](effect.data)
+        }, effect.duration)
         break
     }
   }
 }
 
-module.exports = function(app) {
+export function withEffects(app) {
   return function(props) {
     function enhanceActions(actions) {
       return Object.keys(actions || {}).reduce(function(otherActions, name) {
@@ -69,18 +67,23 @@ module.exports = function(app) {
   }
 }
 
-module.exports.action = function(name, data) {
-  return ["action", { name: name, data: data }]
+export function Action(props) {
+  return { type: "action", name: props.name, data: props.data }
 }
 
-module.exports.update = function(state) {
-  return ["update", { state: state }]
+export function Update(props) {
+  return { type: "update", state: props.state }
 }
 
-module.exports.frame = function(name, data) {
-  return ["frame", { name: name, data: data }]
+export function Frame(props) {
+  return { type: "frame", action: props.action, data: props.data }
 }
 
-module.exports.delay = function(duration, name, data) {
-  return ["delay", { duration: duration, name: name, data: data }]
+export function Delay(props) {
+  return {
+    type: "delay",
+    duration: props.duration,
+    action: props.action,
+    data: props.data
+  }
 }
