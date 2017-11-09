@@ -1,25 +1,28 @@
-function makeRunEffect(actions) {
-  return function runEffect(effect) {
-    switch (effect.type) {
-      case "action":
-        actions[effect.name](effect.data)
-        break
-      case "update":
-        actions.update(effect.state)
-        break
-      case "frame":
-        requestAnimationFrame(function() {
-          actions[effect.action](effect.data)
-        })
-        break
-      case "delay":
-        setTimeout(function() {
-          actions[effect.action](effect.data)
-        }, effect.duration)
-        break
-    }
-    if (Array.isArray(effect.children)) {
-      effect.children.map(runEffect)
+function runEffect(actions, effect) {
+  if (Array.isArray(effect)) {
+    var type = effect[0]
+    if (typeof type === "string") {
+      var props = effect[1]
+      switch (type) {
+        case "action":
+          actions[props.name](props.data)
+          break
+        case "update":
+          actions.update(props.state)
+          break
+        case "frame":
+          requestAnimationFrame(function() {
+            actions[props.action](props.data)
+          })
+          break
+        case "delay":
+          setTimeout(function() {
+            actions[props.action](props.data)
+          }, props.duration)
+          break
+      }
+    } else if (Array.isArray(type)) {
+      effect.map(runEffect.bind(null, actions))
     }
   }
 }
@@ -37,8 +40,7 @@ export function withEffects(app) {
                   var nextStateOrEffects =
                     typeof result === "function" ? result(data) : result
                   if (Array.isArray(nextStateOrEffects)) {
-                    var runEffect = makeRunEffect(actions)
-                    nextStateOrEffects.map(runEffect)
+                    runEffect(actions, nextStateOrEffects)
                   } else {
                     return nextStateOrEffects
                   }
@@ -70,34 +72,37 @@ export function withEffects(app) {
   }
 }
 
-export function action(props, children) {
-  return {
-    type: "action",
-    name: props.name,
-    data: props.data,
-    children: children
-  }
+export function action(name, data) {
+  return [
+    "action",
+    {
+      name: name,
+      data: data
+    }
+  ]
 }
 
-export function update(props, children) {
-  return { type: "update", state: props.state, children: children }
+export function update(state) {
+  return ["update", { state: state }]
 }
 
-export function frame(props, children) {
-  return {
-    type: "frame",
-    action: props.action,
-    data: props.data,
-    children: children
-  }
+export function frame(action, data) {
+  return [
+    "frame",
+    {
+      action: action,
+      data: data
+    }
+  ]
 }
 
-export function delay(props, children) {
-  return {
-    type: "delay",
-    duration: props.duration,
-    action: props.action,
-    data: props.data,
-    children: children
-  }
+export function delay(duration, action, data) {
+  return [
+    "delay",
+    {
+      duration: duration,
+      action: action,
+      data: data
+    }
+  ]
 }

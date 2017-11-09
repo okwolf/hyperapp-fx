@@ -4,7 +4,7 @@ import { withEffects, action, update, frame, delay } from "../src"
 test("fire a chained action", done =>
   withEffects(app)({
     actions: {
-      foo: () => [action({ name: "bar", data: { some: "data" } })],
+      foo: () => action("bar", { some: "data" }),
       bar: () => data => {
         expect(data).toEqual({ some: "data" })
         done()
@@ -16,10 +16,7 @@ test("update with effects", () => {
   const actions = withEffects(app)({
     actions: {
       get: state => state,
-      foo: () => [
-        update({ state: { key: "value" } }),
-        update({ state: { some: "other value" } })
-      ]
+      foo: () => [update({ key: "value" }), update({ some: "other value" })]
     }
   })
   actions.foo()
@@ -33,37 +30,10 @@ test("mix action and update effects", done =>
   withEffects(app)({
     actions: {
       foo: () => [
-        update({ state: { key: "value" } }),
-        action({ name: "bar", data: { some: "data" } }),
-        update({ state: { some: "other value" } }),
-        action({ name: "baz", data: { moar: "stuff" } })
-      ],
-      bar: state => data => {
-        expect(state).toEqual({
-          key: "value"
-        })
-        expect(data).toEqual({ some: "data" })
-      },
-      baz: state => data => {
-        expect(state).toEqual({
-          key: "value",
-          some: "other value"
-        })
-        expect(data).toEqual({ moar: "stuff" })
-        done()
-      }
-    }
-  }).foo())
-
-test("child effects", done =>
-  withEffects(app)({
-    actions: {
-      foo: () => [
-        update({ state: { key: "value" } }, [
-          action({ name: "bar", data: { some: "data" } }),
-          update({ state: { some: "other value" } }),
-          action({ name: "baz", data: { moar: "stuff" } })
-        ])
+        update({ key: "value" }),
+        action("bar", { some: "data" }),
+        update({ some: "other value" }),
+        action("baz", { moar: "stuff" })
       ],
       bar: state => data => {
         expect(state).toEqual({
@@ -86,7 +56,7 @@ test("calls animation frame", done => {
   global.requestAnimationFrame = jest.fn(cb => cb())
   const actions = withEffects(app)({
     actions: {
-      foo: () => [frame({ action: "bar", data: { frame: "data" } })],
+      foo: () => frame("bar", { frame: "data" }),
       bar: () => data => {
         expect(data).toEqual({ frame: "data" })
         done()
@@ -103,9 +73,7 @@ test("fire an action after a delay", () => {
   const actions = withEffects(app)({
     actions: {
       get: state => state,
-      foo: () => [
-        delay({ duration: 1000, action: "bar", data: { updated: "data" } })
-      ],
+      foo: () => delay(1000, "bar", { updated: "data" }),
       bar: () => data => data
     }
   })

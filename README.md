@@ -35,13 +35,23 @@ Example:
 ```js
 import { action } from "hyperapp-effects"
 
-actionName: () => [
-  action({
-    name: "foo",
-    data: { message: "hello" }
-  }),
-  // ... other effects
-]
+actions: {
+  foo: () => [
+    action("bar", { message: "hello" }),
+    action("baz", { message: "hola" }),
+    // ... other effects
+  ]
+}
+```
+
+Note that you may also use a single effect without an array wrapper:
+
+```js
+import { action } from "hyperapp-effects"
+
+actions: {
+  foo: () => action("bar", { message: "hello" })
+}
 ```
 
 ### `update`
@@ -53,10 +63,12 @@ Example:
 ```js
 import { update } from "hyperapp-effects"
 
-actionName: () => [
-  update({ state: { processing: true } }),
-  // ... other effects
-]
+actions: {
+  foo: () => [
+    update({ processing: true }),
+    // ... other effects
+  ]
+}
 ```
 
 ### `frame`
@@ -68,13 +80,12 @@ Example:
 ```js
 import { frame } from "hyperapp-effects"
 
-actionName: () => [
-  frame({
-    action: "spawn",
-    data: { character: "goomba" }
-  }),
-  // ... other effects
-]
+actions: {
+  foo: () => [
+    frame("spawn", { character: "goomba" }),
+    // ... other effects
+  ]
+}
 ```
 
 ### `delay`
@@ -86,14 +97,12 @@ Example:
 ```js
 import { delay } from "hyperapp-effects"
 
-actionName: () => [
-  delay({
-    duration: 60000,
-    action: "alarm",
-    data: { name: "minute timer" }
-  }),
-  // ... other effects
-]
+actions: {
+  startTimer: () => [
+    delay(60000, "alarm", { name: "minute timer" }),
+    // ... other effects
+  ]
+}
 ```
 
 ## Proposed Future Effects
