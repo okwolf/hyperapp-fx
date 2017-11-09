@@ -29,6 +29,17 @@ function runEffect(actions, effect) {
         case "log":
           console.log.apply(null, props.args)
           break
+        case "http":
+          props.options = props.options || {}
+          props.options.response = props.options.response || "json"
+          fetch(props.url, props.options)
+            .then(function(response) {
+              return response[props.options.response]()
+            })
+            .then(function(result) {
+              actions[props.action](result)
+            })
+          break
       }
     } else if (Array.isArray(type)) {
       effect.map(runEffect.bind(null, actions))
@@ -60,24 +71,14 @@ export function withEffects(app) {
       }, {})
     }
 
-    function enhanceModules(module) {
-      module.actions = enhanceActions(module.actions)
-
-      module.actions.update = function(state, actions) {
-        return function(newState) {
-          return newState
-        }
+    props.actions = enhanceActions(props.actions)
+    props.actions.update = function(state, actions) {
+      return function(newState) {
+        return newState
       }
-
-      Object.keys(module.modules || {}).map(function(name) {
-        enhanceModules(module.modules[name])
-      })
     }
 
-    enhanceModules(props)
-    var appActions = app(props)
-
-    return appActions
+    return app(props)
   }
 }
 
@@ -131,6 +132,17 @@ export function log() {
     "log",
     {
       args: arguments
+    }
+  ]
+}
+
+export function http(url, action, options) {
+  return [
+    "http",
+    {
+      url: url,
+      action: action,
+      options: options
     }
   ]
 }

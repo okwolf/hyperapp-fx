@@ -1,5 +1,14 @@
 import { app } from "hyperapp"
-import { withEffects, action, update, frame, delay, time, log } from "../src"
+import {
+  withEffects,
+  action,
+  update,
+  frame,
+  delay,
+  time,
+  log,
+  http
+} from "../src"
 
 test("fire a chained action", done =>
   withEffects(app)({
@@ -105,10 +114,11 @@ test("get the current time", done => {
   delete global.performance
 })
 
-test("log to console", () => {
+test("log to console", done => {
   const defaultLog = console.log
   console.log = function(...args) {
     expect(args).toEqual(["bar", { some: "data" }, ["list", "of", "data"]])
+    done()
   }
   withEffects(app)({
     actions: {
@@ -116,4 +126,84 @@ test("log to console", () => {
     }
   }).foo()
   console.log = defaultLog
+})
+
+test("http get json", done => {
+  const testUrl = "https://example.com"
+  global.fetch = (url, options) => {
+    expect(url).toBe(testUrl)
+    expect(options).toEqual({
+      response: "json"
+    })
+    return Promise.resolve({
+      json: () => Promise.resolve({ response: "data" })
+    })
+  }
+  withEffects(app)({
+    actions: {
+      foo: () => http(testUrl, "bar"),
+      bar: () => data => {
+        expect(data).toEqual({
+          response: "data"
+        })
+        done()
+      }
+    }
+  }).foo()
+  delete global.fetch
+})
+
+test("http get text", done => {
+  const testUrl = "https://example.com/hello"
+  global.fetch = (url, options) => {
+    expect(url).toBe(testUrl)
+    expect(options).toEqual({
+      response: "text"
+    })
+    return Promise.resolve({
+      text: () => Promise.resolve("hello world")
+    })
+  }
+  withEffects(app)({
+    actions: {
+      foo: () => http(testUrl, "bar", { response: "text" }),
+      bar: () => data => {
+        expect(data).toBe("hello world")
+        done()
+      }
+    }
+  }).foo()
+  delete global.fetch
+})
+
+test("http post json", done => {
+  const testUrl = "/login"
+  global.fetch = (url, options) => {
+    expect(url).toBe(testUrl)
+    expect(options).toEqual({
+      method: "POST",
+      body: {
+        user: "username",
+        pass: "password"
+      },
+      response: "json"
+    })
+    return Promise.resolve({
+      json: () => Promise.resolve({ result: "authenticated" })
+    })
+  }
+  withEffects(app)({
+    actions: {
+      foo: () =>
+        http(testUrl, "bar", {
+          method: "POST",
+          body: { user: "username", pass: "password" }
+        }),
+      bar: () => data => {
+        expect(data).toEqual({ result: "authenticated" })
+        done()
+      }
+    }
+  }).foo()
+  delete global.fetch
 })

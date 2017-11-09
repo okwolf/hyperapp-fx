@@ -164,8 +164,67 @@ actions: {
 }
 ```
 
+### `http`
+
+Describes an effect that will send an HTTP request using [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch) and then call an action with the response. If you are using a browser from the Proterozoic Eon like Internet Explorer you will want a [`fetch` polyfill](https://github.com/github/fetch). An optional `options` parameter supports the same [options as `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#Parameters) plus an additional `response` property specifying which [method to use on the response body](https://developer.mozilla.org/en-US/docs/Web/API/Body#Methods), defaulting to "json".
+
+A simple HTTP GET request with a JSON response:
+
+```js
+import { http } from "hyperapp-effects"
+
+actions: {
+  foo: () => http("/data", "dataFetched"),
+  dataFetched: () => data => {
+    // data will have the JSON-decoded
+    // response from /data
+  }
+}
+```
+
+An HTTP GET request with a text response:
+
+```js
+import { http } from "hyperapp-effects"
+
+actions: {
+  foo: () => http(
+    "/data/name",
+    "textFetched",
+    { response: "text" }
+  ),
+  textFetched: () => data => {
+    // data will have the response
+    // text from /data
+  }
+}
+```
+
+An HTTP POST request using JSON body and response:
+
+```js
+import { http } from "hyperapp-effects"
+
+actions: {
+  foo: () => http(
+    "/login",
+    "loginResponse",
+    {
+      method: "POST",
+      body: {
+        user: "username",
+        pass: "password"
+      }
+    }
+  ),
+  loginResponse: () => loginResponse => {
+    // loginResponse will have the JSON-decoded
+    // response from POSTing to /login
+  }
+}
+```
+
 ## Proposed Future Effects
 
-- `effects.http`
 - `effects.throttle`
 - `effects.random`
