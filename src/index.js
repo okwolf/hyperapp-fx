@@ -1,5 +1,5 @@
 function makeRunEffect(actions) {
-  return function(effect) {
+  return function runEffect(effect) {
     switch (effect.type) {
       case "action":
         actions[effect.name](effect.data)
@@ -17,6 +17,9 @@ function makeRunEffect(actions) {
           actions[effect.action](effect.data)
         }, effect.duration)
         break
+    }
+    if (Array.isArray(effect.children)) {
+      effect.children.map(runEffect)
     }
   }
 }
@@ -67,23 +70,34 @@ export function withEffects(app) {
   }
 }
 
-export function Action(props) {
-  return { type: "action", name: props.name, data: props.data }
+export function action(props, children) {
+  return {
+    type: "action",
+    name: props.name,
+    data: props.data,
+    children: children
+  }
 }
 
-export function Update(props) {
-  return { type: "update", state: props.state }
+export function update(props, children) {
+  return { type: "update", state: props.state, children: children }
 }
 
-export function Frame(props) {
-  return { type: "frame", action: props.action, data: props.data }
+export function frame(props, children) {
+  return {
+    type: "frame",
+    action: props.action,
+    data: props.data,
+    children: children
+  }
 }
 
-export function Delay(props) {
+export function delay(props, children) {
   return {
     type: "delay",
     duration: props.duration,
     action: props.action,
-    data: props.data
+    data: props.data,
+    children: children
   }
 }

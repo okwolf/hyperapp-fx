@@ -4,66 +4,90 @@
 [![Codecov](https://img.shields.io/codecov/c/github/okwolf/hyperapp-effects/master.svg)](https://codecov.io/gh/okwolf/hyperapp-effects)
 [![npm](https://img.shields.io/npm/v/hyperapp-effects.svg)](https://www.npmjs.org/package/hyperapp-effects)
 
+A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App giving your `app` superpowers of writing your [effects as data](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects).
+
 ## API
 
-### Implemented
+### `withEffects`
 
-#### `Action`
+This Higher-Order App function enables `actions` to return arrays which will be treated as effects.
+
+Example:
+
+```js
+import { withEffects } from "hyperapp-effects"
+
+withEffects(app)({
+  actions: {
+    foo: () => [
+      // ... effects go here
+    ],
+  }
+}).foo())
+```
+
+### `action`
 
 Fires another action, optionally with `data`.
 
 Example:
 
 ```js
-import { Action } from "hyperapp-effects"
+import { action } from "hyperapp-effects"
 
 actionName: () => [
-  Action({ name: "foo", data: { message: "hello" } }),
+  action({
+    name: "foo",
+    data: { message: "hello" }
+  }),
   // ... other effects
 ]
 ```
 
-#### `Update`
+### `update`
 
 Updates `state` immediately, useful for combining with effects that will change `state` later.
 
 Example:
 
 ```js
-import { Update } from "hyperapp-effects"
+import { update } from "hyperapp-effects"
 
 actionName: () => [
-  Update({ state: { processing: true } }),
+  update({ state: { processing: true } }),
   // ... other effects
 ]
 ```
 
-#### `Frame`
+### `frame`
 
-Calls an action from inside `requestAnimationFrame`, which is also where the render triggered by the action will run, optionally with `data`.
+Calls an action from inside [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), which is also where the render triggered by the action will run, optionally with `data`.
 
 Example:
 
 ```js
-import { Frame } from "hyperapp-effects"
+import { frame } from "hyperapp-effects"
 
 actionName: () => [
-  Frame({ action: "spawn", data: { character: "goomba" } }),
+  frame({
+    action: "spawn",
+    data: { character: "goomba" }
+  }),
   // ... other effects
 ]
 ```
 
-#### `Delay`
+### `delay`
 
-Calls an action after a delay using `setTimeout`, optionally with `data`.
+Calls an action after a delay using [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout), optionally with `data`.
 
 Example:
 
 ```js
-import { Delay } from "hyperapp-effects"
+import { delay } from "hyperapp-effects"
 
 actionName: () => [
-  Delay({
+  delay({
     duration: 60000,
     action: "alarm",
     data: { name: "minute timer" }
@@ -72,12 +96,10 @@ actionName: () => [
 ]
 ```
 
-### Proposed
+## Proposed Future Effects
 
-#### `effects.http`
-
-#### `effects.time`
-
-#### `effects.random`
-
-#### `effects.log`
+- `effects.http`
+- `effects.time`
+- `effects.throttle`
+- `effects.random`
+- `effects.log`
