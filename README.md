@@ -40,7 +40,13 @@ actions: {
     action("bar", { message: "hello" }),
     action("baz", { message: "hola" }),
     // ... other effects
-  ]
+  ],
+  bar: () => data => {
+    // data will have { message: "hello" }
+  },
+  baz: () => data => {
+    // data will have { message: "hola" }
+  }
 }
 ```
 
@@ -50,7 +56,10 @@ Note that you may also use a single effect without an array wrapper:
 import { action } from "hyperapp-effects"
 
 actions: {
-  foo: () => action("bar", { message: "hello" })
+  foo: () => action("bar", { message: "hello" }),
+  bar: () => data => {
+    // data will have { message: "hello" }
+  }
 }
 ```
 
@@ -73,7 +82,7 @@ actions: {
 
 ### `frame`
 
-Describes an effect that will call an action from inside [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), which is also where the render triggered by the action will run, optionally with `data`. A relative timestamp will be provided as the `time` property on the action `data`.
+Describes an effect that will call an action from inside [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), which is also where the render triggered by the action will run, optionally with a `data` object. A relative timestamp will be provided as the `time` property on the action `data`.
 
 Example:
 
@@ -84,7 +93,11 @@ actions: {
   foo: () => [
     frame("spawn", { character: "goomba" }),
     // ... other effects
-  ]
+  ],
+  spawn: () => data => {
+    // This action is running inside requestAnimationFrame
+    // data will have { time: xxxx, character: "goomba" }
+  }
 }
 ```
 
@@ -101,13 +114,17 @@ actions: {
   startTimer: () => [
     delay(60000, "alarm", { name: "minute timer" }),
     // ... other effects
-  ]
+  ],
+  alarm: () => data => {
+    // This action will run after a minute delay
+    // data will have { name: "minute timer" }
+  }
 }
 ```
 
 ### `time`
 
-Describes an effect that will provide the current timestamp to an action using [`performance.now`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now), optionally with `data`. The timestamp will be provided as the `time` property on the action `data`.
+Describes an effect that will provide the current timestamp to an action using [`performance.now`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now), optionally with a `data` object. The timestamp will be provided as the `time` property on the action `data`.
 
 Example:
 
@@ -118,7 +135,10 @@ actions: {
   foo: () => [
     time("bar", { some: "data" }),
     // ... other effects
-  ]
+  ],
+  bar: () => data => {
+    // data will have { time: xxxx, some: "data" }
+  }
 }
 ```
 
