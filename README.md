@@ -73,7 +73,7 @@ actions: {
 
 ### `frame`
 
-Describes an effect that will call an action from inside [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), which is also where the render triggered by the action will run, optionally with `data`.
+Describes an effect that will call an action from inside [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), which is also where the render triggered by the action will run, optionally with `data`. A relative timestamp will be provided as the `time` property on the action `data`.
 
 Example:
 
@@ -105,9 +105,26 @@ actions: {
 }
 ```
 
+### `time`
+
+Describes an effect that will provide the current timestamp to an action using [`performance.now`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now), optionally with `data`. The timestamp will be provided as the `time` property on the action `data`.
+
+Example:
+
+```js
+import { time } from "hyperapp-effects"
+
+actions: {
+  foo: () => [
+    time("bar", { some: "data" }),
+    // ... other effects
+  ]
+}
+```
+
 ### `log`
 
-Describes an effect that will call `console.log` with arguments. Useful for development and debugging. Not recommended for production.
+Describes an effect that will call [`console.log`](https://developer.mozilla.org/en-US/docs/Web/API/Console/log) with arguments. Useful for development and debugging. Not recommended for production.
 
 Example:
 
@@ -130,6 +147,5 @@ actions: {
 ## Proposed Future Effects
 
 - `effects.http`
-- `effects.time`
 - `effects.throttle`
 - `effects.random`

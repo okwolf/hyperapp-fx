@@ -3,6 +3,7 @@ function runEffect(actions, effect) {
     var type = effect[0]
     if (typeof type === "string") {
       var props = effect[1]
+      props.data = props.data || {}
       switch (type) {
         case "action":
           actions[props.name](props.data)
@@ -20,6 +21,10 @@ function runEffect(actions, effect) {
           setTimeout(function() {
             actions[props.action](props.data)
           }, props.duration)
+          break
+        case "time":
+          props.data.time = performance.now()
+          actions[props.action](props.data)
           break
         case "log":
           console.log.apply(null, props.args)
@@ -105,6 +110,16 @@ export function delay(duration, action, data) {
     "delay",
     {
       duration: duration,
+      action: action,
+      data: data
+    }
+  ]
+}
+
+export function time(action, data) {
+  return [
+    "time",
+    {
       action: action,
       data: data
     }
