@@ -53,12 +53,13 @@ test("mix action and update effects", done =>
   }).foo())
 
 test("calls animation frame", done => {
-  global.requestAnimationFrame = jest.fn(cb => cb())
+  const timestamp = 9001
+  global.requestAnimationFrame = jest.fn(cb => cb(timestamp))
   const actions = withEffects(app)({
     actions: {
       foo: () => frame("bar", { frame: "data" }),
       bar: () => data => {
-        expect(data).toEqual({ frame: "data" })
+        expect(data).toEqual({ time: timestamp, frame: "data" })
         done()
       }
     }

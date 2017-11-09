@@ -11,7 +11,8 @@ function runEffect(actions, effect) {
           actions.update(props.state)
           break
         case "frame":
-          requestAnimationFrame(function() {
+          requestAnimationFrame(function(time) {
+            props.data.time = time
             actions[props.action](props.data)
           })
           break
