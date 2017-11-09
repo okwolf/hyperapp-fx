@@ -20,6 +20,9 @@ function runEffect(actions, effect) {
             actions[props.action](props.data)
           }, props.duration)
           break
+        case "log":
+          console.log.apply(null, props.args)
+          break
       }
     } else if (Array.isArray(type)) {
       effect.map(runEffect.bind(null, actions))
@@ -103,6 +106,15 @@ export function delay(duration, action, data) {
       duration: duration,
       action: action,
       data: data
+    }
+  ]
+}
+
+export function log() {
+  return [
+    "log",
+    {
+      args: arguments
     }
   ]
 }

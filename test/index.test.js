@@ -1,5 +1,5 @@
 import { app } from "hyperapp"
-import { withEffects, action, update, frame, delay } from "../src"
+import { withEffects, action, update, frame, delay, log } from "../src"
 
 test("fire a chained action", done =>
   withEffects(app)({
@@ -82,4 +82,17 @@ test("fire an action after a delay", () => {
   jest.runAllTimers()
   expect(actions.get()).toEqual({ updated: "data" })
   jest.useRealTimers()
+})
+
+test("log to console", () => {
+  const defaultLog = console.log
+  console.log = function(...args) {
+    expect(args).toEqual(["bar", { some: "data" }, ["list", "of", "data"]])
+  }
+  withEffects(app)({
+    actions: {
+      foo: () => log("bar", { some: "data" }, ["list", "of", "data"])
+    }
+  }).foo()
+  console.log = defaultLog
 })

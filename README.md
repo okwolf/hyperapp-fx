@@ -28,7 +28,7 @@ withEffects(app)({
 
 ### `action`
 
-Fires another action, optionally with `data`.
+Describes an effect that will fire another action, optionally with `data`.
 
 Example:
 
@@ -56,7 +56,7 @@ actions: {
 
 ### `update`
 
-Updates `state` immediately, useful for combining with effects that will change `state` later.
+Describes an effect that will update `state` immediately, useful for combining with effects that will change `state` later.
 
 Example:
 
@@ -73,7 +73,7 @@ actions: {
 
 ### `frame`
 
-Calls an action from inside [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), which is also where the render triggered by the action will run, optionally with `data`.
+Describes an effect that will call an action from inside [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), which is also where the render triggered by the action will run, optionally with `data`.
 
 Example:
 
@@ -90,7 +90,7 @@ actions: {
 
 ### `delay`
 
-Calls an action after a delay using [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout), optionally with `data`.
+Describes an effect that will call an action after a delay using [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout), optionally with `data`.
 
 Example:
 
@@ -105,10 +105,31 @@ actions: {
 }
 ```
 
+### `log`
+
+Describes an effect that will call `console.log` with arguments. Useful for development and debugging. Not recommended for production.
+
+Example:
+
+```js
+import { log } from "hyperapp-effects"
+
+actions: {
+  foo: () => [
+    log(
+      "string arg",
+      { object: "arg" },
+      ["list", "of", "args"],
+      someOtherArg
+    ),
+    // ... other effects
+  ]
+}
+```
+
 ## Proposed Future Effects
 
 - `effects.http`
 - `effects.time`
 - `effects.throttle`
 - `effects.random`
-- `effects.log`
