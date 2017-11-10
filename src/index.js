@@ -1,48 +1,53 @@
-function runEffect(actions, effect) {
-  if (Array.isArray(effect)) {
-    var type = effect[0]
-    if (typeof type === "string") {
-      var props = effect[1]
-      props.data = props.data || {}
-      switch (type) {
-        case "action":
-          actions[props.name](props.data)
-          break
-        case "update":
-          actions.update(props.state)
-          break
-        case "frame":
-          requestAnimationFrame(function(time) {
-            props.data.time = time
-            actions[props.action](props.data)
-          })
-          break
-        case "delay":
-          setTimeout(function() {
-            actions[props.action](props.data)
-          }, props.duration)
-          break
-        case "time":
-          props.data.time = performance.now()
+var isEffect = Array.isArray
+
+function runIfEffect(actions, maybeEffect) {
+  if (!isEffect(maybeEffect)) {
+    // Not an effect
+    return maybeEffect
+  } else if (isEffect(maybeEffect[0])) {
+    // Run an array of effects
+    maybeEffect.map(runIfEffect.bind(null, actions))
+  } else {
+    // Run a single effect
+    var type = maybeEffect[0]
+    var props = maybeEffect[1]
+    props.data = props.data || {}
+    switch (type) {
+      case "action":
+        actions[props.name](props.data)
+        break
+      case "update":
+        actions.update(props.state)
+        break
+      case "frame":
+        requestAnimationFrame(function(time) {
+          props.data.time = time
           actions[props.action](props.data)
-          break
-        case "log":
-          console.log.apply(null, props.args)
-          break
-        case "http":
-          props.options = props.options || {}
-          props.options.response = props.options.response || "json"
-          fetch(props.url, props.options)
-            .then(function(response) {
-              return response[props.options.response]()
-            })
-            .then(function(result) {
-              actions[props.action](result)
-            })
-          break
-      }
-    } else if (Array.isArray(type)) {
-      effect.map(runEffect.bind(null, actions))
+        })
+        break
+      case "delay":
+        setTimeout(function() {
+          actions[props.action](props.data)
+        }, props.duration)
+        break
+      case "time":
+        props.data.time = performance.now()
+        actions[props.action](props.data)
+        break
+      case "log":
+        console.log.apply(null, props.args)
+        break
+      case "http":
+        props.options = props.options || {}
+        props.options.response = props.options.response || "json"
+        fetch(props.url, props.options)
+          .then(function(response) {
+            return response[props.options.response]()
+          })
+          .then(function(result) {
+            actions[props.action](result)
+          })
+        break
     }
   }
 }
@@ -57,13 +62,9 @@ export function withEffects(app) {
             ? function(state, actions) {
                 return function(data) {
                   var result = action(state, actions)
-                  var nextStateOrEffects =
+                  var maybeEffect =
                     typeof result === "function" ? result(data) : result
-                  if (Array.isArray(nextStateOrEffects)) {
-                    runEffect(actions, nextStateOrEffects)
-                  } else {
-                    return nextStateOrEffects
-                  }
+                  return runIfEffect(actions, maybeEffect)
                 }
               }
             : enhanceActions(action)
