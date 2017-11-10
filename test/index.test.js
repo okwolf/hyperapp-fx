@@ -10,6 +10,33 @@ import {
   http
 } from "../src"
 
+test("without actions", done =>
+  withEffects(app)({
+    view: () => done()
+  }))
+
+test("doesn't interfere with non effect actions", () => {
+  const actions = withEffects(app)({
+    state: {
+      value: 0
+    },
+    actions: {
+      get: state => state,
+      up: state => by => ({
+        value: state.value + by
+      })
+    }
+  })
+
+  expect(actions.get()).toEqual({
+    value: 0
+  })
+
+  expect(actions.up(2)).toEqual({
+    value: 2
+  })
+})
+
 test("fire a chained action", done =>
   withEffects(app)({
     actions: {
@@ -17,6 +44,19 @@ test("fire a chained action", done =>
       bar: () => data => {
         expect(data).toEqual({ some: "data" })
         done()
+      }
+    }
+  }).foo())
+
+test("fire a slice action", done =>
+  withEffects(app)({
+    actions: {
+      foo: () => action("bar.baz", { some: "data" }),
+      bar: {
+        baz: () => data => {
+          expect(data).toEqual({ some: "data" })
+          done()
+        }
       }
     }
   }).foo())
@@ -66,10 +106,12 @@ test("calls animation frame", done => {
   global.requestAnimationFrame = jest.fn(cb => cb(timestamp))
   const actions = withEffects(app)({
     actions: {
-      foo: () => frame("bar", { frame: "data" }),
-      bar: () => data => {
-        expect(data).toEqual({ time: timestamp, frame: "data" })
-        done()
+      foo: () => frame("bar.baz", { frame: "data" }),
+      bar: {
+        baz: () => data => {
+          expect(data).toEqual({ time: timestamp, frame: "data" })
+          done()
+        }
       }
     }
   })
@@ -83,14 +125,16 @@ test("fire an action after a delay", () => {
   const actions = withEffects(app)({
     actions: {
       get: state => state,
-      foo: () => delay(1000, "bar", { updated: "data" }),
-      bar: () => data => data
+      foo: () => delay(1000, "bar.baz", { updated: "data" }),
+      bar: {
+        baz: () => data => data
+      }
     }
   })
   actions.foo()
-  expect(actions.get()).toEqual({})
+  expect(actions.get()).toEqual({ bar: {} })
   jest.runAllTimers()
-  expect(actions.get()).toEqual({ updated: "data" })
+  expect(actions.get()).toEqual({ bar: { updated: "data" } })
   jest.useRealTimers()
 })
 
@@ -101,13 +145,15 @@ test("get the current time", done => {
   }
   withEffects(app)({
     actions: {
-      foo: () => time("bar", { some: "data" }),
-      bar: () => data => {
-        expect(data).toEqual({
-          time: timestamp,
-          some: "data"
-        })
-        done()
+      foo: () => time("bar.baz", { some: "data" }),
+      bar: {
+        baz: () => data => {
+          expect(data).toEqual({
+            time: timestamp,
+            some: "data"
+          })
+          done()
+        }
       }
     }
   }).foo()
@@ -141,12 +187,14 @@ test("http get json", done => {
   }
   withEffects(app)({
     actions: {
-      foo: () => http(testUrl, "bar"),
-      bar: () => data => {
-        expect(data).toEqual({
-          response: "data"
-        })
-        done()
+      foo: () => http(testUrl, "bar.baz"),
+      bar: {
+        baz: () => data => {
+          expect(data).toEqual({
+            response: "data"
+          })
+          done()
+        }
       }
     }
   }).foo()
@@ -166,10 +214,12 @@ test("http get text", done => {
   }
   withEffects(app)({
     actions: {
-      foo: () => http(testUrl, "bar", { response: "text" }),
-      bar: () => data => {
-        expect(data).toBe("hello world")
-        done()
+      foo: () => http(testUrl, "bar.baz", { response: "text" }),
+      bar: {
+        baz: () => data => {
+          expect(data).toBe("hello world")
+          done()
+        }
       }
     }
   }).foo()
@@ -195,13 +245,15 @@ test("http post json", done => {
   withEffects(app)({
     actions: {
       foo: () =>
-        http(testUrl, "bar", {
+        http(testUrl, "bar.baz", {
           method: "POST",
           body: { user: "username", pass: "password" }
         }),
-      bar: () => data => {
-        expect(data).toEqual({ result: "authenticated" })
-        done()
+      bar: {
+        baz: () => data => {
+          expect(data).toEqual({ result: "authenticated" })
+          done()
+        }
       }
     }
   }).foo()

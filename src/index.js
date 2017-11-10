@@ -1,5 +1,15 @@
 var isEffect = Array.isArray
 
+function getAction(actions, name) {
+  function getNextAction(partialActions, paths) {
+    var nextAction = partialActions[paths[0]]
+    return paths.length === 1
+      ? nextAction
+      : getNextAction(nextAction, paths.slice(1))
+  }
+  return getNextAction(actions, name.split("."))
+}
+
 function runIfEffect(actions, maybeEffect) {
   if (!isEffect(maybeEffect)) {
     // Not an effect
@@ -14,7 +24,7 @@ function runIfEffect(actions, maybeEffect) {
     props.data = props.data || {}
     switch (type) {
       case "action":
-        actions[props.name](props.data)
+        getAction(actions, props.name)(props.data)
         break
       case "update":
         actions.update(props.state)
@@ -22,17 +32,17 @@ function runIfEffect(actions, maybeEffect) {
       case "frame":
         requestAnimationFrame(function(time) {
           props.data.time = time
-          actions[props.action](props.data)
+          getAction(actions, props.action)(props.data)
         })
         break
       case "delay":
         setTimeout(function() {
-          actions[props.action](props.data)
+          getAction(actions, props.action)(props.data)
         }, props.duration)
         break
       case "time":
         props.data.time = performance.now()
-        actions[props.action](props.data)
+        getAction(actions, props.action)(props.data)
         break
       case "log":
         console.log.apply(null, props.args)
@@ -45,7 +55,7 @@ function runIfEffect(actions, maybeEffect) {
             return response[props.options.response]()
           })
           .then(function(result) {
-            actions[props.action](result)
+            getAction(actions, props.action)(result)
           })
         break
     }

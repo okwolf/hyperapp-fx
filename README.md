@@ -99,16 +99,18 @@ withEffects(app)({
 }).foo()
 ```
 
-Note that you may also use a single action effect without an array wrapper:
+Note that you may also use a single action effect without an array wrapper and that nested `actions` may be called by separating the slices with dots:
 
 ```js
 import { withEffects, action } from "hyperapp-effects"
 
 withEffects(app)({
   actions: {
-    foo: () => action("bar", { message: "hello" }),
-    bar: () => data => {
-      // data will have { message: "hello" }
+    foo: () => action("bar.baz", { message: "hello" }),
+    bar: {
+      baz: () => data => {
+        // data will have { message: "hello" }
+      }
     }
   }
 }).foo()
