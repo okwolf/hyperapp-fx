@@ -4,11 +4,22 @@
 [![Codecov](https://img.shields.io/codecov/c/github/okwolf/hyperapp-effects/master.svg)](https://codecov.io/gh/okwolf/hyperapp-effects)
 [![npm](https://img.shields.io/npm/v/hyperapp-effects.svg)](https://www.npmjs.org/package/hyperapp-effects)
 
-A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App giving your `app` superpowers of writing your [effects as data](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects).
+A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App giving your `app` superpowers to write your [effects as data](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects).
+
+Effects are always represented as arrays. For a single effect this array represents a tuple containing the effect type string and an object containing the properties of this effect. For multiple effects each array element is either a tuple or an array of tuples, which may be nested.
+
+```js
+EffectTuple = [ string, object ]
+Effect = EffectTuple | EffectTuple[] | Effect[]
+```
 
 ## API
 
 ### `withEffects`
+
+```js
+withEffects = function(App): App
+```
 
 This Higher-Order App function enables `actions` to return arrays which will be treated as effects.
 
@@ -27,6 +38,10 @@ withEffects(app)({
 ```
 
 ### `action`
+
+```js
+action = function(name: string, data?: any): EffectTuple
+```
 
 Describes an effect that will fire another action, optionally with `data`.
 
@@ -50,7 +65,7 @@ actions: {
 }
 ```
 
-Note that you may also use a single effect without an array wrapper:
+Note that you may also use a single action effect without an array wrapper:
 
 ```js
 import { action } from "hyperapp-effects"
@@ -63,7 +78,13 @@ actions: {
 }
 ```
 
+This same convention follows for all the other effects as well.
+
 ### `update`
+
+```js
+update = function(partialState: object): EffectTuple
+```
 
 Describes an effect that will update `state` immediately, useful for combining with effects that will change `state` later.
 
@@ -81,6 +102,10 @@ actions: {
 ```
 
 ### `frame`
+
+```js
+frame = function(name: string, data?: object): EffectTuple
+```
 
 Describes an effect that will call an action from inside [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), which is also where the render triggered by the action will run, optionally with a `data` object. A relative timestamp will be provided as the `time` property on the action `data`.
 
@@ -103,6 +128,10 @@ actions: {
 
 ### `delay`
 
+```js
+delay = function(duration: number, name: string, data?: any): EffectTuple
+```
+
 Describes an effect that will call an action after a delay using [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout), optionally with `data`.
 
 Example:
@@ -124,6 +153,10 @@ actions: {
 
 ### `time`
 
+```js
+time = function(name: string, data?: object): EffectTuple
+```
+
 Describes an effect that will provide the current timestamp to an action using [`performance.now`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now), optionally with a `data` object. The timestamp will be provided as the `time` property on the action `data`.
 
 Example:
@@ -143,6 +176,10 @@ actions: {
 ```
 
 ### `log`
+
+```js
+log = function(...args: any[]): EffectTuple
+```
 
 Describes an effect that will call [`console.log`](https://developer.mozilla.org/en-US/docs/Web/API/Console/log) with arguments. Useful for development and debugging. Not recommended for production.
 
@@ -166,6 +203,10 @@ actions: {
 
 ### `http`
 
+```js
+http = function(url: string, action: string, options?: object): EffectTuple
+```
+
 Describes an effect that will send an HTTP request using [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch) and then call an action with the response. If you are using a browser from the Proterozoic Eon like Internet Explorer you will want a [`fetch` polyfill](https://github.com/github/fetch). An optional `options` parameter supports the same [options as `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#Parameters) plus an additional `response` property specifying which [method to use on the response body](https://developer.mozilla.org/en-US/docs/Web/API/Body#Methods), defaulting to "json".
 
 A simple HTTP GET request with a JSON response:
@@ -174,7 +215,10 @@ A simple HTTP GET request with a JSON response:
 import { http } from "hyperapp-effects"
 
 actions: {
-  foo: () => http("/data", "dataFetched"),
+  foo: () => [
+    http("/data", "dataFetched"),
+    // ... other effects
+  ],
   dataFetched: () => data => {
     // data will have the JSON-decoded
     // response from /data
@@ -223,8 +267,3 @@ actions: {
   }
 }
 ```
-
-## Proposed Future Effects
-
-- `effects.throttle`
-- `effects.random`
