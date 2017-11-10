@@ -35,6 +35,10 @@ test("doesn't interfere with non effect actions", () => {
   expect(actions.up(2)).toEqual({
     value: 2
   })
+
+  expect(actions.get()).toEqual({
+    value: 2
+  })
 })
 
 test("fire a chained action", done =>
