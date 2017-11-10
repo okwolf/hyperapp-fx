@@ -13,6 +13,38 @@ EffectTuple = [ string, object ]
 Effect = EffectTuple | EffectTuple[] | Effect[]
 ```
 
+## Installation
+
+### Node.js
+
+Install with npm / Yarn.
+
+<pre>
+npm i <a href="https://www.npmjs.com/package/hyperapp-effects">hyperapp-effects</a>
+</pre>
+
+Then with a module bundler like [rollup](https://github.com/rollup/rollup) or [webpack](https://github.com/webpack/webpack), use as you would anything else.
+
+```js
+import { withEffects } from "hyperapp-effects"
+```
+
+Or using require.
+
+```js
+const { withEffects } = require("hyperapp-effects")
+```
+
+### Browser
+
+Download the minified library from the [CDN](https://unpkg.com/hyperapp-effects).
+
+```html
+<script src="https://unpkg.com/hyperapp-effects"></script>
+```
+
+You can find the library in `window.effects`.
+
 ## API
 
 ### `withEffects`
