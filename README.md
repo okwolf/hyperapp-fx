@@ -80,34 +80,38 @@ Describes an effect that will fire another action, optionally with `data`.
 Example:
 
 ```js
-import { action } from "hyperapp-effects"
+import { withEffects, action } from "hyperapp-effects"
 
-actions: {
-  foo: () => [
-    action("bar", { message: "hello" }),
-    action("baz", { message: "hola" }),
-    // ... other effects
-  ],
-  bar: () => data => {
-    // data will have { message: "hello" }
-  },
-  baz: () => data => {
-    // data will have { message: "hola" }
+withEffects(app)({
+  actions: {
+    foo: () => [
+      action("bar", { message: "hello" }),
+      action("baz", { message: "hola" }),
+      // ... other effects
+    ],
+    bar: () => data => {
+      // data will have { message: "hello" }
+    },
+    baz: () => data => {
+      // data will have { message: "hola" }
+    }
   }
-}
+}).foo()
 ```
 
 Note that you may also use a single action effect without an array wrapper:
 
 ```js
-import { action } from "hyperapp-effects"
+import { withEffects, action } from "hyperapp-effects"
 
-actions: {
-  foo: () => action("bar", { message: "hello" }),
-  bar: () => data => {
-    // data will have { message: "hello" }
+withEffects(app)({
+  actions: {
+    foo: () => action("bar", { message: "hello" }),
+    bar: () => data => {
+      // data will have { message: "hello" }
+    }
   }
-}
+}).foo()
 ```
 
 This same convention follows for all the other effects as well.
@@ -123,14 +127,13 @@ Describes an effect that will update `state` immediately, useful for combining w
 Example:
 
 ```js
-import { update } from "hyperapp-effects"
+import { withEffects, update } from "hyperapp-effects"
 
-actions: {
-  foo: () => [
-    update({ processing: true }),
-    // ... other effects
-  ]
-}
+withEffects(app)({
+  actions: {
+    foo: () => update({ processing: true })
+  }
+}).foo()
 ```
 
 ### `frame`
@@ -144,18 +147,17 @@ Describes an effect that will call an action from inside [`requestAnimationFrame
 Example:
 
 ```js
-import { frame } from "hyperapp-effects"
+import { withEffects, frame } from "hyperapp-effects"
 
-actions: {
-  foo: () => [
-    frame("spawn", { character: "goomba" }),
-    // ... other effects
-  ],
-  spawn: () => data => {
-    // This action is running inside requestAnimationFrame
-    // data will have { time: xxxx, character: "goomba" }
+withEffects(app)({
+  actions: {
+    foo: () => frame("spawn", { character: "goomba" }),
+    spawn: () => data => {
+      // This action is running inside requestAnimationFrame
+      // data will have { time: xxxx, character: "goomba" }
+    }
   }
-}
+}).foo()
 ```
 
 ### `delay`
@@ -169,18 +171,21 @@ Describes an effect that will call an action after a delay using [`setTimeout`](
 Example:
 
 ```js
-import { delay } from "hyperapp-effects"
+import { withEffects, delay } from "hyperapp-effects"
 
-actions: {
-  startTimer: () => [
-    delay(60000, "alarm", { name: "minute timer" }),
-    // ... other effects
-  ],
-  alarm: () => data => {
-    // This action will run after a minute delay
-    // data will have { name: "minute timer" }
+withEffects(app)({
+  actions: {
+    startTimer: () => delay(
+      60000,
+      "alarm",
+      { name: "minute timer" }
+    ),
+    alarm: () => data => {
+      // This action will run after a minute delay
+      // data will have { name: "minute timer" }
+    }
   }
-}
+}).startTimer()
 ```
 
 ### `time`
@@ -194,17 +199,16 @@ Describes an effect that will provide the current timestamp to an action using [
 Example:
 
 ```js
-import { time } from "hyperapp-effects"
+import { withEffects, time } from "hyperapp-effects"
 
-actions: {
-  foo: () => [
-    time("bar", { some: "data" }),
-    // ... other effects
-  ],
-  bar: () => data => {
-    // data will have { time: xxxx, some: "data" }
+withEffects(app)({
+  actions: {
+    foo: () => time("bar", { some: "data" }),
+    bar: () => data => {
+      // data will have { time: xxxx, some: "data" }
+    }
   }
-}
+}).foo()
 ```
 
 ### `log`
@@ -218,19 +222,18 @@ Describes an effect that will call [`console.log`](https://developer.mozilla.org
 Example:
 
 ```js
-import { log } from "hyperapp-effects"
+import { withEffects, log } from "hyperapp-effects"
 
-actions: {
-  foo: () => [
-    log(
-      "string arg",
-      { object: "arg" },
-      ["list", "of", "args"],
-      someOtherArg
-    ),
-    // ... other effects
-  ]
-}
+withEffects(app)({
+  actions: {
+    foo: () => log(
+        "string arg",
+        { object: "arg" },
+        ["list", "of", "args"],
+        someOtherArg
+    )
+  }
+}).foo()
 ```
 
 ### `http`
@@ -244,60 +247,60 @@ Describes an effect that will send an HTTP request using [`fetch`](https://devel
 A simple HTTP GET request with a JSON response:
 
 ```js
-import { http } from "hyperapp-effects"
+import { withEffects, http } from "hyperapp-effects"
 
-actions: {
-  foo: () => [
-    http("/data", "dataFetched"),
-    // ... other effects
-  ],
-  dataFetched: () => data => {
-    // data will have the JSON-decoded
-    // response from /data
+withEffects(app)({
+  actions: {
+    foo: () => http("/data", "dataFetched"),
+    dataFetched: () => data => {
+      // data will have the JSON-decoded
+      // response from /data
+    }
   }
-}
+}).foo()
 ```
 
 An HTTP GET request with a text response:
 
 ```js
-import { http } from "hyperapp-effects"
+import { withEffects, http } from "hyperapp-effects"
 
-actions: {
-  foo: () => http(
-    "/data/name",
-    "textFetched",
-    { response: "text" }
-  ),
-  textFetched: () => data => {
-    // data will have the response
-    // text from /data
+withEffects(app)({
+  actions: {
+    foo: () => http(
+      "/data/name",
+      "textFetched",
+      { response: "text" }
+    ),
+    textFetched: () => data => {
+      // data will have the response
+      // text from /data
+    }
   }
-}
+}).foo()
 ```
 
 An HTTP POST request using JSON body and response:
 
 ```js
-import { http } from "hyperapp-effects"
+import { withEffects, http } from "hyperapp-effects"
 
-actions: {
-  foo: () => http(
-    "/login",
-    "loginResponse",
-    {
-      method: "POST",
-      body: {
-        user: "username",
-        pass: "password"
+withEffects(app)({
+  actions: {
+    login: () => form => http(
+      "/login",
+      "loginComplete",
+      {
+        method: "POST",
+        body: form
       }
+    ),
+    loginComplete: () => loginResponse => {
+      // loginResponse will have the JSON-decoded
+      // response from POSTing to /login
     }
-  ),
-  loginResponse: () => loginResponse => {
-    // loginResponse will have the JSON-decoded
-    // response from POSTing to /login
   }
-}
+}).login()
 ```
 
 ## License
