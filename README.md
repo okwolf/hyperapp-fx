@@ -267,3 +267,7 @@ actions: {
   }
 }
 ```
+
+## License
+
+Hyperapp Effects is MIT licensed. See [LICENSE](LICENSE.md).
