@@ -118,26 +118,6 @@ withEffects(app)({
 
 This same convention follows for all the other effects as well.
 
-### `update`
-
-```js
-update = function(partialState: object): EffectTuple
-```
-
-Describes an effect that will update `state` immediately, useful for combining with effects that will change `state` later.
-
-Example:
-
-```js
-import { withEffects, update } from "hyperapp-effects"
-
-withEffects(app)({
-  actions: {
-    foo: () => update({ processing: true })
-  }
-}).foo()
-```
-
 ### `frame`
 
 ```js
@@ -160,6 +140,36 @@ withEffects(app)({
     }
   }
 }).foo()
+```
+
+If you wish to have an action that continuously updates the `state` and rerenders inside of `requestAnimationFrame` (such as for a game), remember to include another `frame` effect in your return:
+
+```js
+import { withEffects, action, frame } from "hyperapp-effects"
+
+withEffects(app)({
+  state: {
+    time: 0,
+    delta: 0
+  },
+  actions: {
+    init: () => frame("update"),
+    update: () => ({ time }) => [
+      action("incTime", time),
+
+      // ...
+      // Other actions to update the state based on delta time
+      // ...
+
+      // End with a recursive frame effect to perform the next update
+      frame("update")
+    ],
+    incTime: ({ time: lastTime, delta: lastDelta }) => time => ({
+      time: time || lastTime,
+      delta: time && lastTime ? time - lastTime : lastDelta
+    })
+  }
+}).init()
 ```
 
 ### `delay`

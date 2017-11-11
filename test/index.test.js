@@ -1,14 +1,5 @@
 import { app } from "hyperapp"
-import {
-  withEffects,
-  action,
-  update,
-  frame,
-  delay,
-  time,
-  log,
-  http
-} from "../src"
+import { withEffects, action, frame, delay, time, log, http } from "../src"
 
 test("without actions", done =>
   withEffects(app)({
@@ -65,27 +56,14 @@ test("fire a slice action", done =>
     }
   }).foo())
 
-test("update with effects", () => {
-  const actions = withEffects(app)({
-    actions: {
-      get: state => state,
-      foo: () => [update({ key: "value" }), update({ some: "other value" })]
-    }
-  })
-  actions.foo()
-  expect(actions.get()).toEqual({
-    key: "value",
-    some: "other value"
-  })
-})
-
-test("mix action and update effects", done =>
+test("state updates with action effects", done =>
   withEffects(app)({
     actions: {
+      update: () => state => state,
       foo: () => [
-        update({ key: "value" }),
+        action("update", { key: "value" }),
         action("bar", { some: "data" }),
-        update({ some: "other value" }),
+        action("update", { some: "other value" }),
         action("baz", { moar: "stuff" })
       ],
       bar: state => data => {

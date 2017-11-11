@@ -26,9 +26,6 @@ function runIfEffect(actions, maybeEffect) {
       case "action":
         getAction(actions, props.name)(props.data)
         break
-      case "update":
-        actions.update(props.state)
-        break
       case "frame":
         requestAnimationFrame(function(time) {
           props.data.time = time
@@ -83,11 +80,6 @@ export function withEffects(app) {
     }
 
     props.actions = enhanceActions(props.actions)
-    props.actions.update = function(state, actions) {
-      return function(newState) {
-        return newState
-      }
-    }
 
     return app(props)
   }
@@ -101,10 +93,6 @@ export function action(name, data) {
       data: data
     }
   ]
-}
-
-export function update(state) {
-  return ["update", { state: state }]
 }
 
 export function frame(action, data) {
