@@ -118,6 +118,25 @@ withEffects(app)({
 
 This same convention follows for all the other effects as well.
 
+Also note that `action` (and other effects) may be used for props in your `view`. The originally fired event is available as the `event` property on the action `data`:
+
+```js
+import { withEffects, action } from "hyperapp-effects"
+
+withEffects(app)({
+  actions: {
+    foo: () => data => {
+      // data will have { event: { ...eventProps }, message: "hello" }
+    }
+  },
+  view: () => h("button", {
+    onclick: action("foo", { message: "hello" })
+  })
+})
+```
+
+However, it's recommended to only use `action` effects in your `view`, and all other effects from in `actions`.
+
 ### `frame`
 
 ```js

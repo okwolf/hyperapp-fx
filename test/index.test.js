@@ -1,4 +1,4 @@
-import { app } from "hyperapp"
+import { h, app } from "hyperapp"
 import { withEffects, action, frame, delay, time, log, http } from "../src"
 
 test("without actions", done =>
@@ -241,4 +241,50 @@ test("http post json", done => {
     }
   }).foo()
   delete global.fetch
+})
+
+test("action effects with data in view", done => {
+  document.body.innerHTML = ""
+  withEffects(app)({
+    actions: {
+      foo: () => data => {
+        expect(data).toEqual({ event: { button: 0 } })
+        done()
+      }
+    },
+    view: () =>
+      h(
+        "main",
+        {
+          oncreate: () => {
+            const buttonElement = document.body.firstChild.lastChild
+            buttonElement.onclick({ button: 0 })
+          }
+        },
+        h("button", { onclick: action("foo") })
+      )
+  })
+})
+
+test("action effects in view with data", done => {
+  document.body.innerHTML = ""
+  withEffects(app)({
+    actions: {
+      foo: () => data => {
+        expect(data).toEqual({ event: { button: 0 }, some: "data" })
+        done()
+      }
+    },
+    view: () =>
+      h(
+        "main",
+        {
+          oncreate: () => {
+            const buttonElement = document.body.firstChild.lastChild
+            buttonElement.onclick({ button: 0 })
+          }
+        },
+        h("button", { onclick: action("foo", { some: "data" }) })
+      )
+  })
 })

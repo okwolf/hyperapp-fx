@@ -16,7 +16,9 @@ function runIfEffect(actions, maybeEffect) {
     return maybeEffect
   } else if (isEffect(maybeEffect[0])) {
     // Run an array of effects
-    maybeEffect.map(runIfEffect.bind(null, actions))
+    for (var i in maybeEffect) {
+      runIfEffect(actions, maybeEffect[i])
+    }
   } else {
     // Run a single effect
     var type = maybeEffect[0]
@@ -59,6 +61,25 @@ function runIfEffect(actions, maybeEffect) {
   }
 }
 
+function patchVdomEffects(actions, vdom) {
+  if (typeof vdom === "object") {
+    for (var key in vdom.props) {
+      var maybeEffect = vdom.props[key]
+      if (isEffect(maybeEffect)) {
+        vdom.props[key] = function(event) {
+          var props = maybeEffect[1]
+          props.data = props.data || {}
+          props.data.event = event
+          runIfEffect(actions, maybeEffect)
+        }
+      }
+    }
+    for (var i in vdom.children) {
+      patchVdomEffects(actions, vdom.children[i])
+    }
+  }
+}
+
 export function withEffects(app) {
   return function(props) {
     function enhanceActions(actions) {
@@ -80,6 +101,14 @@ export function withEffects(app) {
     }
 
     props.actions = enhanceActions(props.actions)
+    if (props.view) {
+      var originalView = props.view
+      props.view = function(state, actions) {
+        var nextVdom = originalView.apply(null, arguments)
+        patchVdomEffects(actions, nextVdom)
+        return nextVdom
+      }
+    }
 
     return app(props)
   }
