@@ -255,8 +255,7 @@ withEffects(app)({
   actions: {
     foo: () => http("/data", "dataFetched"),
     dataFetched: () => data => {
-      // data will have the JSON-decoded
-      // response from /data
+      // data will have the JSON-decoded response from /data
     }
   }
 }).foo()
@@ -275,8 +274,7 @@ withEffects(app)({
       { response: "text" }
     ),
     textFetched: () => data => {
-      // data will have the response
-      // text from /data
+      // data will have the response text from /data
     }
   }
 }).foo()
@@ -298,8 +296,7 @@ withEffects(app)({
       }
     ),
     loginComplete: () => loginResponse => {
-      // loginResponse will have the JSON-decoded
-      // response from POSTing to /login
+      // loginResponse will have the JSON-decoded response from POSTing to /login
     }
   }
 }).login()
