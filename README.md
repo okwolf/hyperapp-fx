@@ -118,26 +118,6 @@ withEffects(app)({
 
 This same convention follows for all the other effects as well.
 
-### `update`
-
-```js
-update = function(partialState: object): EffectTuple
-```
-
-Describes an effect that will update `state` immediately, useful for combining with effects that will change `state` later.
-
-Example:
-
-```js
-import { withEffects, update } from "hyperapp-effects"
-
-withEffects(app)({
-  actions: {
-    foo: () => update({ processing: true })
-  }
-}).foo()
-```
-
 ### `frame`
 
 ```js
