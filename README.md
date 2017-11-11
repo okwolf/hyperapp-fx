@@ -6,7 +6,7 @@
 
 A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App giving your `app` superpowers to write your [effects as data](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects).
 
-Effects are always represented as arrays. For a single effect this array represents a tuple containing the effect type string and an object containing the properties of this effect. For multiple effects each array element is either a tuple or an array of tuples, which may be nested.
+Effects are always represented as arrays. For a single effect this array represents a tuple containing the effect type string and an object containing the properties of this effect. For multiple effects each array element is either an effect tuple or an array of these tuples, which may be nested.
 
 ```js
 EffectTuple = [ string, object ]
@@ -53,7 +53,7 @@ You can find the library in `window.effects`.
 withEffects = function(App): App
 ```
 
-This Higher-Order App function enables `actions` to return arrays which will be treated as effects.
+This Higher-Order App function enables `actions` to return arrays which later will be run as effects.
 
 Example:
 
@@ -246,7 +246,7 @@ http = function(url: string, action: string, options?: object): EffectTuple
 
 Describes an effect that will send an HTTP request using [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch) and then call an action with the response. If you are using a browser from the Proterozoic Eon like Internet Explorer you will want a [`fetch` polyfill](https://github.com/github/fetch). An optional `options` parameter supports the same [options as `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#Parameters) plus an additional `response` property specifying which [method to use on the response body](https://developer.mozilla.org/en-US/docs/Web/API/Body#Methods), defaulting to "json".
 
-A simple HTTP GET request with a JSON response:
+Example HTTP GET request with a JSON response:
 
 ```js
 import { withEffects, http } from "hyperapp-effects"
@@ -261,7 +261,7 @@ withEffects(app)({
 }).foo()
 ```
 
-An HTTP GET request with a text response:
+Example HTTP GET request with a text response:
 
 ```js
 import { withEffects, http } from "hyperapp-effects"
@@ -280,7 +280,7 @@ withEffects(app)({
 }).foo()
 ```
 
-An HTTP POST request using JSON body and response:
+Example HTTP POST request using JSON body and response:
 
 ```js
 import { withEffects, http } from "hyperapp-effects"
