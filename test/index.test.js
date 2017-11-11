@@ -165,14 +165,15 @@ test("get the current time", done => {
 })
 
 test("log to console", done => {
+  const testArgs = ["bar", { some: "data" }, ["list", "of", "data"]]
   const defaultLog = console.log
   console.log = function(...args) {
-    expect(args).toEqual(["bar", { some: "data" }, ["list", "of", "data"]])
+    expect(args).toEqual(testArgs)
     done()
   }
   withEffects(app)({
     actions: {
-      foo: () => log("bar", { some: "data" }, ["list", "of", "data"])
+      foo: () => log(...testArgs)
     }
   }).foo()
   console.log = defaultLog
