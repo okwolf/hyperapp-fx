@@ -10,28 +10,26 @@ function getAction(actions, name) {
   return getNextAction(actions, name.split("."))
 }
 
-function runIfEffect(actions, maybeEffect) {
+function runIfEffect(actions, event, maybeEffect) {
   if (!isEffect(maybeEffect)) {
     // Not an effect
     return maybeEffect
   } else if (isEffect(maybeEffect[0])) {
     // Run an array of effects
     for (var i in maybeEffect) {
-      runIfEffect(actions, maybeEffect[i])
+      runIfEffect(actions, event, maybeEffect[i])
     }
   } else {
     // Run a single effect
     var type = maybeEffect[0]
     var props = maybeEffect[1]
-    props.data = props.data || {}
     switch (type) {
       case "action":
         getAction(actions, props.name)(props.data)
         break
       case "frame":
         requestAnimationFrame(function(time) {
-          props.data.time = time
-          getAction(actions, props.action)(props.data)
+          getAction(actions, props.action)(time)
         })
         break
       case "delay":
@@ -40,8 +38,7 @@ function runIfEffect(actions, maybeEffect) {
         }, props.duration)
         break
       case "time":
-        props.data.time = performance.now()
-        getAction(actions, props.action)(props.data)
+        getAction(actions, props.action)(performance.now())
         break
       case "log":
         console.log.apply(null, props.args)
@@ -57,6 +54,9 @@ function runIfEffect(actions, maybeEffect) {
             getAction(actions, props.action)(result)
           })
         break
+      case "event":
+        getAction(actions, props.action)(event)
+        break
     }
   }
 }
@@ -67,10 +67,7 @@ function patchVdomEffects(actions, vdom) {
       var maybeEffect = vdom.props[key]
       if (isEffect(maybeEffect)) {
         vdom.props[key] = function(event) {
-          var props = maybeEffect[1]
-          props.data = props.data || {}
-          props.data.event = event
-          runIfEffect(actions, maybeEffect)
+          runIfEffect(actions, event, maybeEffect)
         }
       }
     }
@@ -92,7 +89,7 @@ export function withEffects(app) {
                   var result = action(state, actions)
                   var maybeEffect =
                     typeof result === "function" ? result(data) : result
-                  return runIfEffect(actions, maybeEffect)
+                  return runIfEffect(actions, null, maybeEffect)
                 }
               }
             : enhanceActions(action)
@@ -124,12 +121,11 @@ export function action(name, data) {
   ]
 }
 
-export function frame(action, data) {
+export function frame(action) {
   return [
     "frame",
     {
-      action: action,
-      data: data
+      action: action
     }
   ]
 }
@@ -145,12 +141,11 @@ export function delay(duration, action, data) {
   ]
 }
 
-export function time(action, data) {
+export function time(action) {
   return [
     "time",
     {
-      action: action,
-      data: data
+      action: action
     }
   ]
 }
@@ -171,6 +166,15 @@ export function http(url, action, options) {
       url: url,
       action: action,
       options: options
+    }
+  ]
+}
+
+export function event(action) {
+  return [
+    "event",
+    {
+      action: action
     }
   ]
 }

@@ -118,7 +118,7 @@ withEffects(app)({
 
 This same convention follows for all the other effects as well.
 
-Also note that `action` (and other effects) may be used for props in your `view`. The originally fired event is available as the `event` property on the action `data`:
+Also note that `action` (and other effects) may be used for handler props in your `view`:
 
 ```js
 import { withEffects, action } from "hyperapp-effects"
@@ -126,7 +126,7 @@ import { withEffects, action } from "hyperapp-effects"
 withEffects(app)({
   actions: {
     foo: () => data => {
-      // data will have { event: { ...eventProps }, message: "hello" }
+      // data will have { message: "hello" }
     }
   },
   view: () => h("button", {
@@ -135,33 +135,15 @@ withEffects(app)({
 })
 ```
 
-However, it's recommended to only use `action` effects in your `view`, and all other effects from in `actions`.
-
 ### `frame`
 
 ```js
-frame = function(name: string, data?: object): EffectTuple
+frame = function(name: string): EffectTuple
 ```
 
-Describes an effect that will call an action from inside [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), which is also where the render triggered by the action will run, optionally with a `data` object. A relative timestamp will be provided as the `time` property on the action `data`.
+Describes an effect that will call an action from inside [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), which is also where the render triggered by the action will run. A relative timestamp will be provided as the action `data`. If you wish to have an action that continuously updates the `state` and rerenders inside of `requestAnimationFrame` (such as for a game), remember to include another `frame` effect in your return.
 
 Example:
-
-```js
-import { withEffects, frame } from "hyperapp-effects"
-
-withEffects(app)({
-  actions: {
-    foo: () => frame("spawn", { character: "goomba" }),
-    spawn: () => data => {
-      // This action is running inside requestAnimationFrame
-      // data will have { time: xxxx, character: "goomba" }
-    }
-  }
-}).foo()
-```
-
-If you wish to have an action that continuously updates the `state` and rerenders inside of `requestAnimationFrame` (such as for a game), remember to include another `frame` effect in your return:
 
 ```js
 import { withEffects, action, frame } from "hyperapp-effects"
@@ -222,10 +204,10 @@ withEffects(app)({
 ### `time`
 
 ```js
-time = function(name: string, data?: object): EffectTuple
+time = function(name: string): EffectTuple
 ```
 
-Describes an effect that will provide the current timestamp to an action using [`performance.now`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now), optionally with a `data` object. The timestamp will be provided as the `time` property on the action `data`.
+Describes an effect that will provide the current timestamp to an action using [`performance.now`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now). The timestamp will be provided as the action `data`.
 
 Example:
 
@@ -234,9 +216,9 @@ import { withEffects, time } from "hyperapp-effects"
 
 withEffects(app)({
   actions: {
-    foo: () => time("bar", { some: "data" }),
-    bar: () => data => {
-      // data will have { time: xxxx, some: "data" }
+    foo: () => time("bar"),
+    bar: () => timestamp => {
+      // use timestamp
     }
   }
 }).foo()
@@ -330,6 +312,27 @@ withEffects(app)({
   }
 }).login()
 ```
+
+### `event`
+
+Describes an effect that will capture event data when attached to a handler in your `view`. The originally fired event will be provided as the action `data`.
+
+```js
+import { withEffects, event } from "hyperapp-effects"
+
+withEffects(app)({
+  actions: {
+    click: () => clickEvent => {
+      // clickEvent has the props of the client event
+    }
+  },
+  view: () => h("button", {
+    onclick: event("click")
+  })
+})
+```
+
+It's recommended to only use `event` and `action` effects in your `view`, and all other effects from inside the actions called by these.
 
 ## License
 
