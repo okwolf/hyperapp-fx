@@ -315,7 +315,7 @@ withEffects(app)({
 
 ### `event`
 
-Describes an effect that will capture event data when attached to a handler in your `view`. The originally fired event will be provided as the action `data`.
+Describes an effect that will capture [DOM Event](https://developer.mozilla.org/en-US/docs/Web/Events) data when attached to a handler in your `view`. The originally fired event will be provided as the action `data`.
 
 ```js
 import { withEffects, event } from "hyperapp-effects"
@@ -333,6 +333,40 @@ withEffects(app)({
 ```
 
 It's recommended to only use `event` and `action` effects in your `view`, and all other effects from inside the actions called by these.
+
+### `keydown`
+
+Describes an effect that will capture [keydown](https://developer.mozilla.org/en-US/docs/Web/Events/keydown) events for your entire document. The [`KeyboardEvent`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent) will be provided as the action `data`.
+
+```js
+import { withEffects, keydown } from "hyperapp-effects"
+
+withEffects(app)({
+  actions: {
+    init: () => keydown("keyPressed"),
+    keyPressed: () => keyEvent => {
+      // keyEvent has the props of the KeyboardEvent
+    }
+  }
+}).init()
+```
+
+### `keyup`
+
+Describes an effect that will capture [keyup](https://developer.mozilla.org/en-US/docs/Web/Events/keyup) events for your entire document. The [`KeyboardEvent`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent) will be provided as the action `data`.
+
+```js
+import { withEffects, keyup } from "hyperapp-effects"
+
+withEffects(app)({
+  actions: {
+    init: () => keyup("keyReleased"),
+    keyReleased: () => keyEvent => {
+      // keyEvent has the props of the KeyboardEvent
+    }
+  }
+}).init()
+```
 
 ## License
 

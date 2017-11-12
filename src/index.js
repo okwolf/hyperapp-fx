@@ -57,6 +57,16 @@ function runIfEffect(actions, event, maybeEffect) {
       case "event":
         getAction(actions, props.action)(event)
         break
+      case "keydown":
+        document.onkeydown = function(event) {
+          getAction(actions, props.action)(event)
+        }
+        break
+      case "keyup":
+        document.onkeyup = function(event) {
+          getAction(actions, props.action)(event)
+        }
+        break
     }
   }
 }
@@ -174,6 +184,24 @@ export function http(url, action, options) {
 export function event(action) {
   return [
     "event",
+    {
+      action: action
+    }
+  ]
+}
+
+export function keydown(action) {
+  return [
+    "keydown",
+    {
+      action: action
+    }
+  ]
+}
+
+export function keyup(action) {
+  return [
+    "keyup",
     {
       action: action
     }

@@ -7,7 +7,9 @@ import {
   time,
   log,
   http,
-  event
+  event,
+  keydown,
+  keyup
 } from "../src"
 
 test("without actions", done =>
@@ -352,4 +354,32 @@ test("combined action and event effects in view", done => {
         })
       )
   })
+})
+
+test("keydown", done => {
+  const keyEvent = { key: "a", code: "KeyA" }
+  withEffects(app)({
+    actions: {
+      init: () => keydown("foo"),
+      foo: () => data => {
+        expect(data).toEqual(keyEvent)
+        done()
+      }
+    }
+  }).init()
+  document.onkeydown(keyEvent)
+})
+
+test("keyup", done => {
+  const keyEvent = { key: "a", code: "KeyA" }
+  withEffects(app)({
+    actions: {
+      init: () => keyup("foo"),
+      foo: () => data => {
+        expect(data).toEqual(keyEvent)
+        done()
+      }
+    }
+  }).init()
+  document.onkeyup(keyEvent)
 })
