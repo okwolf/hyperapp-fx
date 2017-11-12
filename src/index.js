@@ -10,14 +10,14 @@ function getAction(actions, name) {
   return getNextAction(actions, name.split("."))
 }
 
-function runIfEffect(actions, event, maybeEffect) {
+function runIfEffect(actions, currentEvent, maybeEffect) {
   if (!isEffect(maybeEffect)) {
     // Not an effect
     return maybeEffect
   } else if (isEffect(maybeEffect[0])) {
     // Run an array of effects
     for (var i in maybeEffect) {
-      runIfEffect(actions, event, maybeEffect[i])
+      runIfEffect(actions, currentEvent, maybeEffect[i])
     }
   } else {
     // Run a single effect
@@ -55,16 +55,16 @@ function runIfEffect(actions, event, maybeEffect) {
           })
         break
       case "event":
-        getAction(actions, props.action)(event)
+        getAction(actions, props.action)(currentEvent)
         break
       case "keydown":
-        document.onkeydown = function(event) {
-          getAction(actions, props.action)(event)
+        document.onkeydown = function(keyEvent) {
+          getAction(actions, props.action)(keyEvent)
         }
         break
       case "keyup":
-        document.onkeyup = function(event) {
-          getAction(actions, props.action)(event)
+        document.onkeyup = function(keyEvent) {
+          getAction(actions, props.action)(keyEvent)
         }
         break
       case "random":
@@ -98,8 +98,8 @@ function patchVdomEffects(actions, vdom) {
     for (var key in vdom.props) {
       var maybeEffect = vdom.props[key]
       if (isEffect(maybeEffect)) {
-        vdom.props[key] = function(event) {
-          runIfEffect(actions, event, maybeEffect)
+        vdom.props[key] = function(currentEvent) {
+          runIfEffect(actions, currentEvent, maybeEffect)
         }
       }
     }

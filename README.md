@@ -138,7 +138,7 @@ withEffects(app)({
 ### `frame`
 
 ```js
-frame = function(name: string): EffectTuple
+frame = function(action: string): EffectTuple
 ```
 
 Describes an effect that will call an action from inside [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), which is also where the render triggered by the action will run. A relative timestamp will be provided as the action `data`. If you wish to have an action that continuously updates the `state` and rerenders inside of `requestAnimationFrame` (such as for a game), remember to include another `frame` effect in your return.
@@ -176,7 +176,7 @@ withEffects(app)({
 ### `delay`
 
 ```js
-delay = function(duration: number, name: string, data?: any): EffectTuple
+delay = function(duration: number, action: string, data?: any): EffectTuple
 ```
 
 Describes an effect that will call an action after a delay using [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout), optionally with `data`.
@@ -204,7 +204,7 @@ withEffects(app)({
 ### `time`
 
 ```js
-time = function(name: string): EffectTuple
+time = function(action: string): EffectTuple
 ```
 
 Describes an effect that will provide the current timestamp to an action using [`performance.now`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now). The timestamp will be provided as the action `data`.
@@ -314,6 +314,10 @@ withEffects(app)({
 ```
 
 ### `event`
+
+```js
+event = function(action: string): EffectTuple
+```
 
 Describes an effect that will capture [DOM Event](https://developer.mozilla.org/en-US/docs/Web/Events) data when attached to a handler in your `view`. The originally fired event will be provided as the action `data`.
 
