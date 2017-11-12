@@ -336,11 +336,15 @@ withEffects(app)({
 })
 ```
 
-It's recommended to only use `event` and `action` effects in your `view`, and all other effects from inside the actions called by these.
-
 ### `keydown`
 
+```js
+keydown = function(action: string): EffectTuple
+```
+
 Describes an effect that will capture [keydown](https://developer.mozilla.org/en-US/docs/Web/Events/keydown) events for your entire document. The [`KeyboardEvent`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent) will be provided as the action `data`.
+
+Example:
 
 ```js
 import { withEffects, keydown } from "hyperapp-effects"
@@ -357,7 +361,13 @@ withEffects(app)({
 
 ### `keyup`
 
+```js
+keyup = function(action: string): EffectTuple
+```
+
 Describes an effect that will capture [keyup](https://developer.mozilla.org/en-US/docs/Web/Events/keyup) events for your entire document. The [`KeyboardEvent`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent) will be provided as the action `data`.
+
+Example:
 
 ```js
 import { withEffects, keyup } from "hyperapp-effects"
@@ -370,6 +380,33 @@ withEffects(app)({
     }
   }
 }).init()
+```
+
+### `random`
+
+```js
+random = function(action: string, min?: number, max?: number): EffectTuple
+```
+
+Describes an effect that will call an action with a [randomly generated number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random) within a range. If provided the range will be `[min, max)` or else the default range is `[0, 1)`. The random number will be provided as the action `data`.
+
+Use [`Math.floor`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor) if you want a random integer instead of a floating-point number. Remember the range will be `max` exclusive, so use your largest desired int + 1.
+
+Example:
+
+```js
+import { withEffects, random } from "hyperapp-effects"
+
+withEffects(app)({
+  actions: {
+    // We use the max of 7 to include all values of 6.x
+    foo: () => random("rollDie", 1, 7),
+    rollDie: () => randomNumber => {
+      const roll = Math.floor(randomNumber)
+      // roll will be an int from 1-6
+    }
+  }
+}).foo()
 ```
 
 ## License
