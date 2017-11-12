@@ -323,7 +323,7 @@ import { withEffects, event } from "hyperapp-effects"
 withEffects(app)({
   actions: {
     click: () => clickEvent => {
-      // clickEvent has the props of the client event
+      // clickEvent has the props of the click event
     }
   },
   view: () => h("button", {
