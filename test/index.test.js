@@ -252,21 +252,31 @@ test("http post json", done => {
 test("action effects in view", done => {
   document.body.innerHTML = ""
   withEffects(app)({
+    state: {
+      message: "hello"
+    },
     actions: {
       foo: () => data => {
         expect(data).toEqual({ some: "data" })
         done()
       }
     },
-    view: () =>
+    view: ({ message }, actions) =>
       h(
         "main",
         {
           oncreate: () => {
+            expect(actions).toEqual({
+              foo: expect.any(Function)
+            })
+            expect(document.body.innerHTML).toBe(
+              "<main><h1>hello</h1><button></button></main>"
+            )
             const buttonElement = document.body.firstChild.lastChild
             buttonElement.onclick({ button: 0 })
           }
         },
+        h("h1", {}, message),
         h("button", { onclick: action("foo", { some: "data" }) })
       )
   })
@@ -275,21 +285,31 @@ test("action effects in view", done => {
 test("event effects in view", done => {
   document.body.innerHTML = ""
   withEffects(app)({
+    state: {
+      message: "hello"
+    },
     actions: {
       foo: () => data => {
         expect(data).toEqual({ button: 0 })
         done()
       }
     },
-    view: () =>
+    view: ({ message }, actions) =>
       h(
         "main",
         {
           oncreate: () => {
+            expect(actions).toEqual({
+              foo: expect.any(Function)
+            })
+            expect(document.body.innerHTML).toBe(
+              "<main><h1>hello</h1><button></button></main>"
+            )
             const buttonElement = document.body.firstChild.lastChild
             buttonElement.onclick({ button: 0 })
           }
         },
+        h("h1", {}, message),
         h("button", { onclick: event("foo") })
       )
   })
@@ -298,6 +318,9 @@ test("event effects in view", done => {
 test("combined action and event effects in view", done => {
   document.body.innerHTML = ""
   withEffects(app)({
+    state: {
+      message: "hello"
+    },
     actions: {
       foo: () => data => {
         expect(data).toEqual({ button: 0 })
@@ -307,15 +330,23 @@ test("combined action and event effects in view", done => {
         done()
       }
     },
-    view: () =>
+    view: ({ message }, actions) =>
       h(
         "main",
         {
           oncreate: () => {
+            expect(actions).toEqual({
+              foo: expect.any(Function),
+              bar: expect.any(Function)
+            })
+            expect(document.body.innerHTML).toBe(
+              "<main><h1>hello</h1><button></button></main>"
+            )
             const buttonElement = document.body.firstChild.lastChild
             buttonElement.onclick({ button: 0 })
           }
         },
+        h("h1", {}, message),
         h("button", {
           onclick: [event("foo"), action("bar", { some: "data" })]
         })

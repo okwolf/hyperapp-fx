@@ -102,7 +102,7 @@ export function withEffects(app) {
     if (props.view) {
       var originalView = props.view
       props.view = function(state, actions) {
-        var nextVdom = originalView.apply(null, arguments)
+        var nextVdom = originalView(state, actions)
         patchVdomEffects(actions, nextVdom)
         return nextVdom
       }
