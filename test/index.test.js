@@ -9,7 +9,8 @@ import {
   http,
   event,
   keydown,
-  keyup
+  keyup,
+  random
 } from "../src"
 
 test("without actions", done =>
@@ -382,4 +383,39 @@ test("keyup", done => {
     }
   }).init()
   document.onkeyup(keyEvent)
+})
+
+test("random with default range", done => {
+  const randomValue = 0.5
+  const defaultRandom = Math.random
+  Math.random = () => randomValue
+
+  withEffects(app)({
+    actions: {
+      foo: () => random("bar"),
+      bar: () => data => {
+        expect(data).toBeCloseTo(randomValue)
+        done()
+      }
+    }
+  }).foo()
+
+  Math.random = defaultRandom
+})
+
+test("random with custom range", done => {
+  const defaultRandom = Math.random
+  Math.random = () => 0.5
+
+  withEffects(app)({
+    actions: {
+      foo: () => random("bar", 2, 5),
+      bar: () => data => {
+        expect(data).toBeCloseTo(3.5)
+        done()
+      }
+    }
+  }).foo()
+
+  Math.random = defaultRandom
 })

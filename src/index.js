@@ -67,6 +67,10 @@ function runIfEffect(actions, event, maybeEffect) {
           getAction(actions, props.action)(event)
         }
         break
+      case "random":
+        var randomValue = Math.random() * (props.max - props.min) + props.min
+        getAction(actions, props.action)(randomValue)
+        break
     }
   }
 }
@@ -204,6 +208,17 @@ export function keyup(action) {
     "keyup",
     {
       action: action
+    }
+  ]
+}
+
+export function random(action, min, max) {
+  return [
+    "random",
+    {
+      action: action,
+      min: min || 0,
+      max: max || 1
     }
   ]
 }
