@@ -61,6 +61,24 @@ function runIfEffect(actions, event, maybeEffect) {
   }
 }
 
+function enhanceActions(actions) {
+  return Object.keys(actions || {}).reduce(function(otherActions, name) {
+    var action = actions[name]
+    otherActions[name] =
+      typeof action === "function"
+        ? function(state, actions) {
+            return function(data) {
+              var result = action(state, actions)
+              var maybeEffect =
+                typeof result === "function" ? result(data) : result
+              return runIfEffect(actions, null, maybeEffect)
+            }
+          }
+        : enhanceActions(action)
+    return otherActions
+  }, {})
+}
+
 function patchVdomEffects(actions, vdom) {
   if (typeof vdom === "object") {
     for (var key in vdom.props) {
@@ -79,25 +97,8 @@ function patchVdomEffects(actions, vdom) {
 
 export function withEffects(app) {
   return function(props) {
-    function enhanceActions(actions) {
-      return Object.keys(actions || {}).reduce(function(otherActions, name) {
-        var action = actions[name]
-        otherActions[name] =
-          typeof action === "function"
-            ? function(state, actions) {
-                return function(data) {
-                  var result = action(state, actions)
-                  var maybeEffect =
-                    typeof result === "function" ? result(data) : result
-                  return runIfEffect(actions, null, maybeEffect)
-                }
-              }
-            : enhanceActions(action)
-        return otherActions
-      }, {})
-    }
-
     props.actions = enhanceActions(props.actions)
+
     if (props.view) {
       var originalView = props.view
       props.view = function(state, actions) {
