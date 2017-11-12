@@ -1,5 +1,14 @@
-import { app } from "hyperapp"
-import { withEffects, action, frame, delay, time, log, http } from "../src"
+import { h, app } from "hyperapp"
+import {
+  withEffects,
+  action,
+  frame,
+  delay,
+  time,
+  log,
+  http,
+  event
+} from "../src"
 
 test("without actions", done =>
   withEffects(app)({
@@ -88,10 +97,10 @@ test("calls animation frame", done => {
   global.requestAnimationFrame = jest.fn(cb => cb(timestamp))
   const actions = withEffects(app)({
     actions: {
-      foo: () => frame("bar.baz", { frame: "data" }),
+      foo: () => frame("bar.baz"),
       bar: {
         baz: () => data => {
-          expect(data).toEqual({ time: timestamp, frame: "data" })
+          expect(data).toBe(timestamp)
           done()
         }
       }
@@ -127,13 +136,10 @@ test("get the current time", done => {
   }
   withEffects(app)({
     actions: {
-      foo: () => time("bar.baz", { some: "data" }),
+      foo: () => time("bar.baz"),
       bar: {
         baz: () => data => {
-          expect(data).toEqual({
-            time: timestamp,
-            some: "data"
-          })
+          expect(data).toBe(timestamp)
           done()
         }
       }
@@ -241,4 +247,109 @@ test("http post json", done => {
     }
   }).foo()
   delete global.fetch
+})
+
+test("action effects in view", done => {
+  document.body.innerHTML = ""
+  withEffects(app)({
+    state: {
+      message: "hello"
+    },
+    actions: {
+      foo: () => data => {
+        expect(data).toEqual({ some: "data" })
+        done()
+      }
+    },
+    view: ({ message }, actions) =>
+      h(
+        "main",
+        {
+          oncreate: () => {
+            expect(actions).toEqual({
+              foo: expect.any(Function)
+            })
+            expect(document.body.innerHTML).toBe(
+              "<main><h1>hello</h1><button></button></main>"
+            )
+            const buttonElement = document.body.firstChild.lastChild
+            buttonElement.onclick({ button: 0 })
+          }
+        },
+        h("h1", {}, message),
+        h("button", { onclick: action("foo", { some: "data" }) })
+      )
+  })
+})
+
+test("event effects in view", done => {
+  document.body.innerHTML = ""
+  withEffects(app)({
+    state: {
+      message: "hello"
+    },
+    actions: {
+      foo: () => data => {
+        expect(data).toEqual({ button: 0 })
+        done()
+      }
+    },
+    view: ({ message }, actions) =>
+      h(
+        "main",
+        {
+          oncreate: () => {
+            expect(actions).toEqual({
+              foo: expect.any(Function)
+            })
+            expect(document.body.innerHTML).toBe(
+              "<main><h1>hello</h1><button></button></main>"
+            )
+            const buttonElement = document.body.firstChild.lastChild
+            buttonElement.onclick({ button: 0 })
+          }
+        },
+        h("h1", {}, message),
+        h("button", { onclick: event("foo") })
+      )
+  })
+})
+
+test("combined action and event effects in view", done => {
+  document.body.innerHTML = ""
+  withEffects(app)({
+    state: {
+      message: "hello"
+    },
+    actions: {
+      foo: () => data => {
+        expect(data).toEqual({ button: 0 })
+      },
+      bar: () => data => {
+        expect(data).toEqual({ some: "data" })
+        done()
+      }
+    },
+    view: ({ message }, actions) =>
+      h(
+        "main",
+        {
+          oncreate: () => {
+            expect(actions).toEqual({
+              foo: expect.any(Function),
+              bar: expect.any(Function)
+            })
+            expect(document.body.innerHTML).toBe(
+              "<main><h1>hello</h1><button></button></main>"
+            )
+            const buttonElement = document.body.firstChild.lastChild
+            buttonElement.onclick({ button: 0 })
+          }
+        },
+        h("h1", {}, message),
+        h("button", {
+          onclick: [event("foo"), action("bar", { some: "data" })]
+        })
+      )
+  })
 })
