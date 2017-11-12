@@ -57,6 +57,20 @@ function runIfEffect(actions, currentEvent, maybeEffect) {
       case "event":
         getAction(actions, props.action)(currentEvent)
         break
+      case "keydown":
+        document.onkeydown = function(keyEvent) {
+          getAction(actions, props.action)(keyEvent)
+        }
+        break
+      case "keyup":
+        document.onkeyup = function(keyEvent) {
+          getAction(actions, props.action)(keyEvent)
+        }
+        break
+      case "random":
+        var randomValue = Math.random() * (props.max - props.min) + props.min
+        getAction(actions, props.action)(randomValue)
+        break
     }
   }
 }
@@ -176,6 +190,35 @@ export function event(action) {
     "event",
     {
       action: action
+    }
+  ]
+}
+
+export function keydown(action) {
+  return [
+    "keydown",
+    {
+      action: action
+    }
+  ]
+}
+
+export function keyup(action) {
+  return [
+    "keyup",
+    {
+      action: action
+    }
+  ]
+}
+
+export function random(action, min, max) {
+  return [
+    "random",
+    {
+      action: action,
+      min: min || 0,
+      max: max || 1
     }
   ]
 }
