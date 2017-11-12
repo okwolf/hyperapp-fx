@@ -25,7 +25,7 @@
     "build": "npm run bundle && npm run minify",
     "bundle": "rollup -i src/index.js -o dist/effects.js -m -f umd -n effects",
     "minify": "uglifyjs dist/effects.js -o dist/effects.js --mangle --compress warnings=false --pure-funcs=Object.defineProperty -p relative --in-source-map dist/effects.js.map --source-map dist/effects.js.map",
-    "prepare": "npm run build",
+    "prepare": "npm test && npm run build",
     "format": "prettier --semi false --write '{src,test}/**/*.js'"
   },
   "babel": {
