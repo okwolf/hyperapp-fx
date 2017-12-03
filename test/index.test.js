@@ -18,16 +18,22 @@ test("without actions", done =>
     view: () => done()
   }))
 
-test("doesn't interfere with non effect actions", () => {
+test("doesn't interfere with non effect actions", done => {
   const actions = withEffects(app)({
     state: {
       value: 0
     },
     actions: {
-      get: state => state,
-      up: state => by => ({
+      get: () => state => state,
+      up: by => state => ({
         value: state.value + by
-      })
+      }),
+      finish: () => () => actions => {
+        actions.exit()
+      },
+      exit: () => {
+        done()
+      }
     }
   })
 
@@ -42,13 +48,15 @@ test("doesn't interfere with non effect actions", () => {
   expect(actions.get()).toEqual({
     value: 2
   })
+
+  actions.finish()
 })
 
 test("fire a chained action", done =>
   withEffects(app)({
     actions: {
       foo: () => action("bar", { some: "data" }),
-      bar: () => data => {
+      bar: data => {
         expect(data).toEqual({ some: "data" })
         done()
       }
@@ -60,7 +68,7 @@ test("fire a slice action", done =>
     actions: {
       foo: () => action("bar.baz", { some: "data" }),
       bar: {
-        baz: () => data => {
+        baz: data => {
           expect(data).toEqual({ some: "data" })
           done()
         }
@@ -71,20 +79,20 @@ test("fire a slice action", done =>
 test("state updates with action effects", done =>
   withEffects(app)({
     actions: {
-      update: () => state => state,
+      update: data => data,
       foo: () => [
         action("update", { key: "value" }),
         action("bar", { some: "data" }),
         action("update", { some: "other value" }),
         action("baz", { moar: "stuff" })
       ],
-      bar: state => data => {
+      bar: data => state => {
         expect(state).toEqual({
           key: "value"
         })
         expect(data).toEqual({ some: "data" })
       },
-      baz: state => data => {
+      baz: data => state => {
         expect(state).toEqual({
           key: "value",
           some: "other value"
@@ -102,7 +110,7 @@ test("calls animation frame", done => {
     actions: {
       foo: () => frame("bar.baz"),
       bar: {
-        baz: () => data => {
+        baz: data => {
           expect(data).toBe(timestamp)
           done()
         }
@@ -118,10 +126,10 @@ test("fire an action after a delay", () => {
   jest.useFakeTimers()
   const actions = withEffects(app)({
     actions: {
-      get: state => state,
+      get: () => state => state,
       foo: () => delay(1000, "bar.baz", { updated: "data" }),
       bar: {
-        baz: () => data => data
+        baz: data => data
       }
     }
   })
@@ -141,7 +149,7 @@ test("get the current time", done => {
     actions: {
       foo: () => time("bar.baz"),
       bar: {
-        baz: () => data => {
+        baz: data => {
           expect(data).toBe(timestamp)
           done()
         }
@@ -181,7 +189,7 @@ test("http get json", done => {
     actions: {
       foo: () => http(testUrl, "bar.baz"),
       bar: {
-        baz: () => data => {
+        baz: data => {
           expect(data).toEqual({
             response: "data"
           })
@@ -208,7 +216,7 @@ test("http get text", done => {
     actions: {
       foo: () => http(testUrl, "bar.baz", { response: "text" }),
       bar: {
-        baz: () => data => {
+        baz: data => {
           expect(data).toBe("hello world")
           done()
         }
@@ -242,7 +250,7 @@ test("http post json", done => {
           body: { user: "username", pass: "password" }
         }),
       bar: {
-        baz: () => data => {
+        baz: data => {
           expect(data).toEqual({ result: "authenticated" })
           done()
         }
@@ -259,12 +267,12 @@ test("action effects in view", done => {
       message: "hello"
     },
     actions: {
-      foo: () => data => {
+      foo: data => {
         expect(data).toEqual({ some: "data" })
         done()
       }
     },
-    view: ({ message }, actions) =>
+    view: ({ message }) => actions =>
       h(
         "main",
         {
@@ -292,12 +300,12 @@ test("event effects in view", done => {
       message: "hello"
     },
     actions: {
-      foo: () => data => {
+      foo: data => {
         expect(data).toEqual({ button: 0 })
         done()
       }
     },
-    view: ({ message }, actions) =>
+    view: ({ message }) => actions =>
       h(
         "main",
         {
@@ -325,15 +333,15 @@ test("combined action and event effects in view", done => {
       message: "hello"
     },
     actions: {
-      foo: () => data => {
+      foo: data => {
         expect(data).toEqual({ button: 0 })
       },
-      bar: () => data => {
+      bar: data => {
         expect(data).toEqual({ some: "data" })
         done()
       }
     },
-    view: ({ message }, actions) =>
+    view: ({ message }) => actions =>
       h(
         "main",
         {
@@ -362,7 +370,7 @@ test("keydown", done => {
   withEffects(app)({
     actions: {
       init: () => keydown("foo"),
-      foo: () => data => {
+      foo: data => {
         expect(data).toEqual(keyEvent)
         done()
       }
@@ -376,7 +384,7 @@ test("keyup", done => {
   withEffects(app)({
     actions: {
       init: () => keyup("foo"),
-      foo: () => data => {
+      foo: data => {
         expect(data).toEqual(keyEvent)
         done()
       }
@@ -393,7 +401,7 @@ test("random with default range", done => {
   withEffects(app)({
     actions: {
       foo: () => random("bar"),
-      bar: () => data => {
+      bar: data => {
         expect(data).toBeCloseTo(randomValue)
         done()
       }
@@ -410,7 +418,7 @@ test("random with custom range", done => {
   withEffects(app)({
     actions: {
       foo: () => random("bar", 2, 5),
-      bar: () => data => {
+      bar: data => {
         expect(data).toBeCloseTo(3.5)
         done()
       }

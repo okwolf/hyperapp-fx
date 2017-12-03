@@ -80,12 +80,14 @@ function enhanceActions(actions) {
     var action = actions[name]
     otherActions[name] =
       typeof action === "function"
-        ? function(state, actions) {
-            return function(data) {
-              var result = action(state, actions)
-              var maybeEffect =
-                typeof result === "function" ? result(data) : result
-              return runIfEffect(actions, null, maybeEffect)
+        ? function(data) {
+            return function(state) {
+              return function(actions) {
+                var result = action(data)
+                result = typeof result === "function" ? result(state) : result
+                result = typeof result === "function" ? result(actions) : result
+                return runIfEffect(actions, null, result)
+              }
             }
           }
         : enhanceActions(action)
@@ -115,10 +117,13 @@ export function withEffects(app) {
 
     if (props.view) {
       var originalView = props.view
-      props.view = function(state, actions) {
-        var nextVdom = originalView(state, actions)
-        patchVdomEffects(actions, nextVdom)
-        return nextVdom
+      props.view = function(state) {
+        return function(actions) {
+          var result = originalView(state)
+          result = typeof result === "function" ? result(actions) : result
+          patchVdomEffects(actions, result)
+          return result
+        }
       }
     }
 

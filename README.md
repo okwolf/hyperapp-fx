@@ -89,10 +89,10 @@ withEffects(app)({
       action("baz", { message: "hola" }),
       // ... other effects
     ],
-    bar: () => data => {
+    bar: data => {
       // data will have { message: "hello" }
     },
-    baz: () => data => {
+    baz: data => {
       // data will have { message: "hola" }
     }
   }
@@ -108,7 +108,7 @@ withEffects(app)({
   actions: {
     foo: () => action("bar.baz", { message: "hello" }),
     bar: {
-      baz: () => data => {
+      baz: data => {
         // data will have { message: "hello" }
       }
     }
@@ -125,7 +125,7 @@ import { withEffects, action } from "hyperapp-effects"
 
 withEffects(app)({
   actions: {
-    foo: () => data => {
+    foo: data => {
       // data will have { message: "hello" }
     }
   },
@@ -155,7 +155,7 @@ withEffects(app)({
   },
   actions: {
     init: () => frame("update"),
-    update: () => ({ time }) => [
+    update: time => [
       action("incTime", time),
 
       // ...
@@ -165,8 +165,8 @@ withEffects(app)({
       // End with a recursive frame effect to perform the next update
       frame("update")
     ],
-    incTime: ({ time: lastTime, delta: lastDelta }) => time => ({
-      time: time || lastTime,
+    incTime: time => ({ time: lastTime, delta: lastDelta }) => ({
+      time,
       delta: time && lastTime ? time - lastTime : lastDelta
     })
   }
@@ -193,7 +193,7 @@ withEffects(app)({
       "alarm",
       { name: "minute timer" }
     ),
-    alarm: () => data => {
+    alarm: data => {
       // This action will run after a minute delay
       // data will have { name: "minute timer" }
     }
@@ -217,7 +217,7 @@ import { withEffects, time } from "hyperapp-effects"
 withEffects(app)({
   actions: {
     foo: () => time("bar"),
-    bar: () => timestamp => {
+    bar: timestamp => {
       // use timestamp
     }
   }
@@ -265,7 +265,7 @@ import { withEffects, http } from "hyperapp-effects"
 withEffects(app)({
   actions: {
     foo: () => http("/data", "dataFetched"),
-    dataFetched: () => data => {
+    dataFetched: data => {
       // data will have the JSON-decoded response from /data
     }
   }
@@ -284,7 +284,7 @@ withEffects(app)({
       "textFetched",
       { response: "text" }
     ),
-    textFetched: () => data => {
+    textFetched: data => {
       // data will have the response text from /data
     }
   }
@@ -298,7 +298,7 @@ import { withEffects, http } from "hyperapp-effects"
 
 withEffects(app)({
   actions: {
-    login: () => form => http(
+    login: form => http(
       "/login",
       "loginComplete",
       {
@@ -326,7 +326,7 @@ import { withEffects, event } from "hyperapp-effects"
 
 withEffects(app)({
   actions: {
-    click: () => clickEvent => {
+    click: clickEvent => {
       // clickEvent has the props of the click event
     }
   },
@@ -352,7 +352,7 @@ import { withEffects, keydown } from "hyperapp-effects"
 withEffects(app)({
   actions: {
     init: () => keydown("keyPressed"),
-    keyPressed: () => keyEvent => {
+    keyPressed: keyEvent => {
       // keyEvent has the props of the KeyboardEvent
     }
   }
@@ -375,7 +375,7 @@ import { withEffects, keyup } from "hyperapp-effects"
 withEffects(app)({
   actions: {
     init: () => keyup("keyReleased"),
-    keyReleased: () => keyEvent => {
+    keyReleased: keyEvent => {
       // keyEvent has the props of the KeyboardEvent
     }
   }
@@ -401,7 +401,7 @@ withEffects(app)({
   actions: {
     // We use the max of 7 to include all values of 6.x
     foo: () => random("rollDie", 1, 7),
-    rollDie: () => randomNumber => {
+    rollDie: randomNumber => {
       const roll = Math.floor(randomNumber)
       // roll will be an int from 1-6
     }
