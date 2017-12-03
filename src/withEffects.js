@@ -110,14 +110,18 @@ function enhanceActions(actions) {
   }, {})
 }
 
+function handleEventEffect(actions, effect) {
+  return function(currentEvent) {
+    runIfEffect(actions, currentEvent, effect)
+  }
+}
+
 function patchVdomEffects(actions, vdom) {
   if (typeof vdom === "object") {
     for (var key in vdom.props) {
       var maybeEffect = vdom.props[key]
       if (isEffect(maybeEffect)) {
-        vdom.props[key] = function(currentEvent) {
-          runIfEffect(actions, currentEvent, maybeEffect)
-        }
+        vdom.props[key] = handleEventEffect(actions, maybeEffect)
       }
     }
     for (var i in vdom.children) {
