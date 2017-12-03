@@ -155,7 +155,7 @@ withEffects(app)({
   },
   actions: {
     init: () => frame("update"),
-    update: ({ time }) => [
+    update: time => [
       action("incTime", time),
 
       // ...
@@ -166,7 +166,7 @@ withEffects(app)({
       frame("update")
     ],
     incTime: time => ({ time: lastTime, delta: lastDelta }) => ({
-      time: time || lastTime,
+      time,
       delta: time && lastTime ? time - lastTime : lastDelta
     })
   }
