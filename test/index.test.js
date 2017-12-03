@@ -10,7 +10,8 @@ import {
   event,
   keydown,
   keyup,
-  random
+  random,
+  effectsIf
 } from "../src"
 
 test("without actions", done =>
@@ -427,3 +428,8 @@ test("random with custom range", done => {
 
   Math.random = defaultRandom
 })
+
+test("effectsIf", () =>
+  expect(
+    effectsIf([[true, action("include")], [false, action("exclude")]])
+  ).toEqual([action("include")]))
