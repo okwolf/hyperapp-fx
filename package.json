@@ -10,11 +10,11 @@
     "url": "git+https://github.com/okwolf/hyperapp-effects.git"
   },
   "peerDependencies": {
-    "hyperapp": "^0.16.0"
+    "hyperapp": "^0.16.2"
   },
   "devDependencies": {
     "babel-preset-env": "^1.6.1",
-    "hyperapp": "hyperapp/hyperapp#master",
+    "hyperapp": "^0.16.2",
     "jest": "^21.2.1",
     "prettier": "^1.8.2",
     "rollup": "^0.51.2",
@@ -22,8 +22,7 @@
   },
   "scripts": {
     "test": "jest --coverage --no-cache",
-    "build": "npm run build-hyperapp && npm run bundle && npm run minify",
-    "build-hyperapp": "cd node_modules/hyperapp && npm i && npm run bundle",
+    "build": "npm run bundle && npm run minify",
     "bundle": "rollup -i src/index.js -o dist/effects.js -m -f umd -n effects",
     "minify": "uglifyjs dist/effects.js -o dist/effects.js --mangle --compress warnings=false --pure-funcs=Object.defineProperty -p relative --in-source-map dist/effects.js.map --source-map dist/effects.js.map",
     "prepare": "npm run build && npm test",
