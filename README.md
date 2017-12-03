@@ -418,7 +418,7 @@ EffectConditional = [boolean, EffectTuple]
 effectsIf = function(EffectConditional[]): EffectTuple[]
 ```
 
-Convert an array of `[boolean, EffectTuple]`s into a new array of effects where the boolean evaluates to true. This provides compact syntatic sugar for conditionally firing effects.
+Convert an array of `[boolean, EffectTuple]`s into a new array of effects where the boolean evaluated to true. This provides compact syntatic sugar for conditionally firing effects.
 
 Example:
 
