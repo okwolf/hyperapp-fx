@@ -6,13 +6,6 @@
 
 A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App giving your `app` superpowers to write your [effects as data](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects).
 
-Effects are always represented as arrays. For a single effect this array represents a tuple containing the effect type string and an object containing the properties of this effect. For multiple effects each array element is either an effect tuple or an array of these tuples, which may be nested.
-
-```js
-EffectTuple = [ string, object ]
-Effect = EffectTuple | EffectTuple[] | Effect[]
-```
-
 ## Installation
 
 ### Node.js
@@ -46,6 +39,15 @@ Download the minified library from the [CDN](https://unpkg.com/hyperapp-effects)
 You can find the library in `window.effects`.
 
 ## API
+
+### Effects data
+
+```js
+EffectTuple = [ string, object ]
+Effect = EffectTuple | EffectTuple[] | Effect[]
+```
+
+Effects are always represented as arrays. For a single effect this array represents a tuple containing the effect type string and an object containing the properties of this effect. For multiple effects each array element is either an effect tuple or an array of these tuples, which may be nested. This means that effects are composeable.
 
 ### `withEffects`
 
