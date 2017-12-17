@@ -91,23 +91,24 @@ function runIfEffect(actions, currentEvent, maybeEffect) {
   }
 }
 
-function enhanceActions(actions) {
-  return Object.keys(actions || {}).reduce(function(otherActions, name) {
-    var action = actions[name]
+function enhanceActions(actionsTemplate) {
+  return Object.keys(actionsTemplate || {}).reduce(function(
+    otherActions,
+    name
+  ) {
+    var action = actionsTemplate[name]
     otherActions[name] = isFn(action)
       ? function(data) {
-          return function(state) {
-            return function(actions) {
-              var result = action(data)
-              result = isFn(result) ? result(state) : result
-              result = isFn(result) ? result(actions) : result
-              return runIfEffect(actions, null, result)
-            }
+          return function(state, actions) {
+            var result = action(data)
+            result = isFn(result) ? result(state, actions) : result
+            return runIfEffect(actions, null, result)
           }
         }
       : enhanceActions(action)
     return otherActions
-  }, {})
+  },
+  {})
 }
 
 function handleEventEffect(actions, effect) {
@@ -131,21 +132,17 @@ function patchVdomEffects(actions, vdom) {
 }
 
 export default function withEffects(app) {
-  return function(props) {
-    props.actions = enhanceActions(props.actions)
-
-    if (props.view) {
-      var originalView = props.view
-      props.view = function(state) {
-        return function(actions) {
-          var result = originalView(state)
-          result = isFn(result) ? result(actions) : result
-          patchVdomEffects(actions, result)
-          return result
+  return function(initialState, actionsTemplate, view, container) {
+    var enhancedActions = enhanceActions(actionsTemplate)
+    var enhancedView = isFn(view)
+      ? function(state, actions) {
+          var vdom = view(state, actions)
+          patchVdomEffects(actions, vdom)
+          return vdom
         }
-      }
-    }
+      : undefined
 
-    return app(props)
+    var appActions = app(initialState, enhancedActions, enhancedView, container)
+    return appActions
   }
 }
