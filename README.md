@@ -62,13 +62,18 @@ Example:
 ```js
 import { withEffects } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    foo: () => [
-      // ... effects go here
-    ],
-  }
-}).foo())
+const state = {
+  // ...
+}
+
+const actions = {
+  foo: () => [
+    // ... effects go here
+  ],
+  bar: () => // or a single effect can go here
+}
+
+withEffects(app)(state, actions).foo()
 ```
 
 ### `action`
@@ -84,21 +89,25 @@ Example:
 ```js
 import { withEffects, action } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    foo: () => [
-      action("bar", { message: "hello" }),
-      action("baz", { message: "hola" }),
-      // ... other effects
-    ],
-    bar: data => {
-      // data will have { message: "hello" }
-    },
-    baz: data => {
-      // data will have { message: "hola" }
-    }
+const state = {
+  // ...
+}
+
+const actions = {
+  foo: () => [
+    action("bar", { message: "hello" }),
+    action("baz", { message: "hola" }),
+    // ... other effects
+  ],
+  bar: data => {
+    // data will have { message: "hello" }
+  },
+  baz: data => {
+    // data will have { message: "hola" }
   }
-}).foo()
+}
+
+withEffects(app)(state, actions).foo()
 ```
 
 Note that you may also use a single action effect without an array wrapper and that nested `actions` may be called by separating the slices with dots:
@@ -106,16 +115,20 @@ Note that you may also use a single action effect without an array wrapper and t
 ```js
 import { withEffects, action } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    foo: () => action("bar.baz", { message: "hello" }),
-    bar: {
-      baz: data => {
-        // data will have { message: "hello" }
-      }
+const state = {
+  // ...
+}
+
+const actions = {
+  foo: () => action("bar.baz", { message: "hello" }),
+  bar: {
+    baz: data => {
+      // data will have { message: "hello" }
     }
   }
-}).foo()
+}
+
+withEffects(app)(state, actions).foo()
 ```
 
 This same convention follows for all the other effects as well.
@@ -125,16 +138,22 @@ Also note that `action` (and other effects) may be used for handler props in you
 ```js
 import { withEffects, action } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    foo: data => {
-      // data will have { message: "hello" }
-    }
-  },
-  view: () => h("button", {
-    onclick: action("foo", { message: "hello" })
-  })
+const state = {
+  // ...
+}
+
+const actions = {
+  foo: data => {
+    // data will have { message: "hello" }
+    // when the button is clicked
+  }
+}
+
+const view = () => h("button", {
+  onclick: action("foo", { message: "hello" })
 })
+
+withEffects(app)(state, actions, view, document.body)
 ```
 
 ### `frame`
@@ -150,29 +169,30 @@ Example:
 ```js
 import { withEffects, action, frame } from "hyperapp-effects"
 
-withEffects(app)({
-  state: {
-    time: 0,
-    delta: 0
-  },
-  actions: {
-    init: () => frame("update"),
-    update: time => [
-      action("incTime", time),
+const state = {
+  time: 0,
+  delta: 0
+}
 
-      // ...
-      // Other actions to update the state based on delta time
-      // ...
+const actions = {
+  init: () => frame("update"),
+  update: time => [
+    action("incTime", time),
 
-      // End with a recursive frame effect to perform the next update
-      frame("update")
-    ],
-    incTime: time => ({ time: lastTime, delta: lastDelta }) => ({
-      time,
-      delta: time && lastTime ? time - lastTime : lastDelta
-    })
-  }
-}).init()
+    // ...
+    // Other actions to update the state based on delta time
+    // ...
+
+    // End with a recursive frame effect to perform the next update
+    frame("update")
+  ],
+  incTime: time => ({ time: lastTime, delta: lastDelta }) => ({
+    time,
+    delta: time && lastTime ? time - lastTime : lastDelta
+  })
+}
+
+withEffects(app)(state, actions).init()
 ```
 
 ### `delay`
@@ -188,19 +208,23 @@ Example:
 ```js
 import { withEffects, delay } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    startTimer: () => delay(
-      60000,
-      "alarm",
-      { name: "minute timer" }
-    ),
-    alarm: data => {
-      // This action will run after a minute delay
-      // data will have { name: "minute timer" }
-    }
+const state = {
+  // ...
+}
+
+const actions = {
+  startTimer: () => delay(
+    60000,
+    "alarm",
+    { name: "minute timer" }
+  ),
+  alarm: data => {
+    // This action will run after a minute delay
+    // data will have { name: "minute timer" }
   }
-}).startTimer()
+}
+
+withEffects(app)(state, actions).startTimer()
 ```
 
 ### `time`
@@ -216,14 +240,18 @@ Example:
 ```js
 import { withEffects, time } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    foo: () => time("bar"),
-    bar: timestamp => {
-      // use timestamp
-    }
+const state = {
+  // ...
+}
+
+const actions = {
+  foo: () => time("bar"),
+  bar: timestamp => {
+    // use timestamp
   }
-}).foo()
+}
+
+withEffects(app)(state, action).foo()
 ```
 
 ### `log`
@@ -239,16 +267,20 @@ Example:
 ```js
 import { withEffects, log } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    foo: () => log(
-        "string arg",
-        { object: "arg" },
-        ["list", "of", "args"],
-        someOtherArg
-    )
-  }
-}).foo()
+const state = {
+  // ...
+}
+
+const actions = {
+  foo: () => log(
+    "string arg",
+    { object: "arg" },
+    ["list", "of", "args"],
+    someOtherArg
+  )
+}
+
+withEffects(app)(state, actions).foo()
 ```
 
 ### `http`
@@ -264,14 +296,18 @@ Example HTTP GET request with a JSON response:
 ```js
 import { withEffects, http } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    foo: () => http("/data", "dataFetched"),
-    dataFetched: data => {
-      // data will have the JSON-decoded response from /data
-    }
+const state = {
+  // ...
+}
+
+const actions = {
+  foo: () => http("/data", "dataFetched"),
+  dataFetched: data => {
+    // data will have the JSON-decoded response from /data
   }
-}).foo()
+}
+
+withEffects(app)(state, actions).foo()
 ```
 
 Example HTTP GET request with a text response:
@@ -279,18 +315,22 @@ Example HTTP GET request with a text response:
 ```js
 import { withEffects, http } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    foo: () => http(
-      "/data/name",
-      "textFetched",
-      { response: "text" }
-    ),
-    textFetched: data => {
-      // data will have the response text from /data
-    }
+const state = {
+  // ...
+}
+
+const actions = {
+  foo: () => http(
+    "/data/name",
+    "textFetched",
+    { response: "text" }
+  ),
+  textFetched: data => {
+    // data will have the response text from /data
   }
-}).foo()
+}
+
+withEffects(app)(state, actions).foo()
 ```
 
 Example HTTP POST request using JSON body and response:
@@ -298,21 +338,25 @@ Example HTTP POST request using JSON body and response:
 ```js
 import { withEffects, http } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    login: form => http(
-      "/login",
-      "loginComplete",
-      {
-        method: "POST",
-        body: form
-      }
-    ),
-    loginComplete: () => loginResponse => {
-      // loginResponse will have the JSON-decoded response from POSTing to /login
+const state = {
+  // ...
+}
+
+const actions = {
+  login: form => http(
+    "/login",
+    "loginComplete",
+    {
+      method: "POST",
+      body: form
     }
+  ),
+  loginComplete: () => loginResponse => {
+    // loginResponse will have the JSON-decoded response from POSTing to /login
   }
-}).login()
+}
+
+withEffects(app)(state, actions).login()
 ```
 
 ### `event`
@@ -326,16 +370,21 @@ Describes an effect that will capture [DOM Event](https://developer.mozilla.org/
 ```js
 import { withEffects, event } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    click: clickEvent => {
-      // clickEvent has the props of the click event
-    }
-  },
-  view: () => h("button", {
-    onclick: event("click")
-  })
+const state = {
+  // ...
+}
+
+const actions = {
+  click: clickEvent => {
+    // clickEvent has the props of the click event
+  }
+}
+
+const view = () => h("button", {
+  onclick: event("click")
 })
+
+withEffects(app)(state, actions, view, document.body)
 ```
 
 ### `keydown`
@@ -351,14 +400,18 @@ Example:
 ```js
 import { withEffects, keydown } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    init: () => keydown("keyPressed"),
-    keyPressed: keyEvent => {
-      // keyEvent has the props of the KeyboardEvent
-    }
+const state = {
+  // ...
+}
+
+const actions = {
+  init: () => keydown("keyPressed"),
+  keyPressed: keyEvent => {
+    // keyEvent has the props of the KeyboardEvent
   }
-}).init()
+}
+
+withEffects(app)(state, actions).init()
 ```
 
 ### `keyup`
@@ -374,14 +427,18 @@ Example:
 ```js
 import { withEffects, keyup } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    init: () => keyup("keyReleased"),
-    keyReleased: keyEvent => {
-      // keyEvent has the props of the KeyboardEvent
-    }
+const state = {
+  // ...
+}
+
+const actions = {
+  init: () => keyup("keyReleased"),
+  keyReleased: keyEvent => {
+    // keyEvent has the props of the KeyboardEvent
   }
-}).init()
+}
+
+withEffects(app)(state, actions).init()
 ```
 
 ### `random`
@@ -399,16 +456,20 @@ Example:
 ```js
 import { withEffects, random } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    // We use the max of 7 to include all values of 6.x
-    foo: () => random("rollDie", 1, 7),
-    rollDie: randomNumber => {
-      const roll = Math.floor(randomNumber)
-      // roll will be an int from 1-6
-    }
+const state = {
+  // ...
+}
+
+const actions = {
+  // We use the max of 7 to include all values of 6.x
+  foo: () => random("rollDie", 1, 7),
+  rollDie: randomNumber => {
+    const roll = Math.floor(randomNumber)
+    // roll will be an int from 1-6
   }
-}).foo()
+}
+
+withEffects(app)(state, actions).foo()
 ```
 
 ### `effectsIf`
@@ -425,16 +486,20 @@ Example:
 ```js
 import { withEffects, effectsIf, action } from "hyperapp-effects"
 
-withEffects(app)({
-  actions: {
-    foo: () => ({ running }) => effectsIf([
-      [true, action("always")],
-      [false, action("never")],
-      [running, action("ifRunning")],
-      [!running, action("ifNotRunning")]
-    ])
-  }
-}).foo()
+const state = {
+  // ...
+}
+
+const actions = {
+  foo: () => ({ running }) => effectsIf([
+    [true, action("always")],
+    [false, action("never")],
+    [running, action("ifRunning")],
+    [!running, action("ifNotRunning")]
+  ])
+}
+
+withEffects(app)(state, actions).foo()
 ```
 
 ## License

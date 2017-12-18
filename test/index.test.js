@@ -15,28 +15,26 @@ import {
 } from "../src"
 
 test("without actions", done =>
-  withEffects(app)({
-    view: () => done()
-  }))
+  withEffects(app)(undefined, undefined, () => done()))
 
 test("doesn't interfere with non effect actions", done => {
-  const actions = withEffects(app)({
-    state: {
+  const actions = withEffects(app)(
+    {
       value: 0
     },
-    actions: {
+    {
       get: () => state => state,
       up: by => state => ({
         value: state.value + by
       }),
-      finish: () => () => actions => {
+      finish: () => (state, actions) => {
         actions.exit()
       },
       exit: () => {
         done()
       }
     }
-  })
+  )
 
   expect(actions.get()).toEqual({
     value: 0
@@ -54,19 +52,21 @@ test("doesn't interfere with non effect actions", done => {
 })
 
 test("fire a chained action", done =>
-  withEffects(app)({
-    actions: {
+  withEffects(app)(
+    {},
+    {
       foo: () => action("bar", { some: "data" }),
       bar: data => {
         expect(data).toEqual({ some: "data" })
         done()
       }
     }
-  }).foo())
+  ).foo())
 
 test("fire a slice action", done =>
-  withEffects(app)({
-    actions: {
+  withEffects(app)(
+    {},
+    {
       foo: () => action("bar.baz", { some: "data" }),
       bar: {
         baz: data => {
@@ -75,11 +75,12 @@ test("fire a slice action", done =>
         }
       }
     }
-  }).foo())
+  ).foo())
 
 test("state updates with action effects", done =>
-  withEffects(app)({
-    actions: {
+  withEffects(app)(
+    {},
+    {
       update: data => data,
       foo: () => [
         action("update", { key: "value" }),
@@ -102,13 +103,14 @@ test("state updates with action effects", done =>
         done()
       }
     }
-  }).foo())
+  ).foo())
 
 test("calls animation frame", done => {
   const timestamp = 9001
   global.requestAnimationFrame = jest.fn(cb => cb(timestamp))
-  const actions = withEffects(app)({
-    actions: {
+  const actions = withEffects(app)(
+    {},
+    {
       foo: () => frame("bar.baz"),
       bar: {
         baz: data => {
@@ -117,7 +119,7 @@ test("calls animation frame", done => {
         }
       }
     }
-  })
+  )
   actions.foo()
   expect(requestAnimationFrame).toBeCalledWith(expect.any(Function))
   delete global.requestAnimationFrame
@@ -125,15 +127,16 @@ test("calls animation frame", done => {
 
 test("fire an action after a delay", () => {
   jest.useFakeTimers()
-  const actions = withEffects(app)({
-    actions: {
+  const actions = withEffects(app)(
+    {},
+    {
       get: () => state => state,
       foo: () => delay(1000, "bar.baz", { updated: "data" }),
       bar: {
         baz: data => data
       }
     }
-  })
+  )
   actions.foo()
   expect(actions.get()).toEqual({ bar: {} })
   jest.runAllTimers()
@@ -146,8 +149,9 @@ test("get the current time", done => {
   global.performance = {
     now: () => timestamp
   }
-  withEffects(app)({
-    actions: {
+  withEffects(app)(
+    {},
+    {
       foo: () => time("bar.baz"),
       bar: {
         baz: data => {
@@ -156,7 +160,7 @@ test("get the current time", done => {
         }
       }
     }
-  }).foo()
+  ).foo()
   delete global.performance
 })
 
@@ -167,11 +171,12 @@ test("log to console", done => {
     expect(args).toEqual(testArgs)
     done()
   }
-  withEffects(app)({
-    actions: {
+  withEffects(app)(
+    {},
+    {
       foo: () => log(...testArgs)
     }
-  }).foo()
+  ).foo()
   console.log = defaultLog
 })
 
@@ -186,8 +191,9 @@ test("http get json", done => {
       json: () => Promise.resolve({ response: "data" })
     })
   }
-  withEffects(app)({
-    actions: {
+  withEffects(app)(
+    {},
+    {
       foo: () => http(testUrl, "bar.baz"),
       bar: {
         baz: data => {
@@ -198,7 +204,7 @@ test("http get json", done => {
         }
       }
     }
-  }).foo()
+  ).foo()
   delete global.fetch
 })
 
@@ -213,8 +219,9 @@ test("http get text", done => {
       text: () => Promise.resolve("hello world")
     })
   }
-  withEffects(app)({
-    actions: {
+  withEffects(app)(
+    {},
+    {
       foo: () => http(testUrl, "bar.baz", { response: "text" }),
       bar: {
         baz: data => {
@@ -223,7 +230,7 @@ test("http get text", done => {
         }
       }
     }
-  }).foo()
+  ).foo()
   delete global.fetch
 })
 
@@ -243,8 +250,9 @@ test("http post json", done => {
       json: () => Promise.resolve({ result: "authenticated" })
     })
   }
-  withEffects(app)({
-    actions: {
+  withEffects(app)(
+    {},
+    {
       foo: () =>
         http(testUrl, "bar.baz", {
           method: "POST",
@@ -257,23 +265,23 @@ test("http post json", done => {
         }
       }
     }
-  }).foo()
+  ).foo()
   delete global.fetch
 })
 
 test("action effects in view", done => {
   document.body.innerHTML = ""
-  withEffects(app)({
-    state: {
+  withEffects(app)(
+    {
       message: "hello"
     },
-    actions: {
+    {
       foo: data => {
         expect(data).toEqual({ some: "data" })
         done()
       }
     },
-    view: ({ message }) => actions =>
+    ({ message }, actions) =>
       h(
         "main",
         {
@@ -290,23 +298,24 @@ test("action effects in view", done => {
         },
         h("h1", {}, message),
         h("button", { onclick: action("foo", { some: "data" }) })
-      )
-  })
+      ),
+    document.body
+  )
 })
 
 test("event effects in view", done => {
   document.body.innerHTML = ""
-  withEffects(app)({
-    state: {
+  withEffects(app)(
+    {
       message: "hello"
     },
-    actions: {
-      foo: data => {
+    {
+      foo(data) {
         expect(data).toEqual({ button: 0 })
         done()
       }
     },
-    view: ({ message }) => actions =>
+    ({ message }, actions) =>
       h(
         "main",
         {
@@ -323,17 +332,18 @@ test("event effects in view", done => {
         },
         h("h1", {}, message),
         h("button", { onclick: event("foo") })
-      )
-  })
+      ),
+    document.body
+  )
 })
 
 test("combined action and event effects in view", done => {
   document.body.innerHTML = ""
-  withEffects(app)({
-    state: {
+  withEffects(app)(
+    {
       message: "hello"
     },
-    actions: {
+    {
       foo: data => {
         expect(data).toEqual({ button: 0 })
       },
@@ -342,7 +352,7 @@ test("combined action and event effects in view", done => {
         done()
       }
     },
-    view: ({ message }) => actions =>
+    ({ message }, actions) =>
       h(
         "main",
         {
@@ -362,35 +372,38 @@ test("combined action and event effects in view", done => {
         h("button", {
           onclick: [event("foo"), action("bar", { some: "data" })]
         })
-      )
-  })
+      ),
+    document.body
+  )
 })
 
 test("keydown", done => {
   const keyEvent = { key: "a", code: "KeyA" }
-  withEffects(app)({
-    actions: {
+  withEffects(app)(
+    {},
+    {
       init: () => keydown("foo"),
       foo: data => {
         expect(data).toEqual(keyEvent)
         done()
       }
     }
-  }).init()
+  ).init()
   document.onkeydown(keyEvent)
 })
 
 test("keyup", done => {
   const keyEvent = { key: "a", code: "KeyA" }
-  withEffects(app)({
-    actions: {
+  withEffects(app)(
+    {},
+    {
       init: () => keyup("foo"),
       foo: data => {
         expect(data).toEqual(keyEvent)
         done()
       }
     }
-  }).init()
+  ).init()
   document.onkeyup(keyEvent)
 })
 
@@ -399,15 +412,16 @@ test("random with default range", done => {
   const defaultRandom = Math.random
   Math.random = () => randomValue
 
-  withEffects(app)({
-    actions: {
+  withEffects(app)(
+    {},
+    {
       foo: () => random("bar"),
       bar: data => {
         expect(data).toBeCloseTo(randomValue)
         done()
       }
     }
-  }).foo()
+  ).foo()
 
   Math.random = defaultRandom
 })
@@ -416,15 +430,16 @@ test("random with custom range", done => {
   const defaultRandom = Math.random
   Math.random = () => 0.5
 
-  withEffects(app)({
-    actions: {
+  withEffects(app)(
+    {},
+    {
       foo: () => random("bar", 2, 5),
       bar: data => {
         expect(data).toBeCloseTo(3.5)
         done()
       }
     }
-  }).foo()
+  ).foo()
 
   Math.random = defaultRandom
 })

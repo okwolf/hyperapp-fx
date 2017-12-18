@@ -1,6 +1,6 @@
 {
   "name": "hyperapp-effects",
-  "version": "0.3.1",
+  "version": "0.4.0",
   "description": "Effects as data for Hyperapp",
   "main": "dist/effects.js",
   "jsnext:main": "src/index.js",
@@ -10,11 +10,11 @@
     "url": "git+https://github.com/okwolf/hyperapp-effects.git"
   },
   "peerDependencies": {
-    "hyperapp": "^0.16.2"
+    "hyperapp": "^0.18.0"
   },
   "devDependencies": {
     "babel-preset-env": "^1.6.1",
-    "hyperapp": "^0.16.2",
+    "hyperapp": "^0.18.0",
     "jest": "^21.2.1",
     "prettier": "^1.8.2",
     "rollup": "^0.52.0",
