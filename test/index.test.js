@@ -127,21 +127,26 @@ test("calls animation frame", done => {
 
 test("fire an action after a delay", () => {
   jest.useFakeTimers()
-  const actions = withEffects(app)(
-    {},
-    {
-      get: () => state => state,
-      foo: () => delay(1000, "bar.baz", { updated: "data" }),
-      bar: {
-        baz: data => data
+  try {
+    const actions = withEffects(app)(
+      {},
+      {
+        get: () => state => state,
+        foo: () => delay(1000, "bar.baz", { updated: "data" }),
+        bar: {
+          baz: data => data
+        }
       }
-    }
-  )
-  actions.foo()
-  expect(actions.get()).toEqual({ bar: {} })
-  jest.runAllTimers()
-  expect(actions.get()).toEqual({ bar: { updated: "data" } })
-  jest.useRealTimers()
+    )
+    actions.foo()
+    expect(actions.get()).toEqual({ bar: {} })
+    jest.runAllTimers()
+    expect(actions.get()).toEqual({ bar: { updated: "data" } })
+  } finally {
+    jest.useRealTimers()
+  }
+  
+  
 })
 
 test("get the current time", done => {
