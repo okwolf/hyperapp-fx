@@ -136,7 +136,8 @@ test("fire an action after a delay", () => {
         bar: {
           baz: data => data
         }
-      }
+      },
+      Function.prototype
     )
     actions.foo()
     expect(actions.get()).toEqual({ bar: {} })
