@@ -146,8 +146,6 @@ test("fire an action after a delay", () => {
   } finally {
     jest.useRealTimers()
   }
-  
-  
 })
 
 test("get the current time", done => {
