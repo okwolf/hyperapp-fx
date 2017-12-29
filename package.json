@@ -1,6 +1,6 @@
 {
   "name": "hyperapp-effects",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "description": "Effects as data for Hyperapp",
   "main": "dist/effects.js",
   "jsnext:main": "src/index.js",
