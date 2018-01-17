@@ -11,6 +11,7 @@ import {
   keydown,
   keyup,
   random,
+  promise,
   effectsIf
 } from "../src"
 
@@ -446,6 +447,22 @@ test("random with custom range", done => {
   ).foo()
 
   Math.random = defaultRandom
+})
+
+test("promise", done => {
+  const promFac = () => Promise.resolve("resolved");
+
+  withEffects(app)(
+    {},
+    {
+      foo: () => promise(promFac, "done"),
+      done: data => {
+        expect(data).toBe("resolved")
+        done()
+      }
+    }
+  ).foo()
+  delete global.fetch
 })
 
 test("effectsIf", () =>

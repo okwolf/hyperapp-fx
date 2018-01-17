@@ -8,7 +8,8 @@ import {
   EVENT,
   KEY_DOWN,
   KEY_UP,
-  RANDOM
+  RANDOM,
+  PROMISE
 } from "./effectTypes"
 
 var isEffect = Array.isArray
@@ -87,6 +88,10 @@ function runIfEffect(actions, currentEvent, maybeEffect) {
         var randomValue = Math.random() * (props.max - props.min) + props.min
         getAction(actions, props.action)(randomValue)
         break
+      case PROMISE:
+        props.promiseCreator().then(function (result) {
+          getAction(actions, props.action)(result)
+        })
     }
   }
 }
