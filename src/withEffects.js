@@ -62,10 +62,10 @@ function runIfEffect(actions, currentEvent, maybeEffect) {
       case HTTP:
         props.options = props.options || {}
         props.options.response = props.options.response || "json"
-        var errorAction = props.options.error || props.action;
+        var errorAction = props.options.error || props.action
         if (props.options.error) {
           delete props.options.error
-        } 
+        }
         fetch(props.url, props.options)
           .then(function(response) {
             return response[props.options.response]()
@@ -73,7 +73,7 @@ function runIfEffect(actions, currentEvent, maybeEffect) {
           .then(function(result) {
             getAction(actions, props.action)(result)
           })
-          .catch(function (err) {
+          .catch(function(err) {
             getAction(actions, errorAction)(err)
           })
         break

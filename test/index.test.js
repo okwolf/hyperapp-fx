@@ -275,7 +275,7 @@ test("http post json", done => {
 
 test("http get text fail", done => {
   const testUrl = "https://example.com/hello"
-  const error = new Error('Failed');
+  const error = new Error("Failed")
   global.fetch = (url, options) => {
     expect(url).toBe(testUrl)
     expect(options).toEqual({
@@ -286,16 +286,20 @@ test("http get text fail", done => {
   withEffects(app)(
     {},
     {
-      foo: () => http(testUrl, "bar.baz", { response: "text", error: "fizz.errorHandler" }),
+      foo: () =>
+        http(testUrl, "bar.baz", {
+          response: "text",
+          error: "fizz.errorHandler"
+        }),
       fizz: {
-        errorHandler: (err) => {
-          expect(err).toBe(error);
+        errorHandler: err => {
+          expect(err).toBe(error)
           done()
         }
       },
       bar: {
         baz: data => {
-          done.fail(new Error('Should not be called'))
+          done.fail(new Error("Should not be called"))
         }
       }
     }
@@ -305,7 +309,7 @@ test("http get text fail", done => {
 
 test("http get text fail with no handler defined", done => {
   const testUrl = "https://example.com/hello"
-  const error = new Error('Failed');
+  const error = new Error("Failed")
   global.fetch = (url, options) => {
     expect(url).toBe(testUrl)
     expect(options).toEqual({
