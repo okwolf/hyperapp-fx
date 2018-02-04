@@ -43,7 +43,7 @@ You can find the library in `window.effects`.
 ### Effects data
 
 ```js
-EffectTuple = [ string, object ]
+EffectTuple = [ type: string, props: object ]
 Effect = EffectTuple | EffectTuple[] | Effect[]
 ```
 
@@ -95,7 +95,7 @@ const actions = {
   // You will probably want to write a helper function for returning these
   // similar to the built-in effects
   foo: () => [
-    // name of effect for effects data
+    // type of effect for effects data
     // must match key used in custom effect object below
     "custom",
     {
@@ -105,13 +105,15 @@ const actions = {
 }
 
 withEffects({
-  // key in this object must match name used in effect data above
+  // key in this object must match type used in effect data above
   custom(props, getAction) {
     // use props to get the props used when creating the effect
     // use getAction for firing actions when appropriate
   }
 })(app)(state, actions).foo()
 ```
+
+Reusing an existing effect type will override the built-in one.
 
 ### `action`
 
