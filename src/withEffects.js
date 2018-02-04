@@ -100,7 +100,7 @@ export default function withEffects(effectsOrApp) {
   if (typeof effectsOrApp === "function") {
     return makeEffectsApp(effects, effectsOrApp)
   } else {
-    for (name in effectsOrApp) {
+    for (var name in effectsOrApp) {
       effects[name] = effectsOrApp[name]
     }
     return function(nextApp) {
