@@ -50,8 +50,8 @@ export default function makeDefaultEffects() {
       })
   }
 
-  effects[EVENT] = function(props, getAction, currentEvent) {
-    getAction(props.action)(currentEvent)
+  effects[EVENT] = function(props, getAction) {
+    getAction(props.action)(props.event)
   }
 
   effects[KEY_DOWN] = function(props, getAction) {

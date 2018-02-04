@@ -29,7 +29,8 @@ function runIfEffect(actions, currentEvent, maybeEffect, effects) {
     // Run a single effect
     var type = maybeEffect[0]
     var props = maybeEffect[1]
-    effects[type](props, getAction, currentEvent)
+    props.event = currentEvent
+    effects[type](props, getAction)
   }
 }
 
@@ -73,8 +74,7 @@ function patchVdomEffects(actions, vdom, effects) {
   }
 }
 
-export default function withEffects(app) {
-  var effects = makeDefaultEffects()
+function makeEffectsApp(effects, nextApp) {
   return function(initialState, actionsTemplate, view, container) {
     var enhancedActions = enhanceActions(actionsTemplate, effects)
     var enhancedView = isFn(view)
@@ -85,7 +85,26 @@ export default function withEffects(app) {
         }
       : undefined
 
-    var appActions = app(initialState, enhancedActions, enhancedView, container)
+    var appActions = nextApp(
+      initialState,
+      enhancedActions,
+      enhancedView,
+      container
+    )
     return appActions
+  }
+}
+
+export default function withEffects(effectsOrApp) {
+  var effects = makeDefaultEffects()
+  if (typeof effectsOrApp === "function") {
+    return makeEffectsApp(effects, effectsOrApp)
+  } else {
+    for (name in effectsOrApp) {
+      effects[name] = effectsOrApp[name]
+    }
+    return function(nextApp) {
+      return makeEffectsApp(effects, nextApp)
+    }
   }
 }

@@ -18,7 +18,7 @@ test("without actions", done =>
   withEffects(app)(undefined, undefined, () => done()))
 
 test("doesn't interfere with non effect actions", done => {
-  const actions = withEffects(app)(
+  const main = withEffects(app)(
     {
       value: 0
     },
@@ -36,19 +36,19 @@ test("doesn't interfere with non effect actions", done => {
     }
   )
 
-  expect(actions.get()).toEqual({
+  expect(main.get()).toEqual({
     value: 0
   })
 
-  expect(actions.up(2)).toEqual({
+  expect(main.up(2)).toEqual({
     value: 2
   })
 
-  expect(actions.get()).toEqual({
+  expect(main.get()).toEqual({
     value: 2
   })
 
-  actions.finish()
+  main.finish()
 })
 
 test("fire a chained action", done =>
@@ -108,7 +108,7 @@ test("state updates with action effects", done =>
 test("calls animation frame", done => {
   const timestamp = 9001
   global.requestAnimationFrame = jest.fn(cb => cb(timestamp))
-  const actions = withEffects(app)(
+  const main = withEffects(app)(
     {},
     {
       foo: () => frame("bar.baz"),
@@ -120,7 +120,7 @@ test("calls animation frame", done => {
       }
     }
   )
-  actions.foo()
+  main.foo()
   expect(requestAnimationFrame).toBeCalledWith(expect.any(Function))
   delete global.requestAnimationFrame
 })
@@ -128,7 +128,7 @@ test("calls animation frame", done => {
 test("fire an action after a delay", () => {
   jest.useFakeTimers()
   try {
-    const actions = withEffects(app)(
+    const main = withEffects(app)(
       {},
       {
         get: () => state => state,
@@ -139,10 +139,10 @@ test("fire an action after a delay", () => {
       },
       Function.prototype
     )
-    actions.foo()
-    expect(actions.get()).toEqual({ bar: {} })
+    main.foo()
+    expect(main.get()).toEqual({ bar: {} })
     jest.runAllTimers()
-    expect(actions.get()).toEqual({ bar: { updated: "data" } })
+    expect(main.get()).toEqual({ bar: { updated: "data" } })
   } finally {
     jest.useRealTimers()
   }
@@ -452,3 +452,38 @@ test("effectsIf", () =>
   expect(
     effectsIf([[true, action("include")], [false, action("exclude")]])
   ).toEqual([action("include")]))
+
+test("new custom effect", () => {
+  const externalState = { value: 2 }
+
+  const main = withEffects({
+    set(props, getAction) {
+      getAction(props.action)(externalState)
+    }
+  })(app)(
+    {
+      value: 0
+    },
+    {
+      foo: () => ["set", { action: "set" }],
+      set: state => state,
+      get: () => state => state
+    }
+  )
+
+  expect(main.get()).toEqual({
+    value: 0
+  })
+
+  main.foo()
+  expect(main.get()).toEqual({
+    value: 2
+  })
+
+  externalState.value = 1
+
+  main.foo()
+  expect(main.get()).toEqual({
+    value: 1
+  })
+})
