@@ -69,6 +69,9 @@ function runIfEffect(actions, currentEvent, maybeEffect) {
           .then(function(result) {
             getAction(actions, props.action)(result)
           })
+          .catch(function (err) {
+            getAction(actions, props.options.error)(err)
+          })
         break
       case EVENT:
         getAction(actions, props.action)(currentEvent)
