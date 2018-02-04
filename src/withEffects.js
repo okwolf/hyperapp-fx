@@ -64,8 +64,8 @@ function runIfEffect(actions, currentEvent, maybeEffect) {
         props.options.response = props.options.response || "json"
         var errorAction = props.options.error || props.action;
         if (props.options.error) {
-          delete props.option.error
-        }
+          delete props.options.error
+        } 
         fetch(props.url, props.options)
           .then(function(response) {
             return response[props.options.response]()

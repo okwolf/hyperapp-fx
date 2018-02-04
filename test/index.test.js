@@ -273,6 +273,62 @@ test("http post json", done => {
   delete global.fetch
 })
 
+test("http get text fail", done => {
+  const testUrl = "https://example.com/hello"
+  const error = new Error('Failed');
+  global.fetch = (url, options) => {
+    expect(url).toBe(testUrl)
+    expect(options).toEqual({
+      response: "text"
+    })
+    return Promise.reject(error)
+  }
+  withEffects(app)(
+    {},
+    {
+      foo: () => http(testUrl, "bar.baz", { response: "text", error: "fizz.errorHandler" }),
+      fizz: {
+        errorHandler: (err) => {
+          expect(err).toBe(error);
+          done()
+        }
+      },
+      bar: {
+        baz: data => {
+          done.fail(new Error('Should not be called'))
+        }
+      }
+    }
+  ).foo()
+  delete global.fetch
+})
+
+test("http get text fail with no handler defined", done => {
+  const testUrl = "https://example.com/hello"
+  const error = new Error('Failed');
+  global.fetch = (url, options) => {
+    expect(url).toBe(testUrl)
+    expect(options).toEqual({
+      response: "text"
+    })
+    return Promise.reject(error)
+  }
+  withEffects(app)(
+    {},
+    {
+      foo: () => http(testUrl, "bar.baz", { response: "text" }),
+
+      bar: {
+        baz: data => {
+          expect(data).toBe(error)
+          done()
+        }
+      }
+    }
+  ).foo()
+  delete global.fetch
+})
+
 test("action effects in view", done => {
   document.body.innerHTML = ""
   withEffects(app)(
