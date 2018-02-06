@@ -14,501 +14,573 @@ import {
   effectsIf
 } from "../src"
 
-test("without actions", done =>
-  withEffects(app)(undefined, undefined, () => done()))
-
-test("doesn't interfere with non effect actions", done => {
-  const actions = withEffects(app)(
-    {
-      value: 0
-    },
-    {
-      get: () => state => state,
-      up: by => state => ({
-        value: state.value + by
-      }),
-      finish: () => (state, actions) => {
-        actions.exit()
+describe("withEffects", () => {
+  it("should be a function", () => expect(withEffects).toBeInstanceOf(Function))
+  it("should call view without actions", done =>
+    withEffects(app)(undefined, undefined, () => done()))
+  it("should not interfere with non effect actions", done => {
+    const main = withEffects(app)(
+      {
+        value: 0
       },
-      exit: () => {
-        done()
+      {
+        get: () => state => state,
+        up: by => state => ({
+          value: state.value + by
+        }),
+        finish: () => (state, actions) => {
+          actions.exit()
+        },
+        exit: () => {
+          done()
+        }
       }
-    }
-  )
+    )
 
-  expect(actions.get()).toEqual({
-    value: 0
+    expect(main.get()).toEqual({
+      value: 0
+    })
+
+    expect(main.up(2)).toEqual({
+      value: 2
+    })
+
+    expect(main.get()).toEqual({
+      value: 2
+    })
+
+    main.finish()
   })
+  describe("built-in effect", () => {
+    describe("action", () => {
+      it("should fire a chained action", done =>
+        withEffects(app)(
+          {},
+          {
+            foo: () => action("bar", { some: "data" }),
+            bar: data => {
+              expect(data).toEqual({ some: "data" })
+              done()
+            }
+          }
+        ).foo())
 
-  expect(actions.up(2)).toEqual({
-    value: 2
+      it("should fire a slice action", done =>
+        withEffects(app)(
+          {},
+          {
+            foo: () => action("bar.baz", { some: "data" }),
+            bar: {
+              baz: data => {
+                expect(data).toEqual({ some: "data" })
+                done()
+              }
+            }
+          }
+        ).foo())
+      it("should update state", done =>
+        withEffects(app)(
+          {},
+          {
+            update: data => data,
+            foo: () => [
+              action("update", { key: "value" }),
+              action("bar", { some: "data" }),
+              action("update", { some: "other value" }),
+              action("baz", { moar: "stuff" })
+            ],
+            bar: data => state => {
+              expect(state).toEqual({
+                key: "value"
+              })
+              expect(data).toEqual({ some: "data" })
+            },
+            baz: data => state => {
+              expect(state).toEqual({
+                key: "value",
+                some: "other value"
+              })
+              expect(data).toEqual({ moar: "stuff" })
+              done()
+            }
+          }
+        ).foo())
+      it("should attach to listeners in view", done => {
+        document.body.innerHTML = ""
+        withEffects(app)(
+          {
+            message: "hello"
+          },
+          {
+            foo: data => {
+              expect(data).toEqual({ some: "data" })
+              done()
+            }
+          },
+          ({ message }, actions) =>
+            h(
+              "main",
+              {
+                oncreate: () => {
+                  expect(actions).toEqual({
+                    foo: expect.any(Function)
+                  })
+                  expect(document.body.innerHTML).toBe(
+                    "<main><h1>hello</h1><button></button></main>"
+                  )
+                  const buttonElement = document.body.firstChild.lastChild
+                  buttonElement.onclick({ button: 0 })
+                }
+              },
+              h("h1", {}, message),
+              h("button", { onclick: action("foo", { some: "data" }) })
+            ),
+          document.body
+        )
+      })
+    })
+    describe("frame", () => {
+      it("should call animation frame", done => {
+        const timestamp = 9001
+        global.requestAnimationFrame = jest.fn(cb => cb(timestamp))
+        const main = withEffects(app)(
+          {},
+          {
+            foo: () => frame("bar.baz"),
+            bar: {
+              baz: data => {
+                expect(data).toBe(timestamp)
+                done()
+              }
+            }
+          }
+        )
+        main.foo()
+        expect(requestAnimationFrame).toBeCalledWith(expect.any(Function))
+        delete global.requestAnimationFrame
+      })
+    })
+    describe("delay", () => {
+      it("should fire an action after a delay", () => {
+        jest.useFakeTimers()
+        try {
+          const main = withEffects(app)(
+            {},
+            {
+              get: () => state => state,
+              foo: () => delay(1000, "bar.baz", { updated: "data" }),
+              bar: {
+                baz: data => data
+              }
+            },
+            Function.prototype
+          )
+          main.foo()
+          expect(main.get()).toEqual({ bar: {} })
+          jest.runAllTimers()
+          expect(main.get()).toEqual({ bar: { updated: "data" } })
+        } finally {
+          jest.useRealTimers()
+        }
+      })
+    })
+    describe("time", () => {
+      it("should get the current time", done => {
+        const timestamp = 9001
+        global.performance = {
+          now: () => timestamp
+        }
+        withEffects(app)(
+          {},
+          {
+            foo: () => time("bar.baz"),
+            bar: {
+              baz: data => {
+                expect(data).toBe(timestamp)
+                done()
+              }
+            }
+          }
+        ).foo()
+        delete global.performance
+      })
+    })
+    describe("log", () => {
+      it("should log to console", done => {
+        const testArgs = ["bar", { some: "data" }, ["list", "of", "data"]]
+        const defaultLog = console.log
+        console.log = function(...args) {
+          expect(args).toEqual(testArgs)
+          done()
+        }
+        withEffects(app)(
+          {},
+          {
+            foo: () => log(...testArgs)
+          }
+        ).foo()
+        console.log = defaultLog
+      })
+    })
+    describe("http", () => {
+      it("should get json", done => {
+        const testUrl = "https://example.com"
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({
+            response: "json"
+          })
+          return Promise.resolve({
+            json: () => Promise.resolve({ response: "data" })
+          })
+        }
+        withEffects(app)(
+          {},
+          {
+            foo: () => http(testUrl, "bar.baz"),
+            bar: {
+              baz: data => {
+                expect(data).toEqual({
+                  response: "data"
+                })
+                done()
+              }
+            }
+          }
+        ).foo()
+        delete global.fetch
+      })
+      it("should get text", done => {
+        const testUrl = "https://example.com/hello"
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({
+            response: "text"
+          })
+          return Promise.resolve({
+            text: () => Promise.resolve("hello world")
+          })
+        }
+        withEffects(app)(
+          {},
+          {
+            foo: () => http(testUrl, "bar.baz", { response: "text" }),
+            bar: {
+              baz: data => {
+                expect(data).toBe("hello world")
+                done()
+              }
+            }
+          }
+        ).foo()
+        delete global.fetch
+      })
+      it("should post json", done => {
+        const testUrl = "/login"
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({
+            method: "POST",
+            body: {
+              user: "username",
+              pass: "password"
+            },
+            response: "json"
+          })
+          return Promise.resolve({
+            json: () => Promise.resolve({ result: "authenticated" })
+          })
+        }
+        withEffects(app)(
+          {},
+          {
+            foo: () =>
+              http(testUrl, "bar.baz", {
+                method: "POST",
+                body: { user: "username", pass: "password" }
+              }),
+            bar: {
+              baz: data => {
+                expect(data).toEqual({ result: "authenticated" })
+                done()
+              }
+            }
+          }
+        ).foo()
+        delete global.fetch
+      })
+      it("should call the error handler on error", done => {
+        const testUrl = "https://example.com/hello"
+        const error = new Error("Failed")
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({
+            response: "text"
+          })
+          return Promise.reject(error)
+        }
+        withEffects(app)(
+          {},
+          {
+            foo: () =>
+              http(testUrl, "bar.baz", {
+                response: "text",
+                error: "fizz.errorHandler"
+              }),
+            fizz: {
+              errorHandler: err => {
+                expect(err).toBe(error)
+                done()
+              }
+            },
+            bar: {
+              baz: data => {
+                done.fail(new Error("Should not be called"))
+              }
+            }
+          }
+        ).foo()
+        delete global.fetch
+      })
+      it("should call default action on error", done => {
+        const testUrl = "https://example.com/hello"
+        const error = new Error("Failed")
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({
+            response: "text"
+          })
+          return Promise.reject(error)
+        }
+        withEffects(app)(
+          {},
+          {
+            foo: () => http(testUrl, "bar.baz", { response: "text" }),
+
+            bar: {
+              baz: data => {
+                expect(data).toBe(error)
+                done()
+              }
+            }
+          }
+        ).foo()
+        delete global.fetch
+      })
+    })
+    describe("event", () => {
+      it("should attach to listeners in view", done => {
+        document.body.innerHTML = ""
+        withEffects(app)(
+          {
+            message: "hello"
+          },
+          {
+            foo(data) {
+              expect(data).toEqual({ button: 0 })
+              done()
+            }
+          },
+          ({ message }, actions) =>
+            h(
+              "main",
+              {
+                oncreate: () => {
+                  expect(actions).toEqual({
+                    foo: expect.any(Function)
+                  })
+                  expect(document.body.innerHTML).toBe(
+                    "<main><h1>hello</h1><button></button></main>"
+                  )
+                  const buttonElement = document.body.firstChild.lastChild
+                  buttonElement.onclick({ button: 0 })
+                }
+              },
+              h("h1", {}, message),
+              h("button", { onclick: event("foo") })
+            ),
+          document.body
+        )
+      })
+    })
+    describe("keydown", () => {
+      it("should attach keydown listener", done => {
+        const keyEvent = { key: "a", code: "KeyA" }
+        withEffects(app)(
+          {},
+          {
+            init: () => keydown("foo"),
+            foo: data => {
+              expect(data).toEqual(keyEvent)
+              done()
+            }
+          }
+        ).init()
+        document.onkeydown(keyEvent)
+      })
+    })
+    describe("keyup", () => {
+      it("should attach keyup listener", done => {
+        const keyEvent = { key: "a", code: "KeyA" }
+        withEffects(app)(
+          {},
+          {
+            init: () => keyup("foo"),
+            foo: data => {
+              expect(data).toEqual(keyEvent)
+              done()
+            }
+          }
+        ).init()
+        document.onkeyup(keyEvent)
+      })
+    })
+    describe("random", () => {
+      it("should call random with default range", done => {
+        const randomValue = 0.5
+        const defaultRandom = Math.random
+        Math.random = () => randomValue
+
+        withEffects(app)(
+          {},
+          {
+            foo: () => random("bar"),
+            bar: data => {
+              expect(data).toBeCloseTo(randomValue)
+              done()
+            }
+          }
+        ).foo()
+
+        Math.random = defaultRandom
+      })
+
+      it("should call random with custom range", done => {
+        const defaultRandom = Math.random
+        Math.random = () => 0.5
+
+        withEffects(app)(
+          {},
+          {
+            foo: () => random("bar", 2, 5),
+            bar: data => {
+              expect(data).toBeCloseTo(3.5)
+              done()
+            }
+          }
+        ).foo()
+
+        Math.random = defaultRandom
+      })
+    })
   })
-
-  expect(actions.get()).toEqual({
-    value: 2
-  })
-
-  actions.finish()
-})
-
-test("fire a chained action", done =>
-  withEffects(app)(
-    {},
-    {
-      foo: () => action("bar", { some: "data" }),
-      bar: data => {
-        expect(data).toEqual({ some: "data" })
-        done()
-      }
-    }
-  ).foo())
-
-test("fire a slice action", done =>
-  withEffects(app)(
-    {},
-    {
-      foo: () => action("bar.baz", { some: "data" }),
-      bar: {
-        baz: data => {
+  it("should allow combining action and event effects in view", done => {
+    document.body.innerHTML = ""
+    withEffects(app)(
+      {
+        message: "hello"
+      },
+      {
+        foo: data => {
+          expect(data).toEqual({ button: 0 })
+        },
+        bar: data => {
           expect(data).toEqual({ some: "data" })
           done()
         }
-      }
-    }
-  ).foo())
-
-test("state updates with action effects", done =>
-  withEffects(app)(
-    {},
-    {
-      update: data => data,
-      foo: () => [
-        action("update", { key: "value" }),
-        action("bar", { some: "data" }),
-        action("update", { some: "other value" }),
-        action("baz", { moar: "stuff" })
-      ],
-      bar: data => state => {
-        expect(state).toEqual({
-          key: "value"
-        })
-        expect(data).toEqual({ some: "data" })
       },
-      baz: data => state => {
-        expect(state).toEqual({
-          key: "value",
-          some: "other value"
-        })
-        expect(data).toEqual({ moar: "stuff" })
-        done()
-      }
-    }
-  ).foo())
+      ({ message }, actions) =>
+        h(
+          "main",
+          {
+            oncreate: () => {
+              expect(actions).toEqual({
+                foo: expect.any(Function),
+                bar: expect.any(Function)
+              })
+              expect(document.body.innerHTML).toBe(
+                "<main><h1>hello</h1><button></button></main>"
+              )
+              const buttonElement = document.body.firstChild.lastChild
+              buttonElement.onclick({ button: 0 })
+            }
+          },
+          h("h1", {}, message),
+          h("button", {
+            onclick: [event("foo"), action("bar", { some: "data" })]
+          })
+        ),
+      document.body
+    )
+  })
+  it("should allow adding new custom effect", () => {
+    const externalState = { value: 2 }
 
-test("calls animation frame", done => {
-  const timestamp = 9001
-  global.requestAnimationFrame = jest.fn(cb => cb(timestamp))
-  const actions = withEffects(app)(
-    {},
-    {
-      foo: () => frame("bar.baz"),
-      bar: {
-        baz: data => {
-          expect(data).toBe(timestamp)
-          done()
-        }
+    const main = withEffects({
+      set(props, getAction) {
+        getAction(props.action)(externalState)
       }
-    }
-  )
-  actions.foo()
-  expect(requestAnimationFrame).toBeCalledWith(expect.any(Function))
-  delete global.requestAnimationFrame
-})
+    })(app)(
+      {
+        value: 0
+      },
+      {
+        foo: () => ["set", { action: "set" }],
+        set: state => state,
+        get: () => state => state
+      }
+    )
 
-test("fire an action after a delay", () => {
-  jest.useFakeTimers()
-  try {
-    const actions = withEffects(app)(
+    expect(main.get()).toEqual({
+      value: 0
+    })
+
+    main.foo()
+    expect(main.get()).toEqual({
+      value: 2
+    })
+
+    externalState.value = 1
+
+    main.foo()
+    expect(main.get()).toEqual({
+      value: 1
+    })
+  })
+  it("should allow overriding built-in effects", () => {
+    const actionLog = []
+
+    withEffects({
+      action(props) {
+        actionLog.push(props)
+      }
+    })(app)(
       {},
       {
-        get: () => state => state,
-        foo: () => delay(1000, "bar.baz", { updated: "data" }),
-        bar: {
-          baz: data => data
-        }
-      },
-      Function.prototype
-    )
-    actions.foo()
-    expect(actions.get()).toEqual({ bar: {} })
-    jest.runAllTimers()
-    expect(actions.get()).toEqual({ bar: { updated: "data" } })
-  } finally {
-    jest.useRealTimers()
-  }
-})
-
-test("get the current time", done => {
-  const timestamp = 9001
-  global.performance = {
-    now: () => timestamp
-  }
-  withEffects(app)(
-    {},
-    {
-      foo: () => time("bar.baz"),
-      bar: {
-        baz: data => {
-          expect(data).toBe(timestamp)
-          done()
+        foo: () => action("bar", { some: "data" }),
+        bar: () => {
+          throw new Error(
+            "expected bar not to be called with overridden action effect!"
+          )
         }
       }
-    }
-  ).foo()
-  delete global.performance
-})
+    ).foo()
 
-test("log to console", done => {
-  const testArgs = ["bar", { some: "data" }, ["list", "of", "data"]]
-  const defaultLog = console.log
-  console.log = function(...args) {
-    expect(args).toEqual(testArgs)
-    done()
-  }
-  withEffects(app)(
-    {},
-    {
-      foo: () => log(...testArgs)
-    }
-  ).foo()
-  console.log = defaultLog
-})
-
-test("http get json", done => {
-  const testUrl = "https://example.com"
-  global.fetch = (url, options) => {
-    expect(url).toBe(testUrl)
-    expect(options).toEqual({
-      response: "json"
-    })
-    return Promise.resolve({
-      json: () => Promise.resolve({ response: "data" })
-    })
-  }
-  withEffects(app)(
-    {},
-    {
-      foo: () => http(testUrl, "bar.baz"),
-      bar: {
-        baz: data => {
-          expect(data).toEqual({
-            response: "data"
-          })
-          done()
+    expect(actionLog).toEqual([
+      {
+        name: "bar",
+        event: null,
+        data: {
+          some: "data"
         }
       }
-    }
-  ).foo()
-  delete global.fetch
+    ])
+  })
 })
 
-test("http get text", done => {
-  const testUrl = "https://example.com/hello"
-  global.fetch = (url, options) => {
-    expect(url).toBe(testUrl)
-    expect(options).toEqual({
-      response: "text"
-    })
-    return Promise.resolve({
-      text: () => Promise.resolve("hello world")
-    })
-  }
-  withEffects(app)(
-    {},
-    {
-      foo: () => http(testUrl, "bar.baz", { response: "text" }),
-      bar: {
-        baz: data => {
-          expect(data).toBe("hello world")
-          done()
-        }
-      }
-    }
-  ).foo()
-  delete global.fetch
+describe("effectsIf", () => {
+  it("should filter out effects with truthy conditionals", () =>
+    expect(
+      effectsIf([[true, action("include")], [false, action("exclude")]])
+    ).toEqual([action("include")]))
 })
-
-test("http post json", done => {
-  const testUrl = "/login"
-  global.fetch = (url, options) => {
-    expect(url).toBe(testUrl)
-    expect(options).toEqual({
-      method: "POST",
-      body: {
-        user: "username",
-        pass: "password"
-      },
-      response: "json"
-    })
-    return Promise.resolve({
-      json: () => Promise.resolve({ result: "authenticated" })
-    })
-  }
-  withEffects(app)(
-    {},
-    {
-      foo: () =>
-        http(testUrl, "bar.baz", {
-          method: "POST",
-          body: { user: "username", pass: "password" }
-        }),
-      bar: {
-        baz: data => {
-          expect(data).toEqual({ result: "authenticated" })
-          done()
-        }
-      }
-    }
-  ).foo()
-  delete global.fetch
-})
-
-test("http get text fail", done => {
-  const testUrl = "https://example.com/hello"
-  const error = new Error("Failed")
-  global.fetch = (url, options) => {
-    expect(url).toBe(testUrl)
-    expect(options).toEqual({
-      response: "text"
-    })
-    return Promise.reject(error)
-  }
-  withEffects(app)(
-    {},
-    {
-      foo: () =>
-        http(testUrl, "bar.baz", {
-          response: "text",
-          error: "fizz.errorHandler"
-        }),
-      fizz: {
-        errorHandler: err => {
-          expect(err).toBe(error)
-          done()
-        }
-      },
-      bar: {
-        baz: data => {
-          done.fail(new Error("Should not be called"))
-        }
-      }
-    }
-  ).foo()
-  delete global.fetch
-})
-
-test("http get text fail with no handler defined", done => {
-  const testUrl = "https://example.com/hello"
-  const error = new Error("Failed")
-  global.fetch = (url, options) => {
-    expect(url).toBe(testUrl)
-    expect(options).toEqual({
-      response: "text"
-    })
-    return Promise.reject(error)
-  }
-  withEffects(app)(
-    {},
-    {
-      foo: () => http(testUrl, "bar.baz", { response: "text" }),
-
-      bar: {
-        baz: data => {
-          expect(data).toBe(error)
-          done()
-        }
-      }
-    }
-  ).foo()
-  delete global.fetch
-})
-
-test("action effects in view", done => {
-  document.body.innerHTML = ""
-  withEffects(app)(
-    {
-      message: "hello"
-    },
-    {
-      foo: data => {
-        expect(data).toEqual({ some: "data" })
-        done()
-      }
-    },
-    ({ message }, actions) =>
-      h(
-        "main",
-        {
-          oncreate: () => {
-            expect(actions).toEqual({
-              foo: expect.any(Function)
-            })
-            expect(document.body.innerHTML).toBe(
-              "<main><h1>hello</h1><button></button></main>"
-            )
-            const buttonElement = document.body.firstChild.lastChild
-            buttonElement.onclick({ button: 0 })
-          }
-        },
-        h("h1", {}, message),
-        h("button", { onclick: action("foo", { some: "data" }) })
-      ),
-    document.body
-  )
-})
-
-test("event effects in view", done => {
-  document.body.innerHTML = ""
-  withEffects(app)(
-    {
-      message: "hello"
-    },
-    {
-      foo(data) {
-        expect(data).toEqual({ button: 0 })
-        done()
-      }
-    },
-    ({ message }, actions) =>
-      h(
-        "main",
-        {
-          oncreate: () => {
-            expect(actions).toEqual({
-              foo: expect.any(Function)
-            })
-            expect(document.body.innerHTML).toBe(
-              "<main><h1>hello</h1><button></button></main>"
-            )
-            const buttonElement = document.body.firstChild.lastChild
-            buttonElement.onclick({ button: 0 })
-          }
-        },
-        h("h1", {}, message),
-        h("button", { onclick: event("foo") })
-      ),
-    document.body
-  )
-})
-
-test("combined action and event effects in view", done => {
-  document.body.innerHTML = ""
-  withEffects(app)(
-    {
-      message: "hello"
-    },
-    {
-      foo: data => {
-        expect(data).toEqual({ button: 0 })
-      },
-      bar: data => {
-        expect(data).toEqual({ some: "data" })
-        done()
-      }
-    },
-    ({ message }, actions) =>
-      h(
-        "main",
-        {
-          oncreate: () => {
-            expect(actions).toEqual({
-              foo: expect.any(Function),
-              bar: expect.any(Function)
-            })
-            expect(document.body.innerHTML).toBe(
-              "<main><h1>hello</h1><button></button></main>"
-            )
-            const buttonElement = document.body.firstChild.lastChild
-            buttonElement.onclick({ button: 0 })
-          }
-        },
-        h("h1", {}, message),
-        h("button", {
-          onclick: [event("foo"), action("bar", { some: "data" })]
-        })
-      ),
-    document.body
-  )
-})
-
-test("keydown", done => {
-  const keyEvent = { key: "a", code: "KeyA" }
-  withEffects(app)(
-    {},
-    {
-      init: () => keydown("foo"),
-      foo: data => {
-        expect(data).toEqual(keyEvent)
-        done()
-      }
-    }
-  ).init()
-  document.onkeydown(keyEvent)
-})
-
-test("keyup", done => {
-  const keyEvent = { key: "a", code: "KeyA" }
-  withEffects(app)(
-    {},
-    {
-      init: () => keyup("foo"),
-      foo: data => {
-        expect(data).toEqual(keyEvent)
-        done()
-      }
-    }
-  ).init()
-  document.onkeyup(keyEvent)
-})
-
-test("random with default range", done => {
-  const randomValue = 0.5
-  const defaultRandom = Math.random
-  Math.random = () => randomValue
-
-  withEffects(app)(
-    {},
-    {
-      foo: () => random("bar"),
-      bar: data => {
-        expect(data).toBeCloseTo(randomValue)
-        done()
-      }
-    }
-  ).foo()
-
-  Math.random = defaultRandom
-})
-
-test("random with custom range", done => {
-  const defaultRandom = Math.random
-  Math.random = () => 0.5
-
-  withEffects(app)(
-    {},
-    {
-      foo: () => random("bar", 2, 5),
-      bar: data => {
-        expect(data).toBeCloseTo(3.5)
-        done()
-      }
-    }
-  ).foo()
-
-  Math.random = defaultRandom
-})
-
-test("effectsIf", () =>
-  expect(
-    effectsIf([[true, action("include")], [false, action("exclude")]])
-  ).toEqual([action("include")]))

@@ -43,7 +43,7 @@ You can find the library in `window.effects`.
 ### Effects data
 
 ```js
-EffectTuple = [ string, object ]
+EffectTuple = [ type: string, props: object ]
 Effect = EffectTuple | EffectTuple[] | Effect[]
 ```
 
@@ -52,7 +52,13 @@ Effects are always represented as arrays. For a single effect this array represe
 ### `withEffects`
 
 ```js
-withEffects = function(App): App
+Effects = {
+  [effectName]: function(
+    props: object,
+    getAction: function(name: string)
+  )
+}
+withEffects = function(App): App | function(Effects): function(App): App
 ```
 
 This Higher-Order App function enables `actions` to return arrays which later will be run as effects.
@@ -75,6 +81,39 @@ const actions = {
 
 withEffects(app)(state, actions).foo()
 ```
+
+For custom effects pass an object to `withEffects` before composing with your `app`:
+
+```js
+import { withEffects } from "hyperapp-effects"
+
+const state = {
+  // ...
+}
+
+const actions = {
+  // You will probably want to write a helper function for returning these
+  // similar to the built-in effects
+  foo: () => [
+    // type of effect for effects data
+    // must match key used in custom effect object below
+    "custom",
+    {
+      // ... props go here
+    }
+  ]
+}
+
+withEffects({
+  // key in this object must match type used in effect data above
+  custom(props, getAction) {
+    // use props to get the props used when creating the effect
+    // use getAction for firing actions when appropriate
+  }
+})(app)(state, actions).foo()
+```
+
+Reusing an existing effect type will override the built-in one.
 
 ### `action`
 

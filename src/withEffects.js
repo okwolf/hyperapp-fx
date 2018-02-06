@@ -1,22 +1,11 @@
-import {
-  ACTION,
-  FRAME,
-  DELAY,
-  TIME,
-  LOG,
-  HTTP,
-  EVENT,
-  KEY_DOWN,
-  KEY_UP,
-  RANDOM
-} from "./effectTypes"
+import makeDefaultEffects from "./makeDefaultEffects"
 
 var isEffect = Array.isArray
 var isFn = function(value) {
   return typeof value === "function"
 }
 
-function getAction(actions, name) {
+function getActionNamed(actions, name) {
   function getNextAction(partialActions, paths) {
     var nextAction = partialActions[paths[0]]
     return paths.length === 1
@@ -26,79 +15,26 @@ function getAction(actions, name) {
   return getNextAction(actions, name.split("."))
 }
 
-function runIfEffect(actions, currentEvent, maybeEffect) {
+function runIfEffect(actions, currentEvent, maybeEffect, effects) {
+  var getAction = getActionNamed.bind(null, actions)
   if (!isEffect(maybeEffect)) {
     // Not an effect
     return maybeEffect
   } else if (isEffect(maybeEffect[0])) {
     // Run an array of effects
     for (var i in maybeEffect) {
-      runIfEffect(actions, currentEvent, maybeEffect[i])
+      runIfEffect(actions, currentEvent, maybeEffect[i], effects)
     }
   } else {
     // Run a single effect
     var type = maybeEffect[0]
     var props = maybeEffect[1]
-    switch (type) {
-      case ACTION:
-        getAction(actions, props.name)(props.data)
-        break
-      case FRAME:
-        requestAnimationFrame(function(time) {
-          getAction(actions, props.action)(time)
-        })
-        break
-      case DELAY:
-        setTimeout(function() {
-          getAction(actions, props.action)(props.data)
-        }, props.duration)
-        break
-      case TIME:
-        getAction(actions, props.action)(performance.now())
-        break
-      case LOG:
-        console.log.apply(null, props.args)
-        break
-      case HTTP:
-        props.options = props.options || {}
-        props.options.response = props.options.response || "json"
-        var errorAction = props.options.error || props.action
-        if (props.options.error) {
-          delete props.options.error
-        }
-        fetch(props.url, props.options)
-          .then(function(response) {
-            return response[props.options.response]()
-          })
-          .then(function(result) {
-            getAction(actions, props.action)(result)
-          })
-          .catch(function(err) {
-            getAction(actions, errorAction)(err)
-          })
-        break
-      case EVENT:
-        getAction(actions, props.action)(currentEvent)
-        break
-      case KEY_DOWN:
-        document.onkeydown = function(keyEvent) {
-          getAction(actions, props.action)(keyEvent)
-        }
-        break
-      case KEY_UP:
-        document.onkeyup = function(keyEvent) {
-          getAction(actions, props.action)(keyEvent)
-        }
-        break
-      case RANDOM:
-        var randomValue = Math.random() * (props.max - props.min) + props.min
-        getAction(actions, props.action)(randomValue)
-        break
-    }
+    props.event = currentEvent
+    effects[type](props, getAction)
   }
 }
 
-function enhanceActions(actionsTemplate) {
+function enhanceActions(actionsTemplate, effects) {
   return Object.keys(actionsTemplate || {}).reduce(function(
     otherActions,
     name
@@ -109,47 +45,66 @@ function enhanceActions(actionsTemplate) {
           return function(state, actions) {
             var result = action(data)
             result = isFn(result) ? result(state, actions) : result
-            return runIfEffect(actions, null, result)
+            return runIfEffect(actions, null, result, effects)
           }
         }
-      : enhanceActions(action)
+      : enhanceActions(action, effects)
     return otherActions
   },
   {})
 }
 
-function handleEventEffect(actions, effect) {
+function handleEventEffect(actions, effect, effects) {
   return function(currentEvent) {
-    runIfEffect(actions, currentEvent, effect)
+    runIfEffect(actions, currentEvent, effect, effects)
   }
 }
 
-function patchVdomEffects(actions, vdom) {
+function patchVdomEffects(actions, vdom, effects) {
   if (typeof vdom === "object") {
     for (var key in vdom.props) {
       var maybeEffect = vdom.props[key]
       if (isEffect(maybeEffect)) {
-        vdom.props[key] = handleEventEffect(actions, maybeEffect)
+        vdom.props[key] = handleEventEffect(actions, maybeEffect, effects)
       }
     }
     for (var i in vdom.children) {
-      patchVdomEffects(actions, vdom.children[i])
+      patchVdomEffects(actions, vdom.children[i], effects)
     }
   }
 }
 
-export default function withEffects(app) {
+function makeEffectsApp(effects, nextApp) {
   return function(initialState, actionsTemplate, view, container) {
-    var enhancedActions = enhanceActions(actionsTemplate)
+    var enhancedActions = enhanceActions(actionsTemplate, effects)
     var enhancedView = isFn(view)
       ? function(state, actions) {
           var vdom = view(state, actions)
-          patchVdomEffects(actions, vdom)
+          patchVdomEffects(actions, vdom, effects)
           return vdom
         }
       : undefined
 
-    var appActions = app(initialState, enhancedActions, enhancedView, container)
+    var appActions = nextApp(
+      initialState,
+      enhancedActions,
+      enhancedView,
+      container
+    )
     return appActions
+  }
+}
+
+export default function withEffects(effectsOrApp) {
+  var effects = makeDefaultEffects()
+  if (typeof effectsOrApp === "function") {
+    return makeEffectsApp(effects, effectsOrApp)
+  } else {
+    for (var name in effectsOrApp) {
+      effects[name] = effectsOrApp[name]
+    }
+    return function(nextApp) {
+      return makeEffectsApp(effects, nextApp)
+    }
   }
 }
