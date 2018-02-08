@@ -62,10 +62,10 @@ function handleEventEffect(actions, effect, effects) {
 
 function patchVdomEffects(actions, vdom, effects) {
   if (typeof vdom === "object") {
-    for (var key in vdom.props) {
-      var maybeEffect = vdom.props[key]
+    for (var key in vdom.attributes) {
+      var maybeEffect = vdom.attributes[key]
       if (isEffect(maybeEffect)) {
-        vdom.props[key] = handleEventEffect(actions, maybeEffect, effects)
+        vdom.attributes[key] = handleEventEffect(actions, maybeEffect, effects)
       }
     }
     for (var i in vdom.children) {
