@@ -12,7 +12,7 @@ import {
   keyup,
   random,
   effectsIf
-} from "../src"
+} from "../dist/effects"
 
 describe("withEffects", () => {
   it("should be a function", () => expect(withEffects).toBeInstanceOf(Function))
