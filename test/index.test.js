@@ -231,6 +231,7 @@ describe("withEffects", () => {
             response: "json"
           })
           return Promise.resolve({
+            ok: true,
             json: () => Promise.resolve({ response: "data" })
           })
         }
@@ -258,6 +259,7 @@ describe("withEffects", () => {
             response: "text"
           })
           return Promise.resolve({
+            ok: true,
             text: () => Promise.resolve("hello world")
           })
         }
@@ -288,6 +290,7 @@ describe("withEffects", () => {
             response: "json"
           })
           return Promise.resolve({
+            ok: true,
             json: () => Promise.resolve({ result: "authenticated" })
           })
         }
@@ -360,6 +363,33 @@ describe("withEffects", () => {
             bar: {
               baz: data => {
                 expect(data).toBe(error)
+                done()
+              }
+            }
+          }
+        ).foo()
+        delete global.fetch
+      })
+      it("should call default action on error when response is not OK", done => {
+        const testUrl = "https://example.com/hello"
+        const response = {
+          ok: false
+        }
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({
+            response: "text"
+          })
+          return Promise.resolve(response)
+        }
+        withEffects(app)(
+          {},
+          {
+            foo: () => http(testUrl, "bar.baz", { response: "text" }),
+
+            bar: {
+              baz: data => {
+                expect(data).toBe(response)
                 done()
               }
             }

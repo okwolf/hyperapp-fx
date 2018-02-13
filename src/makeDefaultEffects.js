@@ -47,6 +47,12 @@ export default function makeDefaultEffects() {
     }
     fetch(props.url, props.options)
       .then(function(response) {
+        if (!response.ok) {
+          throw response
+        }
+        return response
+      })
+      .then(function(response) {
         return response[props.options.response]()
       })
       .then(function(result) {
