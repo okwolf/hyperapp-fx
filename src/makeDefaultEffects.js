@@ -44,7 +44,10 @@ export default function makeDefaultEffects() {
     props.options = props.options || {}
     props.options.response = props.options.response || "json"
     props.options.error = props.options.error || props.action
-    var fetchPayload = removeKeysFromObject(props.options, ["json", "error"])
+    var fetchPayload = removeKeysFromObject(props.options, [
+      "response",
+      "error"
+    ])
     fetch(props.url, fetchPayload)
       .then(function(response) {
         if (!response.ok) {
