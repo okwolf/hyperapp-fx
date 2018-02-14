@@ -227,9 +227,7 @@ describe("withEffects", () => {
         const testUrl = "https://example.com"
         global.fetch = (url, options) => {
           expect(url).toBe(testUrl)
-          expect(options).toEqual({
-            response: "json"
-          })
+          expect(options).toEqual({})
           return Promise.resolve({
             ok: true,
             json: () => Promise.resolve({ response: "data" })
@@ -255,9 +253,7 @@ describe("withEffects", () => {
         const testUrl = "https://example.com/hello"
         global.fetch = (url, options) => {
           expect(url).toBe(testUrl)
-          expect(options).toEqual({
-            response: "text"
-          })
+          expect(options).toEqual({})
           return Promise.resolve({
             ok: true,
             text: () => Promise.resolve("hello world")
@@ -286,8 +282,7 @@ describe("withEffects", () => {
             body: {
               user: "username",
               pass: "password"
-            },
-            response: "json"
+            }
           })
           return Promise.resolve({
             ok: true,
@@ -317,9 +312,7 @@ describe("withEffects", () => {
         const error = new Error("Failed")
         global.fetch = (url, options) => {
           expect(url).toBe(testUrl)
-          expect(options).toEqual({
-            response: "text"
-          })
+          expect(options).toEqual({})
           return Promise.reject(error)
         }
         withEffects(app)(
@@ -350,9 +343,7 @@ describe("withEffects", () => {
         const error = new Error("Failed")
         global.fetch = (url, options) => {
           expect(url).toBe(testUrl)
-          expect(options).toEqual({
-            response: "text"
-          })
+          expect(options).toEqual({})
           return Promise.reject(error)
         }
         withEffects(app)(
@@ -377,9 +368,7 @@ describe("withEffects", () => {
         }
         global.fetch = (url, options) => {
           expect(url).toBe(testUrl)
-          expect(options).toEqual({
-            response: "text"
-          })
+          expect(options).toEqual({})
           return Promise.resolve(response)
         }
         withEffects(app)(
