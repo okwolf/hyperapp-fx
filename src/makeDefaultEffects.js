@@ -11,6 +11,8 @@ import {
   RANDOM
 } from "./effectTypes"
 
+import { removeKeysFromObject } from "./immutable.js"
+
 export default function makeDefaultEffects() {
   var effects = {}
 
@@ -41,12 +43,26 @@ export default function makeDefaultEffects() {
   effects[HTTP] = function(props, getAction) {
     props.options = props.options || {}
     props.options.response = props.options.response || "json"
-    fetch(props.url, props.options)
+    props.options.error = props.options.error || props.action
+    var fetchPayload = removeKeysFromObject(props.options, [
+      "response",
+      "error"
+    ])
+    fetch(props.url, fetchPayload)
+      .then(function(response) {
+        if (!response.ok) {
+          throw response
+        }
+        return response
+      })
       .then(function(response) {
         return response[props.options.response]()
       })
       .then(function(result) {
         getAction(props.action)(result)
+      })
+      .catch(function(err) {
+        getAction(props.options.error)(err)
       })
   }
 
