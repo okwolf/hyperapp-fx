@@ -1,9 +1,9 @@
 export function removeKeysFromObject(object, keys) {
-  var cpy = {}
+  var copy = {}
   Object.keys(object)
-    .filter(k => keys.indexOf(k) === -1)
-    .forEach(k => {
-      cpy[k] = object[k]
+    .filter(key => keys.indexOf(key) === -1)
+    .forEach(key => {
+      copy[key] = object[key]
     })
-  return cpy
+  return copy
 }
