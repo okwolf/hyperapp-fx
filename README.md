@@ -328,7 +328,12 @@ withEffects(app)(state, actions).foo()
 http = function(url: string, action: string, options?: object): EffectTuple
 ```
 
-Describes an effect that will send an HTTP request using [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch) and then call an action with the response. If you are using a browser from the Proterozoic Eon like Internet Explorer you will want a [`fetch` polyfill](https://github.com/github/fetch). An optional `options` parameter supports the same [options as `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#Parameters) plus an additional `response` property specifying which [method to use on the response body](https://developer.mozilla.org/en-US/docs/Web/API/Body#Methods), defaulting to "json".
+Describes an effect that will send an HTTP request using [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch) and then call an action with the response. If you are using a browser from the Proterozoic Eon like Internet Explorer you will want a [`fetch` polyfill](https://github.com/github/fetch). An optional `options` parameter supports the same [options as `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#Parameters) plus the following additional properties:
+
+| Property   | Usage                                                                                                                                              | Default                            |
+|------------|----------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------|
+| `response` | Specify which [method to use on the response body](https://developer.mozilla.org/en-US/docs/Web/API/Body#Methods).                                 | `"json"`                           |
+| `error`    | Action to call if there is a problem making the request or a [not-ok](https://developer.mozilla.org/en-US/docs/Web/API/Response/ok) HTTP response. | Same action as defined for success |
 
 Example HTTP GET request with a JSON response:
 
@@ -372,7 +377,7 @@ const actions = {
 withEffects(app)(state, actions).foo()
 ```
 
-Example HTTP POST request using JSON body and response:
+Example HTTP POST request using JSON body and response that handles errors:
 
 ```js
 import { withEffects, http } from "hyperapp-effects"
@@ -387,11 +392,15 @@ const actions = {
     "loginComplete",
     {
       method: "POST",
-      body: form
+      body: form,
+      error: "loginError"
     }
   ),
-  loginComplete: () => loginResponse => {
+  loginComplete: loginResponse => {
     // loginResponse will have the JSON-decoded response from POSTing to /login
+  },
+  loginError: error => {
+    // please handle your errors...
   }
 }
 
