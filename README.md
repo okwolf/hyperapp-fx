@@ -43,7 +43,7 @@ You can find the library in `window.effects`.
 ### Effects data
 
 ```js
-EffectTuple = [ type: string, props: object ]
+EffectTuple = [type: string, props: object]
 Effect = EffectTuple | EffectTuple[] | Effect[]
 ```
 
