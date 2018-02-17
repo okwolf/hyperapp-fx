@@ -52,13 +52,13 @@ Effects are always represented as arrays. For a single effect this array represe
 ### `withEffects`
 
 ```js
-Effects = {
-  [effectName]: function(
+EffectsConfig = {
+  [effectName]: (
     props: object,
-    getAction: function(name: string)
-  )
+    getAction: (name: string) => Action
+  ) => undefined
 }
-withEffects = function(App): App | function(Effects): function(App): App
+withEffects = App => App | EffectsConfig => App => App
 ```
 
 This Higher-Order App function enables `actions` to return arrays which later will be run as effects.
@@ -118,7 +118,7 @@ Reusing an existing effect type will override the built-in one.
 ### `action`
 
 ```js
-action = function(name: string, data?: any): EffectTuple
+action = (name: string, data?: any) => EffectTuple
 ```
 
 Describes an effect that will fire another action, optionally with `data`.
@@ -198,7 +198,7 @@ withEffects(app)(state, actions, view, document.body)
 ### `frame`
 
 ```js
-frame = function(action: string): EffectTuple
+frame = (action: string) => EffectTuple
 ```
 
 Describes an effect that will call an action from inside [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame), which is also where the render triggered by the action will run. A relative timestamp will be provided as the action `data`. If you wish to have an action that continuously updates the `state` and rerenders inside of `requestAnimationFrame` (such as for a game), remember to include another `frame` effect in your return.
@@ -237,7 +237,7 @@ withEffects(app)(state, actions).init()
 ### `delay`
 
 ```js
-delay = function(duration: number, action: string, data?: any): EffectTuple
+delay = (duration: number, action: string, data?: any) => EffectTuple
 ```
 
 Describes an effect that will call an action after a delay using [`setTimeout`](https://developer.mozilla.org/en-US/docs/Web/API/Window/setTimeout), optionally with `data`.
@@ -269,7 +269,7 @@ withEffects(app)(state, actions).startTimer()
 ### `time`
 
 ```js
-time = function(action: string): EffectTuple
+time = (action: string) => EffectTuple
 ```
 
 Describes an effect that will provide the current timestamp to an action using [`performance.now`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now). The timestamp will be provided as the action `data`.
@@ -296,7 +296,7 @@ withEffects(app)(state, action).foo()
 ### `log`
 
 ```js
-log = function(...args: any[]): EffectTuple
+log = (...args: any[]) => EffectTuple
 ```
 
 Describes an effect that will call [`console.log`](https://developer.mozilla.org/en-US/docs/Web/API/Console/log) with arguments. Useful for development and debugging. Not recommended for production.
@@ -325,7 +325,7 @@ withEffects(app)(state, actions).foo()
 ### `http`
 
 ```js
-http = function(url: string, action: string, options?: object): EffectTuple
+http = (url: string, action: string, options?: object) => EffectTuple
 ```
 
 Describes an effect that will send an HTTP request using [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch) and then call an action with the response. If you are using a browser from the Proterozoic Eon like Internet Explorer you will want a [`fetch` polyfill](https://github.com/github/fetch). An optional `options` parameter supports the same [options as `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#Parameters) plus the following additional properties:
@@ -410,7 +410,7 @@ withEffects(app)(state, actions).login()
 ### `event`
 
 ```js
-event = function(action: string): EffectTuple
+event = (action: string) => EffectTuple
 ```
 
 Describes an effect that will capture [DOM Event](https://developer.mozilla.org/en-US/docs/Web/Events) data when attached to a handler in your `view`. The originally fired event will be provided as the action `data`.
@@ -438,7 +438,7 @@ withEffects(app)(state, actions, view, document.body)
 ### `keydown`
 
 ```js
-keydown = function(action: string): EffectTuple
+keydown = (action: string) => EffectTuple
 ```
 
 Describes an effect that will capture [keydown](https://developer.mozilla.org/en-US/docs/Web/Events/keydown) events for your entire document. The [`KeyboardEvent`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent) will be provided as the action `data`.
@@ -465,7 +465,7 @@ withEffects(app)(state, actions).init()
 ### `keyup`
 
 ```js
-keyup = function(action: string): EffectTuple
+keyup = (action: string) => EffectTuple
 ```
 
 Describes an effect that will capture [keyup](https://developer.mozilla.org/en-US/docs/Web/Events/keyup) events for your entire document. The [`KeyboardEvent`](https://developer.mozilla.org/en-US/docs/Web/API/KeyboardEvent) will be provided as the action `data`.
@@ -492,7 +492,7 @@ withEffects(app)(state, actions).init()
 ### `random`
 
 ```js
-random = function(action: string, min?: number, max?: number): EffectTuple
+random = (action: string, min?: number, max?: number) => EffectTuple
 ```
 
 Describes an effect that will call an action with a [randomly generated number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random) within a range. If provided the range will be `[min, max)` or else the default range is `[0, 1)`. The random number will be provided as the action `data`.
@@ -524,7 +524,7 @@ withEffects(app)(state, actions).foo()
 
 ```js
 EffectConditional = [boolean, EffectTuple]
-effectsIf = function(EffectConditional[]): EffectTuple[]
+effectsIf = EffectConditional[] => EffectTuple[]
 ```
 
 Convert an array of `[boolean, EffectTuple]`s into a new array of effects where the boolean evaluated to true. This provides compact syntatic sugar for conditionally firing effects.
