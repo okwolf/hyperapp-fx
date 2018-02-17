@@ -1,3 +1,4 @@
+import { assign } from "./utils.js"
 import makeDefaultEffects from "./makeDefaultEffects"
 
 var isEffect = Array.isArray
@@ -28,8 +29,7 @@ function runIfEffect(actions, currentEvent, maybeEffect, effects) {
   } else {
     // Run a single effect
     var type = maybeEffect[0]
-    var props = maybeEffect[1]
-    props.event = currentEvent
+    var props = assign(maybeEffect[1], { event: currentEvent })
     effects[type](props, getAction)
   }
 }
