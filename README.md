@@ -16,7 +16,7 @@ Install with npm / Yarn.
 npm i <a href="https://www.npmjs.com/package/hyperapp-effects">hyperapp-effects</a>
 </pre>
 
-Then with a module bundler like [rollup](https://github.com/rollup/rollup) or [webpack](https://github.com/webpack/webpack), use as you would anything else.
+Then with a module bundler like [parcel](https://github.com/parcel-bundler/parcel), [rollup](https://github.com/rollup/rollup) or [webpack](https://github.com/webpack/webpack), use as you would anything else.
 
 ```js
 import { withEffects } from "hyperapp-effects"
