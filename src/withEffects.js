@@ -9,6 +9,9 @@ var isFn = function(value) {
 function getActionNamed(actions, name) {
   function getNextAction(partialActions, paths) {
     var nextAction = partialActions[paths[0]]
+    if (!nextAction) {
+      throw new Error("couldn't find action: " + name)
+    }
     return paths.length === 1
       ? nextAction
       : getNextAction(nextAction, paths.slice(1))

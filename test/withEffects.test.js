@@ -52,6 +52,24 @@ describe("withEffects", () => {
   })
   describe("built-in effect", () => {
     describe("action", () => {
+      it("should throw for unknown actions", () =>
+        expect(() =>
+          withEffects(app)(
+            {},
+            {
+              foo: () => action("unknown")
+            }
+          ).foo()
+        ).toThrow("couldn't find action: unknown"))
+      it("should throw for unknown slice actions", () =>
+        expect(() =>
+          withEffects(app)(
+            {},
+            {
+              foo: () => action("uh.oh")
+            }
+          ).foo()
+        ).toThrow("couldn't find action: uh.oh"))
       it("should fire a chained action", done =>
         withEffects(app)(
           {},
@@ -63,7 +81,6 @@ describe("withEffects", () => {
             }
           }
         ).foo())
-
       it("should fire a slice action", done =>
         withEffects(app)(
           {},
