@@ -10,6 +10,7 @@ import {
   KEY_UP,
   RANDOM
 } from "./effectTypes"
+import { assign, omit } from "./utils.js"
 
 export default function makeDefaultEffects() {
   var effects = {}
@@ -39,14 +40,29 @@ export default function makeDefaultEffects() {
   }
 
   effects[HTTP] = function(props, getAction) {
-    props.options = props.options || {}
-    props.options.response = props.options.response || "json"
-    fetch(props.url, props.options)
+    var options = assign(
+      {
+        response: "json",
+        error: props.action
+      },
+      props.options
+    )
+    var fetchOptions = omit(options, ["response", "error"])
+    fetch(props.url, fetchOptions)
       .then(function(response) {
-        return response[props.options.response]()
+        if (!response.ok) {
+          throw response
+        }
+        return response
+      })
+      .then(function(response) {
+        return response[options.response]()
       })
       .then(function(result) {
         getAction(props.action)(result)
+      })
+      .catch(function(error) {
+        getAction(options.error)(error)
       })
   }
 

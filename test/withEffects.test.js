@@ -10,8 +10,7 @@ import {
   event,
   keydown,
   keyup,
-  random,
-  effectsIf
+  random
 } from "../dist/effects"
 
 describe("withEffects", () => {
@@ -53,6 +52,24 @@ describe("withEffects", () => {
   })
   describe("built-in effect", () => {
     describe("action", () => {
+      it("should throw for unknown actions", () =>
+        expect(() =>
+          withEffects(app)(
+            {},
+            {
+              foo: () => action("unknown")
+            }
+          ).foo()
+        ).toThrow("couldn't find action: unknown"))
+      it("should throw for unknown slice actions", () =>
+        expect(() =>
+          withEffects(app)(
+            {},
+            {
+              foo: () => action("uh.oh")
+            }
+          ).foo()
+        ).toThrow("couldn't find action: uh.oh"))
       it("should fire a chained action", done =>
         withEffects(app)(
           {},
@@ -64,7 +81,6 @@ describe("withEffects", () => {
             }
           }
         ).foo())
-
       it("should fire a slice action", done =>
         withEffects(app)(
           {},
@@ -227,10 +243,9 @@ describe("withEffects", () => {
         const testUrl = "https://example.com"
         global.fetch = (url, options) => {
           expect(url).toBe(testUrl)
-          expect(options).toEqual({
-            response: "json"
-          })
+          expect(options).toEqual({})
           return Promise.resolve({
+            ok: true,
             json: () => Promise.resolve({ response: "data" })
           })
         }
@@ -254,10 +269,9 @@ describe("withEffects", () => {
         const testUrl = "https://example.com/hello"
         global.fetch = (url, options) => {
           expect(url).toBe(testUrl)
-          expect(options).toEqual({
-            response: "text"
-          })
+          expect(options).toEqual({})
           return Promise.resolve({
+            ok: true,
             text: () => Promise.resolve("hello world")
           })
         }
@@ -284,10 +298,10 @@ describe("withEffects", () => {
             body: {
               user: "username",
               pass: "password"
-            },
-            response: "json"
+            }
           })
           return Promise.resolve({
+            ok: true,
             json: () => Promise.resolve({ result: "authenticated" })
           })
         }
@@ -302,6 +316,85 @@ describe("withEffects", () => {
             bar: {
               baz: data => {
                 expect(data).toEqual({ result: "authenticated" })
+                done()
+              }
+            }
+          }
+        ).foo()
+        delete global.fetch
+      })
+      it("should call the error handler on error", done => {
+        const testUrl = "https://example.com/hello"
+        const error = new Error("Failed")
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({})
+          return Promise.reject(error)
+        }
+        withEffects(app)(
+          {},
+          {
+            foo: () =>
+              http(testUrl, "bar.baz", {
+                response: "text",
+                error: "fizz.errorHandler"
+              }),
+            fizz: {
+              errorHandler: err => {
+                expect(err).toBe(error)
+                done()
+              }
+            },
+            bar: {
+              baz: data => {
+                done.fail(new Error("Should not be called"))
+              }
+            }
+          }
+        ).foo()
+        delete global.fetch
+      })
+      it("should call default action on error", done => {
+        const testUrl = "https://example.com/hello"
+        const error = new Error("Failed")
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({})
+          return Promise.reject(error)
+        }
+        withEffects(app)(
+          {},
+          {
+            foo: () => http(testUrl, "bar.baz", { response: "text" }),
+
+            bar: {
+              baz: data => {
+                expect(data).toBe(error)
+                done()
+              }
+            }
+          }
+        ).foo()
+        delete global.fetch
+      })
+      it("should call default action on error when response is not OK", done => {
+        const testUrl = "https://example.com/hello"
+        const response = {
+          ok: false
+        }
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({})
+          return Promise.resolve(response)
+        }
+        withEffects(app)(
+          {},
+          {
+            foo: () => http(testUrl, "bar.baz", { response: "text" }),
+
+            bar: {
+              baz: data => {
+                expect(data).toBe(response)
                 done()
               }
             }
@@ -518,11 +611,4 @@ describe("withEffects", () => {
       }
     ])
   })
-})
-
-describe("effectsIf", () => {
-  it("should filter out effects with truthy conditionals", () =>
-    expect(
-      effectsIf([[true, action("include")], [false, action("exclude")]])
-    ).toEqual([action("include")]))
 })
