@@ -14,6 +14,7 @@ install:
   - npm i
 
 script:
+  - npm run build
   - npm test
   - codecov
 
