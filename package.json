@@ -7,14 +7,14 @@
   "module": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/okwolf/hyperapp-effects.git"
+    "url": "git+https://github.com/HyperappCommunity/hyperapp-effects.git"
   },
   "peerDependencies": {
-    "hyperapp": "^1.1.1"
+    "hyperapp": "^1.1.2"
   },
   "devDependencies": {
     "babel-preset-env": "^1.6.1",
-    "hyperapp": "^1.1.1",
+    "hyperapp": "^1.1.2",
     "jest": "^21.2.1",
     "prettier": "^1.8.2",
     "rollup": "^0.55.5",
@@ -34,7 +34,7 @@
   "author": "Wolfgang Wedemeyer <wolf@okwolf.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/okwolf/hyperapp-effects/issues"
+    "url": "https://github.com/HyperappCommunity/hyperapp-effects/issues"
   },
-  "homepage": "https://github.com/okwolf/hyperapp-effects"
+  "homepage": "https://github.com/HyperappCommunity/hyperapp-effects"
 }
