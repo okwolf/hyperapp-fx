@@ -1,7 +1,7 @@
-# Hyperapp Effects
+# <img height=24 src=https://cdn.rawgit.com/JorgeBucaran/f53d2c00bafcf36e84ffd862f0dc2950/raw/882f20c970ff7d61aa04d44b92fc3530fa758bc0/Hyperapp.svg> Hyperapp Effects
 
-[![Build Status](https://travis-ci.org/okwolf/hyperapp-effects.svg?branch=master)](https://travis-ci.org/okwolf/hyperapp-effects)
-[![Codecov](https://img.shields.io/codecov/c/github/okwolf/hyperapp-effects/master.svg)](https://codecov.io/gh/okwolf/hyperapp-effects)
+[![Build Status](https://travis-ci.org/hyperappjs/hyperapp-effects.svg?branch=master)](https://travis-ci.org/hyperappjs/hyperapp-effects)
+[![codecov](https://codecov.io/gh/HyperappCommunity/hyperapp-effects/branch/master/graph/badge.svg)](https://codecov.io/gh/HyperappCommunity/hyperapp-effects)
 [![npm](https://img.shields.io/npm/v/hyperapp-effects.svg)](https://www.npmjs.org/package/hyperapp-effects)
 
 A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App giving your `app` superpowers to write your [effects as data](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects).
