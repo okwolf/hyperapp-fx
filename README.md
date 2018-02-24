@@ -520,7 +520,7 @@ const actions = {
 withFx(app)(state, actions).foo()
 ```
 
-### `effectsIf`
+### `fxIf`
 
 ```js
 EffectConditional = [boolean, EffectTuple]
@@ -532,14 +532,14 @@ Convert an array of `[boolean, EffectTuple]`s into a new array of effects where 
 Example:
 
 ```js
-import { withFx, effectsIf, action } from "@hyperapp/fx"
+import { withFx, fxIf, action } from "@hyperapp/fx"
 
 const state = {
   // ...
 }
 
 const actions = {
-  foo: () => ({ running }) => effectsIf([
+  foo: () => ({ running }) => fxIf([
     [true, action("always")],
     [false, action("never")],
     [running, action("ifRunning")],
