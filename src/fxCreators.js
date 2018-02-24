@@ -9,7 +9,7 @@ import {
   KEY_DOWN,
   KEY_UP,
   RANDOM
-} from "./effectTypes"
+} from "./fxTypes"
 
 export function action(name, data) {
   return [

@@ -21,7 +21,7 @@
   },
   "scripts": {
     "test": "jest --coverage --no-cache",
-    "bundle": "rollup -i src/index.js -o dist/effects.js -f umd -n effects",
+    "bundle": "rollup -i src/index.js -o dist/fx.js -f umd -n fx",
     "prepare": "npm run bundle",
     "format": "prettier --semi false --write '{src,test}/**/*.js'"
   },

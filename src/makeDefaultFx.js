@@ -9,37 +9,37 @@ import {
   KEY_DOWN,
   KEY_UP,
   RANDOM
-} from "./effectTypes"
+} from "./fxTypes"
 import { assign, omit } from "./utils.js"
 
-export default function makeDefaultEffects() {
-  var effects = {}
+export default function makeDefaultFx() {
+  var fx = {}
 
-  effects[ACTION] = function(props, getAction) {
+  fx[ACTION] = function(props, getAction) {
     getAction(props.name)(props.data)
   }
 
-  effects[FRAME] = function(props, getAction) {
+  fx[FRAME] = function(props, getAction) {
     requestAnimationFrame(function(time) {
       getAction(props.action)(time)
     })
   }
 
-  effects[DELAY] = function(props, getAction) {
+  fx[DELAY] = function(props, getAction) {
     setTimeout(function() {
       getAction(props.action)(props.data)
     }, props.duration)
   }
 
-  effects[TIME] = function(props, getAction) {
+  fx[TIME] = function(props, getAction) {
     getAction(props.action)(performance.now())
   }
 
-  effects[LOG] = function(props, getAction) {
+  fx[LOG] = function(props, getAction) {
     console.log.apply(null, props.args)
   }
 
-  effects[HTTP] = function(props, getAction) {
+  fx[HTTP] = function(props, getAction) {
     var options = assign(
       {
         response: "json",
@@ -66,26 +66,26 @@ export default function makeDefaultEffects() {
       })
   }
 
-  effects[EVENT] = function(props, getAction) {
+  fx[EVENT] = function(props, getAction) {
     getAction(props.action)(props.event)
   }
 
-  effects[KEY_DOWN] = function(props, getAction) {
+  fx[KEY_DOWN] = function(props, getAction) {
     document.onkeydown = function(keyEvent) {
       getAction(props.action)(keyEvent)
     }
   }
 
-  effects[KEY_UP] = function(props, getAction) {
+  fx[KEY_UP] = function(props, getAction) {
     document.onkeyup = function(keyEvent) {
       getAction(props.action)(keyEvent)
     }
   }
 
-  effects[RANDOM] = function(props, getAction) {
+  fx[RANDOM] = function(props, getAction) {
     var randomValue = Math.random() * (props.max - props.min) + props.min
     getAction(props.action)(randomValue)
   }
 
-  return effects
+  return fx
 }
