@@ -1,4 +1,4 @@
-import { action, fxIf } from "../dist/fx"
+import { action, fxIf } from "../src"
 
 describe("fxIf", () => {
   it("should filter out effects with truthy conditionals", () =>
