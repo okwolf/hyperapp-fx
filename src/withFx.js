@@ -98,13 +98,13 @@ function makeFxApp(fx, nextApp) {
   }
 }
 
-export function withFx(FxOrApp) {
+export function withFx(fxOrApp) {
   var fx = makeDefaultFx()
-  if (typeof FxOrApp === "function") {
-    return makeFxApp(fx, FxOrApp)
+  if (typeof fxOrApp === "function") {
+    return makeFxApp(fx, fxOrApp)
   } else {
-    for (var name in FxOrApp) {
-      fx[name] = FxOrApp[name]
+    for (var name in fxOrApp) {
+      fx[name] = fxOrApp[name]
     }
     return function(nextApp) {
       return makeFxApp(fx, nextApp)

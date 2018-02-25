@@ -11,7 +11,7 @@ import {
   keydown,
   keyup,
   random
-} from "../src"
+} from "../dist/fx"
 
 describe("withFx", () => {
   it("should be a function", () => expect(withFx).toBeInstanceOf(Function))
