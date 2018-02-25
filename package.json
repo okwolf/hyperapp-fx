@@ -17,12 +17,15 @@
     "hyperapp": "^1.1.2",
     "jest": "^21.2.1",
     "prettier": "^1.8.2",
-    "rollup": "^0.55.5"
+    "rollup": "^0.55.5",
+    "uglify-js": "^3.2.1"
   },
   "scripts": {
     "test": "jest --coverage --no-cache",
-    "bundle": "rollup -i src/index.js -o dist/effects.js -f umd -n effects",
-    "prepare": "npm run bundle",
+    "build": "npm run bundle && npm run minify",
+    "bundle": "rollup -i src/index.js -o dist/effects.js -m -f umd -n effects",
+    "minify": "uglifyjs dist/effects.js -o dist/effects.js -mc pure_funcs=['Object.defineProperty'] --source-map includeSources,url=effects.js.map",
+    "prepare": "npm run build",
     "format": "prettier --semi false --write '{src,test}/**/*.js'"
   },
   "babel": {

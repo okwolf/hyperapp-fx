@@ -1,4 +1,4 @@
-import { action, effectsIf } from "../src"
+import { action, effectsIf } from "../dist/effects"
 
 describe("effectsIf", () => {
   it("should filter out effects with truthy conditionals", () =>
