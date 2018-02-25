@@ -20,7 +20,6 @@ function getActionNamed(actions, name) {
 }
 
 function runIfFx(actions, currentEvent, maybeFx, fx) {
-  var getAction = getActionNamed.bind(null, actions)
   if (!isFx(maybeFx)) {
     // Not an effect
     return maybeFx
@@ -31,6 +30,7 @@ function runIfFx(actions, currentEvent, maybeFx, fx) {
     }
   } else {
     // Run a single effect
+    var getAction = getActionNamed.bind(null, actions)
     var type = maybeFx[0]
     var props = assign(maybeFx[1], { event: currentEvent })
     fx[type](props, getAction)
