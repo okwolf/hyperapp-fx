@@ -8,9 +8,7 @@ A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App giving your 
 
 ## Installation
 
-### Node.js
-
-Install with npm / Yarn.
+Install with npm or Yarn.
 
 <pre>
 npm i <a href="https://www.npmjs.com/package/@hyperapp/fx">@hyperapp/fx</a>
@@ -22,21 +20,12 @@ Then with a module bundler like [parcel](https://github.com/parcel-bundler/parce
 import { withFx } from "@hyperapp/fx"
 ```
 
-Or using require.
 
-```js
-const { withFx } = require("@hyperapp/fx")
-```
-
-### Browser
-
-Download the minified library from the [CDN](https://unpkg.com/@hyperapp/fx).
+If you don't want to set up a build environment, you can download Hyperapp FX from a CDN like [unpkg.com](https://unpkg.com/@hyperapp/fx) and it will be globally available through the <samp>window.fx</samp> object.
 
 ```html
 <script src="https://unpkg.com/@hyperapp/fx"></script>
 ```
-
-You can find the library in `window.fx`.
 
 ## API
 
