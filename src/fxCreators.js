@@ -8,7 +8,8 @@ import {
   EVENT,
   KEY_DOWN,
   KEY_UP,
-  RANDOM
+  RANDOM,
+  DEBOUNCE
 } from "./fxTypes"
 
 export function action(name, data) {
@@ -104,6 +105,18 @@ export function random(action, min, max) {
       action: action,
       min: min || 0,
       max: max || 1
+    }
+  ]
+}
+
+export function debounce (wait, action, inmediate, data) {
+  return [
+    DEBOUNCE,
+    {
+      wait: wait,
+      action: action,
+      inmediate: inmediate,
+      data: data
     }
   ]
 }

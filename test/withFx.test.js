@@ -10,7 +10,8 @@ import {
   event,
   keydown,
   keyup,
-  random
+  random,
+  debounce
 } from "../src"
 
 describe("withFx", () => {
@@ -506,6 +507,102 @@ describe("withFx", () => {
         ).foo()
 
         Math.random = defaultRandom
+      })
+    })
+    describe("debounce", () => {
+      it("should fire an action after a delay if inmediate is false", () => {
+        jest.useFakeTimers()
+        try {
+          const main = withFx(app)(
+            {},
+            {
+              get: () => state => state,
+              foo: () => debounce(1000, "bar.baz", false, { updated: "data" }),
+              bar: {
+                baz: data => data
+              }
+            },
+            Function.prototype
+          )
+          main.foo()
+          expect(main.get()).toEqual({ bar: {} })
+          jest.runAllTimers()
+          expect(main.get()).toEqual({ bar: { updated: "data" } })
+        } finally {
+          jest.useRealTimers()
+        }
+      })
+      it("should fire an action before the delay if inmediate is true", () => {
+        jest.useFakeTimers()
+        try {
+          const main = withFx(app)(
+            {},
+            {
+              get: () => state => state,
+              foo: () => debounce(1000, "bar.baz", true, { updated: "data" }),
+              bar: {
+                baz: data => data
+              }
+            },
+            Function.prototype
+          )
+          main.foo()
+          expect(main.get()).toEqual({ bar: { updated: "data"} })
+          jest.runAllTimers()
+          expect(main.get()).toEqual({ bar: { updated: "data" } })
+        } finally {
+          jest.useRealTimers()
+        }
+      })
+      it("should only fire an action once during the duration of the delay", () => {
+        jest.useFakeTimers()
+        try {
+          const main = withFx(app)(
+            {},
+            {
+              get: () => state => state,
+              foo: (data) => debounce(1000, "bar.baz", true, data),
+              bar: {
+                baz: data => data
+              }
+            },
+            Function.prototype
+          )
+          jest.spyOn(main.bar, 'baz')
+          main.foo({ data: "updated" })
+          main.foo({ data: "updated again" })
+          expect(main.bar.baz).toHaveBeenCalledTimes(1)
+          jest.runAllTimers()
+          expect(main.get()).toEqual({ bar: { data: "updated" } })
+        } finally {
+          jest.useRealTimers()
+        }
+      })
+      it("should fire an action after the delay has passed", () => {
+        jest.useFakeTimers()
+        try {
+          const main = withFx(app)(
+            {},
+            {
+              get: () => state => state,
+              foo: (data) => debounce(1000, "bar.baz", true, data),
+              bar: {
+                baz: data => data
+              }
+            },
+            Function.prototype
+          )
+          jest.spyOn(main.bar, 'baz')
+          main.foo({ data: "updated" })
+          expect(main.bar.baz).toHaveBeenCalledTimes(1)
+          expect(main.get()).toEqual({ bar: { data: "updated" } })
+          jest.runAllTimers()
+          main.foo({ data: "updated again" })
+          expect(main.bar.baz).toHaveBeenCalledTimes(2)
+          expect(main.get()).toEqual({ bar: { data: "updated again" } })
+        } finally {
+          jest.useRealTimers()
+        }
       })
     })
   })
