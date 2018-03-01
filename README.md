@@ -17,7 +17,7 @@ Here's a taste of how to use two of the most common effects for firing effects a
 
 ```js
 import { h, app } from "hyperapp"
-import { withFx, http, action } = "@hyperapp/fx"
+import { withFx, http, action } from "@hyperapp/fx"
 
 const state = {
   quote: "Click here for quotes"
