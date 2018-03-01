@@ -4,7 +4,42 @@
 [![codecov](https://codecov.io/gh/hyperapp/fx/branch/master/graph/badge.svg)](https://codecov.io/gh/hyperapp/fx)
 [![npm](https://img.shields.io/npm/v/@hyperapp/fx.svg)](https://www.npmjs.org/package/@hyperapp/fx)
 
-A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App giving your `app` superpowers to write your [effects as data](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects).
+A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App giving your `app` superpowers to write your [_effects as data_](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects). Using _effects as data_ will give your app benefits in several areas.
+
+* **Purity** — All of your actions become pure functions, since you are merely returning data describing the effect(s) to run on your behalf later, rather than directly performing them yourself.
+* **Testing** — pure functions are amazingly easy to test, since they always return the same data for the same arguments.
+* **Debugging** — data is more useful for troubleshooting at runtime since it can be logged or serialized and transmitted for remote forensics. Debug async and other effectful code without touching a debugger.
+
+## Getting Started
+
+Here's a taste of how to use two of the most common effects for firing effects and making HTTP requests. The app displays inpsiring quotes about design, fetching a new quote each time the user clicks on the current one. Go ahead and [try it online here](https://codepen.io/okwolf/pen/QQYaad?editors=0010).
+
+```js
+import { h, app } from "hyperapp"
+import { withFx, http, action } = "@hyperapp/fx"
+
+const state = {
+  quote: "Click here for quotes"
+}
+
+const actions = {
+  getQuote: () => [
+    action("setQuote", "..."),
+    http(
+      "https://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1",
+      "quoteFetched"
+    )
+  ],
+  quoteFetched: ([{ content }]) => action("setQuote", content),
+  setQuote: quote => ({ quote })
+}
+
+const view = state => (
+  <h1 onclick={action("getQuote")}>{state.quote}</h1>
+)
+
+withFx(app)(state, actions, view, document.body)
+```
 
 ## Installation
 
@@ -20,23 +55,13 @@ Then with a module bundler like [parcel](https://github.com/parcel-bundler/parce
 import { withFx } from "@hyperapp/fx"
 ```
 
-
-If you don't want to set up a build environment, you can download Hyperapp FX from a CDN like [unpkg.com](https://unpkg.com/@hyperapp/fx) and it will be globally available through the <samp>window.fx</samp> object.
+If you don't want to set up a build environment, you can download Hyperapp FX from a CDN like [unpkg.com](https://unpkg.com/@hyperapp/fx) and it will be globally available through the `window.fx` object.
 
 ```html
 <script src="https://unpkg.com/@hyperapp/fx"></script>
 ```
 
-## API
-
-### Effects data
-
-```js
-EffectTuple = [type: string, props: object]
-Effect = EffectTuple | EffectTuple[] | Effect[]
-```
-
-Effects are always represented as arrays. For a single effect this array represents a tuple containing the effect type string and an object containing the properties of this effect. For multiple effects each array element is either an effect tuple or an array of these tuples, which may be nested. This means that effects are composeable.
+## Overview
 
 ### `withFx`
 
@@ -103,6 +128,15 @@ withFx({
 ```
 
 Reusing an existing effect type will override the built-in one.
+
+### Effects data
+
+```js
+EffectTuple = [type: string, props: object]
+Effect = EffectTuple | EffectTuple[] | Effect[]
+```
+
+Effects are always represented as arrays. For a single effect this array represents a tuple containing the effect type string and an object containing the properties of this effect. For multiple effects each array element is either an effect tuple or an array of these tuples, which may be nested. This means that effects are composeable.
 
 ### `action`
 
