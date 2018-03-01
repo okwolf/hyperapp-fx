@@ -576,4 +576,4 @@ withFx(app)(state, actions).foo()
 
 ## License
 
-Hyperapp Effects is MIT licensed. See [LICENSE](LICENSE.md).
+Hyperapp FX is MIT licensed. See [LICENSE](LICENSE.md).
