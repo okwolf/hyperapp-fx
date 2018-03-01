@@ -1,6 +1,6 @@
 import { h, app } from "hyperapp"
 import {
-  withEffects,
+  withFx,
   action,
   frame,
   delay,
@@ -11,14 +11,14 @@ import {
   keydown,
   keyup,
   random
-} from "../dist/effects"
+} from "../src"
 
-describe("withEffects", () => {
-  it("should be a function", () => expect(withEffects).toBeInstanceOf(Function))
+describe("withFx", () => {
+  it("should be a function", () => expect(withFx).toBeInstanceOf(Function))
   it("should call view without actions", done =>
-    withEffects(app)(undefined, undefined, () => done()))
+    withFx(app)(undefined, undefined, () => done()))
   it("should not interfere with non effect actions", done => {
-    const main = withEffects(app)(
+    const main = withFx(app)(
       {
         value: 0
       },
@@ -54,7 +54,7 @@ describe("withEffects", () => {
     describe("action", () => {
       it("should throw for unknown actions", () =>
         expect(() =>
-          withEffects(app)(
+          withFx(app)(
             {},
             {
               foo: () => action("unknown")
@@ -63,7 +63,7 @@ describe("withEffects", () => {
         ).toThrow("couldn't find action: unknown"))
       it("should throw for unknown slice actions", () =>
         expect(() =>
-          withEffects(app)(
+          withFx(app)(
             {},
             {
               foo: () => action("uh.oh")
@@ -71,7 +71,7 @@ describe("withEffects", () => {
           ).foo()
         ).toThrow("couldn't find action: uh.oh"))
       it("should fire a chained action", done =>
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             foo: () => action("bar", { some: "data" }),
@@ -82,7 +82,7 @@ describe("withEffects", () => {
           }
         ).foo())
       it("should fire a slice action", done =>
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             foo: () => action("bar.baz", { some: "data" }),
@@ -95,7 +95,7 @@ describe("withEffects", () => {
           }
         ).foo())
       it("should update state", done =>
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             update: data => data,
@@ -123,7 +123,7 @@ describe("withEffects", () => {
         ).foo())
       it("should attach to listeners in view", done => {
         document.body.innerHTML = ""
-        withEffects(app)(
+        withFx(app)(
           {
             message: "hello"
           },
@@ -159,7 +159,7 @@ describe("withEffects", () => {
       it("should call animation frame", done => {
         const timestamp = 9001
         global.requestAnimationFrame = jest.fn(cb => cb(timestamp))
-        const main = withEffects(app)(
+        const main = withFx(app)(
           {},
           {
             foo: () => frame("bar.baz"),
@@ -180,7 +180,7 @@ describe("withEffects", () => {
       it("should fire an action after a delay", () => {
         jest.useFakeTimers()
         try {
-          const main = withEffects(app)(
+          const main = withFx(app)(
             {},
             {
               get: () => state => state,
@@ -206,7 +206,7 @@ describe("withEffects", () => {
         global.performance = {
           now: () => timestamp
         }
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             foo: () => time("bar.baz"),
@@ -229,7 +229,7 @@ describe("withEffects", () => {
           expect(args).toEqual(testArgs)
           done()
         }
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             foo: () => log(...testArgs)
@@ -249,7 +249,7 @@ describe("withEffects", () => {
             json: () => Promise.resolve({ response: "data" })
           })
         }
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             foo: () => http(testUrl, "bar.baz"),
@@ -275,7 +275,7 @@ describe("withEffects", () => {
             text: () => Promise.resolve("hello world")
           })
         }
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             foo: () => http(testUrl, "bar.baz", { response: "text" }),
@@ -305,7 +305,7 @@ describe("withEffects", () => {
             json: () => Promise.resolve({ result: "authenticated" })
           })
         }
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             foo: () =>
@@ -331,7 +331,7 @@ describe("withEffects", () => {
           expect(options).toEqual({})
           return Promise.reject(error)
         }
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             foo: () =>
@@ -362,7 +362,7 @@ describe("withEffects", () => {
           expect(options).toEqual({})
           return Promise.reject(error)
         }
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             foo: () => http(testUrl, "bar.baz", { response: "text" }),
@@ -387,7 +387,7 @@ describe("withEffects", () => {
           expect(options).toEqual({})
           return Promise.resolve(response)
         }
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             foo: () => http(testUrl, "bar.baz", { response: "text" }),
@@ -406,7 +406,7 @@ describe("withEffects", () => {
     describe("event", () => {
       it("should attach to listeners in view", done => {
         document.body.innerHTML = ""
-        withEffects(app)(
+        withFx(app)(
           {
             message: "hello"
           },
@@ -441,7 +441,7 @@ describe("withEffects", () => {
     describe("keydown", () => {
       it("should attach keydown listener", done => {
         const keyEvent = { key: "a", code: "KeyA" }
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             init: () => keydown("foo"),
@@ -457,7 +457,7 @@ describe("withEffects", () => {
     describe("keyup", () => {
       it("should attach keyup listener", done => {
         const keyEvent = { key: "a", code: "KeyA" }
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             init: () => keyup("foo"),
@@ -476,7 +476,7 @@ describe("withEffects", () => {
         const defaultRandom = Math.random
         Math.random = () => randomValue
 
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             foo: () => random("bar"),
@@ -494,7 +494,7 @@ describe("withEffects", () => {
         const defaultRandom = Math.random
         Math.random = () => 0.5
 
-        withEffects(app)(
+        withFx(app)(
           {},
           {
             foo: () => random("bar", 2, 5),
@@ -509,9 +509,9 @@ describe("withEffects", () => {
       })
     })
   })
-  it("should allow combining action and event effects in view", done => {
+  it("should allow combining action and event fx in view", done => {
     document.body.innerHTML = ""
-    withEffects(app)(
+    withFx(app)(
       {
         message: "hello"
       },
@@ -551,7 +551,7 @@ describe("withEffects", () => {
   it("should allow adding new custom effect", () => {
     const externalState = { value: 2 }
 
-    const main = withEffects({
+    const main = withFx({
       set(props, getAction) {
         getAction(props.action)(externalState)
       }
@@ -582,10 +582,10 @@ describe("withEffects", () => {
       value: 1
     })
   })
-  it("should allow overriding built-in effects", () => {
+  it("should allow overriding built-in fx", () => {
     const actionLog = []
 
-    withEffects({
+    withFx({
       action(props) {
         actionLog.push(props)
       }

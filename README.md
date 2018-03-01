@@ -1,55 +1,70 @@
-# <img height=24 src=https://cdn.rawgit.com/JorgeBucaran/f53d2c00bafcf36e84ffd862f0dc2950/raw/882f20c970ff7d61aa04d44b92fc3530fa758bc0/Hyperapp.svg> Hyperapp Effects
+# <img height=24 src=https://cdn.rawgit.com/JorgeBucaran/f53d2c00bafcf36e84ffd862f0dc2950/raw/882f20c970ff7d61aa04d44b92fc3530fa758bc0/Hyperapp.svg> Hyperapp FX
 
-[![Build Status](https://travis-ci.org/HyperappCommunity/hyperapp-effects.svg?branch=master)](https://travis-ci.org/HyperappCommunity/hyperapp-effects)
-[![codecov](https://codecov.io/gh/HyperappCommunity/hyperapp-effects/branch/master/graph/badge.svg)](https://codecov.io/gh/HyperappCommunity/hyperapp-effects)
-[![npm](https://img.shields.io/npm/v/hyperapp-effects.svg)](https://www.npmjs.org/package/hyperapp-effects)
+[![Build Status](https://travis-ci.org/hyperapp/fx.svg?branch=master)](https://travis-ci.org/hyperapp/fx)
+[![codecov](https://codecov.io/gh/hyperapp/fx/branch/master/graph/badge.svg)](https://codecov.io/gh/hyperapp/fx)
+[![npm](https://img.shields.io/npm/v/@hyperapp/fx.svg)](https://www.npmjs.org/package/@hyperapp/fx)
+[![Slack](https://hyperappjs.herokuapp.com/badge.svg)](https://hyperappjs.herokuapp.com "Join us")
 
-A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App giving your `app` superpowers to write your [effects as data](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects).
+A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App enabling you to write your [_effects as data_](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects). Using _effects as data_ will give your app benefits in several areas.
+
+* **Purity** — All of your actions become pure functions, since you are merely returning data describing the effect(s) to run on your behalf later, rather than directly performing them yourself.
+* **Testing** — pure functions are amazingly easy to test, since they always return the same data for the same arguments.
+* **Debugging** — data is more useful for troubleshooting at runtime since it can be logged or serialized and transmitted for remote forensics. Debug async and other effectful code without touching a debugger.
+
+## Getting Started
+
+Here's a taste of how to use two of the most common effects for firing effects and making HTTP requests. The app displays inpsiring quotes about design, fetching a new quote each time the user clicks on the current one. Go ahead and [try it online here](https://codepen.io/okwolf/pen/QQYaad?editors=0010).
+
+```js
+import { h, app } from "hyperapp"
+import { withFx, http, action } = "@hyperapp/fx"
+
+const state = {
+  quote: "Click here for quotes"
+}
+
+const actions = {
+  getQuote: () => [
+    action("setQuote", "..."),
+    http(
+      "https://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1",
+      "quoteFetched"
+    )
+  ],
+  quoteFetched: ([{ content }]) => action("setQuote", content),
+  setQuote: quote => ({ quote })
+}
+
+const view = state => (
+  <h1 onclick={action("getQuote")}>{state.quote}</h1>
+)
+
+withFx(app)(state, actions, view, document.body)
+```
 
 ## Installation
 
-### Node.js
-
-Install with npm / Yarn.
+Install with npm or Yarn.
 
 <pre>
-npm i <a href="https://www.npmjs.com/package/hyperapp-effects">hyperapp-effects</a>
+npm i <a href="https://www.npmjs.com/package/@hyperapp/fx">@hyperapp/fx</a>
 </pre>
 
 Then with a module bundler like [parcel](https://github.com/parcel-bundler/parcel), [rollup](https://github.com/rollup/rollup) or [webpack](https://github.com/webpack/webpack), use as you would anything else.
 
 ```js
-import { withEffects } from "hyperapp-effects"
+import { withFx } from "@hyperapp/fx"
 ```
 
-Or using require.
-
-```js
-const { withEffects } = require("hyperapp-effects")
-```
-
-### Browser
-
-Download the minified library from the [CDN](https://unpkg.com/hyperapp-effects).
+If you don't want to set up a build environment, you can download Hyperapp FX from a CDN like [unpkg.com](https://unpkg.com/@hyperapp/fx) and it will be globally available through the `window.fx` object.
 
 ```html
-<script src="https://unpkg.com/hyperapp-effects"></script>
+<script src="https://unpkg.com/@hyperapp/fx"></script>
 ```
 
-You can find the library in `window.effects`.
+## Overview
 
-## API
-
-### Effects data
-
-```js
-EffectTuple = [type: string, props: object]
-Effect = EffectTuple | EffectTuple[] | Effect[]
-```
-
-Effects are always represented as arrays. For a single effect this array represents a tuple containing the effect type string and an object containing the properties of this effect. For multiple effects each array element is either an effect tuple or an array of these tuples, which may be nested. This means that effects are composeable.
-
-### `withEffects`
+### `withFx`
 
 ```js
 EffectsConfig = {
@@ -58,7 +73,7 @@ EffectsConfig = {
     getAction: (name: string) => Action
   ) => undefined
 }
-withEffects = App => App | EffectsConfig => App => App
+withFx = App => App | EffectsConfig => App => App
 ```
 
 This Higher-Order App function enables `actions` to return arrays which later will be run as effects.
@@ -66,7 +81,7 @@ This Higher-Order App function enables `actions` to return arrays which later wi
 Example:
 
 ```js
-import { withEffects } from "hyperapp-effects"
+import { withFx } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -79,13 +94,13 @@ const actions = {
   bar: () => // or a single effect can go here
 }
 
-withEffects(app)(state, actions).foo()
+withFx(app)(state, actions).foo()
 ```
 
-For custom effects pass an object to `withEffects` before composing with your `app`:
+For custom effects pass an object to `withFx` before composing with your `app`:
 
 ```js
-import { withEffects } from "hyperapp-effects"
+import { withFx } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -104,7 +119,7 @@ const actions = {
   ]
 }
 
-withEffects({
+withFx({
   // key in this object must match type used in effect data above
   custom(props, getAction) {
     // use props to get the props used when creating the effect
@@ -114,6 +129,15 @@ withEffects({
 ```
 
 Reusing an existing effect type will override the built-in one.
+
+### Effects data
+
+```js
+EffectTuple = [type: string, props: object]
+Effect = EffectTuple | EffectTuple[] | Effect[]
+```
+
+Effects are always represented as arrays. For a single effect this array represents a tuple containing the effect type string and an object containing the properties of this effect. For multiple effects each array element is either an effect tuple or an array of these tuples, which may be nested. This means that effects are composeable.
 
 ### `action`
 
@@ -126,7 +150,7 @@ Describes an effect that will fire another action, optionally with `data`.
 Example:
 
 ```js
-import { withEffects, action } from "hyperapp-effects"
+import { withFx, action } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -146,13 +170,13 @@ const actions = {
   }
 }
 
-withEffects(app)(state, actions).foo()
+withFx(app)(state, actions).foo()
 ```
 
 Note that you may also use a single action effect without an array wrapper and that nested `actions` may be called by separating the slices with dots:
 
 ```js
-import { withEffects, action } from "hyperapp-effects"
+import { withFx, action } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -167,7 +191,7 @@ const actions = {
   }
 }
 
-withEffects(app)(state, actions).foo()
+withFx(app)(state, actions).foo()
 ```
 
 This same convention follows for all the other effects as well.
@@ -175,7 +199,7 @@ This same convention follows for all the other effects as well.
 Also note that `action` (and other effects) may be used for handler props in your `view`:
 
 ```js
-import { withEffects, action } from "hyperapp-effects"
+import { withFx, action } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -192,7 +216,7 @@ const view = () => h("button", {
   onclick: action("foo", { message: "hello" })
 })
 
-withEffects(app)(state, actions, view, document.body)
+withFx(app)(state, actions, view, document.body)
 ```
 
 ### `frame`
@@ -206,7 +230,7 @@ Describes an effect that will call an action from inside [`requestAnimationFrame
 Example:
 
 ```js
-import { withEffects, action, frame } from "hyperapp-effects"
+import { withFx, action, frame } from "@hyperapp/fx"
 
 const state = {
   time: 0,
@@ -231,7 +255,7 @@ const actions = {
   })
 }
 
-withEffects(app)(state, actions).init()
+withFx(app)(state, actions).init()
 ```
 
 ### `delay`
@@ -245,7 +269,7 @@ Describes an effect that will call an action after a delay using [`setTimeout`](
 Example:
 
 ```js
-import { withEffects, delay } from "hyperapp-effects"
+import { withFx, delay } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -263,7 +287,7 @@ const actions = {
   }
 }
 
-withEffects(app)(state, actions).startTimer()
+withFx(app)(state, actions).startTimer()
 ```
 
 ### `time`
@@ -277,7 +301,7 @@ Describes an effect that will provide the current timestamp to an action using [
 Example:
 
 ```js
-import { withEffects, time } from "hyperapp-effects"
+import { withFx, time } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -290,7 +314,7 @@ const actions = {
   }
 }
 
-withEffects(app)(state, action).foo()
+withFx(app)(state, action).foo()
 ```
 
 ### `log`
@@ -304,7 +328,7 @@ Describes an effect that will call [`console.log`](https://developer.mozilla.org
 Example:
 
 ```js
-import { withEffects, log } from "hyperapp-effects"
+import { withFx, log } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -319,7 +343,7 @@ const actions = {
   )
 }
 
-withEffects(app)(state, actions).foo()
+withFx(app)(state, actions).foo()
 ```
 
 ### `http`
@@ -338,7 +362,7 @@ Describes an effect that will send an HTTP request using [`fetch`](https://devel
 Example HTTP GET request with a JSON response:
 
 ```js
-import { withEffects, http } from "hyperapp-effects"
+import { withFx, http } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -351,13 +375,13 @@ const actions = {
   }
 }
 
-withEffects(app)(state, actions).foo()
+withFx(app)(state, actions).foo()
 ```
 
 Example HTTP GET request with a text response:
 
 ```js
-import { withEffects, http } from "hyperapp-effects"
+import { withFx, http } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -374,13 +398,13 @@ const actions = {
   }
 }
 
-withEffects(app)(state, actions).foo()
+withFx(app)(state, actions).foo()
 ```
 
 Example HTTP POST request using JSON body and response that handles errors:
 
 ```js
-import { withEffects, http } from "hyperapp-effects"
+import { withFx, http } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -404,7 +428,7 @@ const actions = {
   }
 }
 
-withEffects(app)(state, actions).login()
+withFx(app)(state, actions).login()
 ```
 
 ### `event`
@@ -416,7 +440,7 @@ event = (action: string) => EffectTuple
 Describes an effect that will capture [DOM Event](https://developer.mozilla.org/en-US/docs/Web/Events) data when attached to a handler in your `view`. The originally fired event will be provided as the action `data`.
 
 ```js
-import { withEffects, event } from "hyperapp-effects"
+import { withFx, event } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -432,7 +456,7 @@ const view = () => h("button", {
   onclick: event("click")
 })
 
-withEffects(app)(state, actions, view, document.body)
+withFx(app)(state, actions, view, document.body)
 ```
 
 ### `keydown`
@@ -446,7 +470,7 @@ Describes an effect that will capture [keydown](https://developer.mozilla.org/en
 Example:
 
 ```js
-import { withEffects, keydown } from "hyperapp-effects"
+import { withFx, keydown } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -459,7 +483,7 @@ const actions = {
   }
 }
 
-withEffects(app)(state, actions).init()
+withFx(app)(state, actions).init()
 ```
 
 ### `keyup`
@@ -473,7 +497,7 @@ Describes an effect that will capture [keyup](https://developer.mozilla.org/en-U
 Example:
 
 ```js
-import { withEffects, keyup } from "hyperapp-effects"
+import { withFx, keyup } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -486,7 +510,7 @@ const actions = {
   }
 }
 
-withEffects(app)(state, actions).init()
+withFx(app)(state, actions).init()
 ```
 
 ### `random`
@@ -502,7 +526,7 @@ Use [`Math.floor`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refer
 Example:
 
 ```js
-import { withEffects, random } from "hyperapp-effects"
+import { withFx, random } from "@hyperapp/fx"
 
 const state = {
   // ...
@@ -517,10 +541,10 @@ const actions = {
   }
 }
 
-withEffects(app)(state, actions).foo()
+withFx(app)(state, actions).foo()
 ```
 
-### `effectsIf`
+### `fxIf`
 
 ```js
 EffectConditional = [boolean, EffectTuple]
@@ -532,14 +556,14 @@ Convert an array of `[boolean, EffectTuple]`s into a new array of effects where 
 Example:
 
 ```js
-import { withEffects, effectsIf, action } from "hyperapp-effects"
+import { withFx, fxIf, action } from "@hyperapp/fx"
 
 const state = {
   // ...
 }
 
 const actions = {
-  foo: () => ({ running }) => effectsIf([
+  foo: () => ({ running }) => fxIf([
     [true, action("always")],
     [false, action("never")],
     [running, action("ifRunning")],
@@ -547,7 +571,7 @@ const actions = {
   ])
 }
 
-withEffects(app)(state, actions).foo()
+withFx(app)(state, actions).foo()
 ```
 
 ## License

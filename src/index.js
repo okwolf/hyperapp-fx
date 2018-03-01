@@ -1,3 +1,3 @@
-export { default as withEffects } from "./withEffects"
-export * from "./effectCreators"
-export { default as effectsIf } from "./effectsIf"
+export { withFx } from "./withFx"
+export * from "./fxCreators"
+export { fxIf } from "./fxIf"

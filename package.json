@@ -1,13 +1,12 @@
 {
-  "name": "hyperapp-effects",
-  "version": "0.5.2",
+  "name": "@hyperapp/fx",
+  "version": "0.6.0",
   "description": "Effects as data for Hyperapp",
-  "main": "dist/effects.js",
-  "jsnext:main": "src/index.js",
+  "main": "dist/fx.js",
   "module": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/HyperappCommunity/hyperapp-effects.git"
+    "url": "git+https://github.com/hyperapp/fx.git"
   },
   "peerDependencies": {
     "hyperapp": "^1.1.2"
@@ -23,8 +22,8 @@
   "scripts": {
     "test": "jest --coverage --no-cache",
     "build": "npm run bundle && npm run minify",
-    "bundle": "rollup -i src/index.js -o dist/effects.js -m -f umd -n effects",
-    "minify": "uglifyjs dist/effects.js -o dist/effects.js -mc pure_funcs=['Object.defineProperty'] --source-map includeSources,url=effects.js.map",
+    "bundle": "rollup -i src/index.js -o dist/fx.js -m -f umd -n fx",
+    "minify": "uglifyjs dist/fx.js -o dist/fx.js -mc pure_funcs=['Object.defineProperty'] --source-map includeSources,url=fx.js.map",
     "prepare": "npm run build",
     "format": "prettier --semi false --write '{src,test}/**/*.js'"
   },
@@ -34,7 +33,7 @@
   "author": "Wolfgang Wedemeyer <wolf@okwolf.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/HyperappCommunity/hyperapp-effects/issues"
+    "url": "https://github.com/hyperapp/fx/issues"
   },
-  "homepage": "https://github.com/HyperappCommunity/hyperapp-effects"
+  "homepage": "https://github.com/hyperapp/fx"
 }

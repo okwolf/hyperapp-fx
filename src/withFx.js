@@ -1,7 +1,7 @@
 import { assign } from "./utils.js"
-import makeDefaultEffects from "./makeDefaultEffects"
+import makeDefaultFx from "./makeDefaultFx"
 
-var isEffect = Array.isArray
+var isFx = Array.isArray
 var isFn = function(value) {
   return typeof value === "function"
 }
@@ -19,25 +19,25 @@ function getActionNamed(actions, name) {
   return getNextAction(actions, name.split("."))
 }
 
-function runIfEffect(actions, currentEvent, maybeEffect, effects) {
-  var getAction = getActionNamed.bind(null, actions)
-  if (!isEffect(maybeEffect)) {
+function runIfFx(actions, currentEvent, maybeFx, fx) {
+  if (!isFx(maybeFx)) {
     // Not an effect
-    return maybeEffect
-  } else if (isEffect(maybeEffect[0])) {
+    return maybeFx
+  } else if (isFx(maybeFx[0])) {
     // Run an array of effects
-    for (var i in maybeEffect) {
-      runIfEffect(actions, currentEvent, maybeEffect[i], effects)
+    for (var i in maybeFx) {
+      runIfFx(actions, currentEvent, maybeFx[i], fx)
     }
   } else {
     // Run a single effect
-    var type = maybeEffect[0]
-    var props = assign(maybeEffect[1], { event: currentEvent })
-    effects[type](props, getAction)
+    var getAction = getActionNamed.bind(null, actions)
+    var type = maybeFx[0]
+    var props = assign(maybeFx[1], { event: currentEvent })
+    fx[type](props, getAction)
   }
 }
 
-function enhanceActions(actionsTemplate, effects) {
+function enhanceActions(actionsTemplate, fx) {
   return Object.keys(actionsTemplate || {}).reduce(function(
     otherActions,
     name
@@ -48,42 +48,42 @@ function enhanceActions(actionsTemplate, effects) {
           return function(state, actions) {
             var result = action(data)
             result = isFn(result) ? result(state, actions) : result
-            return runIfEffect(actions, null, result, effects)
+            return runIfFx(actions, null, result, fx)
           }
         }
-      : enhanceActions(action, effects)
+      : enhanceActions(action, fx)
     return otherActions
   },
   {})
 }
 
-function handleEventEffect(actions, effect, effects) {
+function handleEventFx(actions, currentFx, fx) {
   return function(currentEvent) {
-    runIfEffect(actions, currentEvent, effect, effects)
+    runIfFx(actions, currentEvent, currentFx, fx)
   }
 }
 
-function patchVdomEffects(actions, vdom, effects) {
+function patchVdomFx(actions, vdom, fx) {
   if (typeof vdom === "object") {
     for (var key in vdom.attributes) {
-      var maybeEffect = vdom.attributes[key]
-      if (isEffect(maybeEffect)) {
-        vdom.attributes[key] = handleEventEffect(actions, maybeEffect, effects)
+      var maybeFx = vdom.attributes[key]
+      if (isFx(maybeFx)) {
+        vdom.attributes[key] = handleEventFx(actions, maybeFx, fx)
       }
     }
     for (var i in vdom.children) {
-      patchVdomEffects(actions, vdom.children[i], effects)
+      patchVdomFx(actions, vdom.children[i], fx)
     }
   }
 }
 
-function makeEffectsApp(effects, nextApp) {
+function makeFxApp(fx, nextApp) {
   return function(initialState, actionsTemplate, view, container) {
-    var enhancedActions = enhanceActions(actionsTemplate, effects)
+    var enhancedActions = enhanceActions(actionsTemplate, fx)
     var enhancedView = isFn(view)
       ? function(state, actions) {
           var vdom = view(state, actions)
-          patchVdomEffects(actions, vdom, effects)
+          patchVdomFx(actions, vdom, fx)
           return vdom
         }
       : undefined
@@ -98,16 +98,16 @@ function makeEffectsApp(effects, nextApp) {
   }
 }
 
-export default function withEffects(effectsOrApp) {
-  var effects = makeDefaultEffects()
-  if (typeof effectsOrApp === "function") {
-    return makeEffectsApp(effects, effectsOrApp)
+export function withFx(fxOrApp) {
+  var fx = makeDefaultFx()
+  if (typeof fxOrApp === "function") {
+    return makeFxApp(fx, fxOrApp)
   } else {
-    for (var name in effectsOrApp) {
-      effects[name] = effectsOrApp[name]
+    for (var name in fxOrApp) {
+      fx[name] = fxOrApp[name]
     }
     return function(nextApp) {
-      return makeEffectsApp(effects, nextApp)
+      return makeFxApp(fx, nextApp)
     }
   }
 }
