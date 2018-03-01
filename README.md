@@ -3,6 +3,7 @@
 [![Build Status](https://travis-ci.org/hyperapp/fx.svg?branch=master)](https://travis-ci.org/hyperapp/fx)
 [![codecov](https://codecov.io/gh/hyperapp/fx/branch/master/graph/badge.svg)](https://codecov.io/gh/hyperapp/fx)
 [![npm](https://img.shields.io/npm/v/@hyperapp/fx.svg)](https://www.npmjs.org/package/@hyperapp/fx)
+[![Slack](https://hyperappjs.herokuapp.com/badge.svg)](https://hyperappjs.herokuapp.com "Join us")
 
 A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App enabling you to write your [_effects as data_](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects). Using _effects as data_ will give your app benefits in several areas.
 
