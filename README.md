@@ -4,7 +4,7 @@
 [![codecov](https://codecov.io/gh/hyperapp/fx/branch/master/graph/badge.svg)](https://codecov.io/gh/hyperapp/fx)
 [![npm](https://img.shields.io/npm/v/@hyperapp/fx.svg)](https://www.npmjs.org/package/@hyperapp/fx)
 
-A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App giving your `app` superpowers to write your [_effects as data_](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects). Using _effects as data_ will give your app benefits in several areas.
+A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App enabling you to write your [_effects as data_](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects). Using _effects as data_ will give your app benefits in several areas.
 
 * **Purity** — All of your actions become pure functions, since you are merely returning data describing the effect(s) to run on your behalf later, rather than directly performing them yourself.
 * **Testing** — pure functions are amazingly easy to test, since they always return the same data for the same arguments.
