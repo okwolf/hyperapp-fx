@@ -109,7 +109,7 @@ export function random(action, min, max) {
   ]
 }
 
-export function debounce (wait, action, inmediate, data) {
+export function debounce (wait, action, immediate, data) {
   return [
     DEBOUNCE,
     {
