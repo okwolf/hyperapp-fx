@@ -115,7 +115,7 @@ export function debounce (wait, action, immediate, data) {
     {
       wait: wait,
       action: action,
-      inmediate: inmediate,
+      immediate: immediate,
       data: data
     }
   ]

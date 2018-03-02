@@ -510,7 +510,7 @@ describe("withFx", () => {
       })
     })
     describe("debounce", () => {
-      it("should fire an action after a delay if inmediate is false", () => {
+      it("should fire an action after a delay if immediate is false", () => {
         jest.useFakeTimers()
         try {
           const main = withFx(app)(
@@ -532,7 +532,7 @@ describe("withFx", () => {
           jest.useRealTimers()
         }
       })
-      it("should fire an action before the delay if inmediate is true", () => {
+      it("should fire an action before the delay if immediate is true", () => {
         jest.useFakeTimers()
         try {
           const main = withFx(app)(
