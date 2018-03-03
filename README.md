@@ -13,7 +13,7 @@ A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App enabling you
 
 ## Getting Started
 
-Here's a taste of how to use two of the most common effects for firing effects and making HTTP requests. The app displays inpsiring quotes about design, fetching a new quote each time the user clicks on the current one. Go ahead and [try it online here](https://codepen.io/okwolf/pen/QQYaad?editors=0010).
+Here's a taste of how to use two of the most common effects for firing actions and making HTTP requests. The app displays inpsiring quotes about design, fetching a new quote each time the user clicks on the current one. Go ahead and [try it online here](https://codepen.io/okwolf/pen/QQYaad?editors=0010).
 
 ```js
 import { h, app } from "hyperapp"
