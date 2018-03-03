@@ -1,28 +1,30 @@
 {
-  "name": "hyperapp-effects",
-  "version": "0.5.1",
+  "name": "@hyperapp/fx",
+  "version": "0.6.0",
   "description": "Effects as data for Hyperapp",
-  "main": "dist/effects.js",
-  "jsnext:main": "src/index.js",
+  "main": "dist/fx.js",
   "module": "src/index.js",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/okwolf/hyperapp-effects.git"
+    "url": "git+https://github.com/hyperapp/fx.git"
   },
   "peerDependencies": {
-    "hyperapp": "^1.1.1"
+    "hyperapp": "^1.1.2"
   },
   "devDependencies": {
     "babel-preset-env": "^1.6.1",
-    "hyperapp": "^1.1.1",
+    "hyperapp": "^1.1.2",
     "jest": "^22.2.2",
     "prettier": "^1.8.2",
-    "rollup": "^0.52.0"
+    "rollup": "^0.55.5",
+    "uglify-js": "^3.2.1"
   },
   "scripts": {
     "test": "jest --coverage --no-cache",
-    "bundle": "rollup -i src/index.js -o dist/effects.js -f umd -n effects",
-    "prepare": "npm run bundle",
+    "build": "npm run bundle && npm run minify",
+    "bundle": "rollup -i src/index.js -o dist/fx.js -m -f umd -n fx",
+    "minify": "uglifyjs dist/fx.js -o dist/fx.js -mc pure_funcs=['Object.defineProperty'] --source-map includeSources,url=fx.js.map",
+    "prepare": "npm run build",
     "format": "prettier --semi false --write '{src,test}/**/*.js'"
   },
   "babel": {
@@ -31,7 +33,7 @@
   "author": "Wolfgang Wedemeyer <wolf@okwolf.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/okwolf/hyperapp-effects/issues"
+    "url": "https://github.com/hyperapp/fx/issues"
   },
-  "homepage": "https://github.com/okwolf/hyperapp-effects"
+  "homepage": "https://github.com/hyperapp/fx"
 }
