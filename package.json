@@ -20,15 +20,35 @@
     "uglify-js": "^3.2.1"
   },
   "scripts": {
+    "clean": "npx rimraf coverage dist node_modules",
+    "format": "prettier --write '{src,test}/**/*.js'",
+    "format:check": "prettier --list-different {src,test}/**/*.js",
+    "lint": "npx eslint {src,test}/**/*.js",
     "test": "jest --coverage --no-cache",
-    "build": "npm run bundle && npm run minify",
+    "build": "npm run check && npm run bundle && npm run minify",
     "bundle": "rollup -i src/index.js -o dist/fx.js -m -f umd -n fx",
     "minify": "uglifyjs dist/fx.js -o dist/fx.js -mc pure_funcs=['Object.defineProperty'] --source-map includeSources,url=fx.js.map",
+    "check": "npm run format:check && npm run lint && npm t",
     "prepare": "npm run build",
-    "format": "prettier --semi false --write '{src,test}/**/*.js'"
+    "release": "npm run clean && npm i && npm run format && npm run build && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
+  },
+  "prettier": {
+    "semi": false
   },
   "babel": {
     "presets": "env"
+  },
+  "eslintConfig": {
+    "extends": "eslint:recommended",
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "env": {
+      "browser": true
+    },
+    "rules": {
+      "no-use-before-define": "error"
+    }
   },
   "author": "Wolfgang Wedemeyer <wolf@okwolf.com>",
   "license": "MIT",

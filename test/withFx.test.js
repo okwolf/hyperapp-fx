@@ -234,6 +234,7 @@ describe("withFx", () => {
         delete global.performance
       })
     })
+    /* eslint-disable no-console */
     describe("log", () => {
       it("should log to console", done => {
         const testArgs = ["bar", { some: "data" }, ["list", "of", "data"]]
@@ -251,6 +252,7 @@ describe("withFx", () => {
         console.log = defaultLog
       })
     })
+    /* eslint-enable no-console */
     describe("http", () => {
       it("should get json", done => {
         const testUrl = "https://example.com"
@@ -359,7 +361,7 @@ describe("withFx", () => {
               }
             },
             bar: {
-              baz: data => {
+              baz: () => {
                 done.fail(new Error("Should not be called"))
               }
             }

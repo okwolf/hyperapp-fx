@@ -37,7 +37,8 @@ export default function makeDefaultFx() {
     getAction(props.action)(performance.now())
   }
 
-  fx[LOG] = function(props, getAction) {
+  fx[LOG] = function(props) {
+    // eslint-disable-next-line no-console
     console.log.apply(null, props.args)
   }
 
