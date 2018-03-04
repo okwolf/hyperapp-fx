@@ -93,7 +93,7 @@ export default function makeDefaultFx() {
   fx[DEBOUNCE] = function(props, getAction) {
     return (function(props, getAction) {
       clearTimeout(debounceTimeouts[props.action])
-      debounceTimeouts[props.action] = setTimeout(function () {
+      debounceTimeouts[props.action] = setTimeout(function() {
         getAction(props.action)(props.data)
       }, props.wait)
     })(props, getAction)
@@ -101,11 +101,11 @@ export default function makeDefaultFx() {
 
   var throttleLocks = {}
   fx[THROTTLE] = function(props, getAction) {
-    return (function (props, getAction) {
-      if(!throttleLocks[props.action]) {
+    return (function(props, getAction) {
+      if (!throttleLocks[props.action]) {
         getAction(props.action)(props.data)
         throttleLocks[props.action] = true
-        setTimeout(function () {
+        setTimeout(function() {
           throttleLocks[props.action] = false
         }, props.rate)
       }

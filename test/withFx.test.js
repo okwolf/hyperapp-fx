@@ -551,14 +551,14 @@ describe("withFx", () => {
             {},
             {
               get: () => state => state,
-              foo: (data) => debounce(1000, "bar.baz", data),
+              foo: data => debounce(1000, "bar.baz", data),
               bar: {
                 baz: data => data
               }
             },
             Function.prototype
           )
-          jest.spyOn(main.bar, 'baz')
+          jest.spyOn(main.bar, "baz")
           main.foo({ data: "updated" })
           expect(main.bar.baz).toHaveBeenCalledTimes(0)
           expect(main.get()).toEqual({ bar: {} })
@@ -576,16 +576,16 @@ describe("withFx", () => {
             {},
             {
               get: () => state => state,
-              foo: (data) => debounce(1000, "bar.baz", data),
+              foo: data => debounce(1000, "bar.baz", data),
               bar: {
                 baz: data => data
               }
             },
             Function.prototype
           )
-          jest.spyOn(main.bar, 'baz')
+          jest.spyOn(main.bar, "baz")
           main.foo({ data: "first" })
-          main.foo({ data: "last"})
+          main.foo({ data: "last" })
           jest.runAllTimers()
           expect(main.get()).toEqual({ bar: { data: "last" } })
         } finally {

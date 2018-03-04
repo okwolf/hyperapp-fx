@@ -110,7 +110,7 @@ export function random(action, min, max) {
   ]
 }
 
-export function debounce (wait, action, data) {
+export function debounce(wait, action, data) {
   return [
     DEBOUNCE,
     {
@@ -121,7 +121,7 @@ export function debounce (wait, action, data) {
   ]
 }
 
-export function throttle (rate, action, data) {
+export function throttle(rate, action, data) {
   return [
     THROTTLE,
     {
