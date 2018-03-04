@@ -30,7 +30,7 @@
     "minify": "uglifyjs dist/fx.js -o dist/fx.js -mc pure_funcs=['Object.defineProperty'] --source-map includeSources,url=fx.js.map",
     "check": "npm run format:check && npm run lint && npm t",
     "prepare": "npm run build",
-    "release": "npm run clean && npm i && npm run format && npm run build && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
+    "release": "npm run clean && npm i && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
   },
   "prettier": {
     "semi": false
