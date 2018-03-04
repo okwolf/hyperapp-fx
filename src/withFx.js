@@ -33,7 +33,12 @@ function runIfFx(actions, currentEvent, maybeFx, fx) {
     var getAction = getActionNamed.bind(null, actions)
     var type = maybeFx[0]
     var props = assign(maybeFx[1], { event: currentEvent })
-    fx[type](props, getAction)
+    var fxRunner = fx[type]
+    if (isFn(fxRunner)) {
+      fxRunner(props, getAction)
+    } else {
+      throw new Error("no such fx type: " + type)
+    }
   }
 }
 
