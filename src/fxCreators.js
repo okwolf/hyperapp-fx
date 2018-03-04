@@ -125,9 +125,9 @@ export function throttle (rate, action, data) {
   return [
     THROTTLE,
     {
-      rate,
-      action,
-      data
+      rate: rate,
+      action: action,
+      data: data
     }
   ]
 }
