@@ -9,7 +9,8 @@ import {
   KEY_DOWN,
   KEY_UP,
   RANDOM,
-  DEBOUNCE
+  DEBOUNCE,
+  THROTTLE
 } from "./fxTypes"
 
 export function action(name, data) {
@@ -116,6 +117,17 @@ export function debounce (wait, action, data) {
       wait: wait,
       action: action,
       data: data
+    }
+  ]
+}
+
+export function throttle (rate, action, data) {
+  return [
+    THROTTLE,
+    {
+      rate,
+      action,
+      data
     }
   ]
 }

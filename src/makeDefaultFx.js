@@ -9,7 +9,8 @@ import {
   KEY_DOWN,
   KEY_UP,
   RANDOM,
-  DEBOUNCE
+  DEBOUNCE,
+  THROTTLE
 } from "./fxTypes"
 import { assign, omit } from "./utils.js"
 
@@ -95,6 +96,19 @@ export default function makeDefaultFx() {
       debounceTimeouts[props.action] = setTimeout(function () {
         getAction(props.action)(props.data)
       }, props.wait)
+    })(props, getAction)
+  }
+
+  var throttleLocks = {}
+  fx[THROTTLE] = function(props, getAction) {
+    return (function (props, getAction) {
+      if(!throttleLocks[props.action]) {
+        getAction(props.action)(props.data)
+        throttleLocks[props.action] = true
+        setTimeout(() => {
+          throttleLocks[props.action] = false
+        }, props.rate)
+      }
     })(props, getAction)
   }
 

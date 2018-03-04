@@ -11,7 +11,8 @@ import {
   keydown,
   keyup,
   random,
-  debounce
+  debounce,
+  throttle
 } from "../src"
 
 describe("withFx", () => {
@@ -576,6 +577,55 @@ describe("withFx", () => {
           main.foo({ data: "last"})
           jest.runAllTimers()
           expect(main.get()).toEqual({ bar: { data: "last" } })
+        } finally {
+          jest.useRealTimers()
+        }
+      })
+    })
+    describe("throttle", () => {
+      it("should execute an action within a limit", () => {
+        jest.useFakeTimers()
+        try {
+          const main = withFx(app)(
+            {},
+            {
+              get: () => state => state,
+              foo: () => throttle(1000, "bar.baz", { updated: "data" }),
+              bar: {
+                baz: data => data
+              }
+            },
+            Function.prototype
+          )
+          main.foo()
+          expect(main.get()).toEqual({ bar: { updated: "data" } })
+          jest.runAllTimers()
+        } finally {
+          jest.useRealTimers()
+        }
+      })
+      it("should only execute an action once within a limit", () => {
+        jest.useFakeTimers()
+        try {
+          const main = withFx(app)(
+            {},
+            {
+              get: () => state => state,
+              foo: () => throttle(1000, "bar.baz", { updated: "data" }),
+              bar: {
+                baz: data => data
+              }
+            },
+            Function.prototype
+          )
+          jest.spyOn(main.bar, "baz")
+          main.foo({ updated: "data" })
+          main.foo({ updated: "again" })
+          expect(main.bar.baz).toHaveBeenCalledTimes(1)
+          expect(main.get()).toEqual({ bar: { updated: "data" } })
+          jest.runAllTimers()
+          expect(main.bar.baz).toHaveBeenCalledTimes(1)
+          expect(main.get()).toEqual({ bar: { updated: "data" } })
         } finally {
           jest.useRealTimers()
         }
