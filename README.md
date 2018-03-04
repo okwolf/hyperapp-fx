@@ -137,7 +137,7 @@ EffectTuple = [type: string, props: object]
 Effect = EffectTuple | EffectTuple[] | Effect[]
 ```
 
-Effects are always represented as arrays. For a single effect this array represents a tuple containing the effect type string and an object containing the properties of this effect. For multiple effects each array element is either an effect tuple or an array of these tuples, which may be nested. This means that effects are composeable.
+Effects are always represented as arrays. For a single effect this array represents a tuple containing the effect type string and an object containing the properties of this effect. For multiple effects each array element is either an effect tuple or an array of these tuples, which may be nested. This means that effects are composeable. Empty arrays are treated as a no-op effect and skipped.
 
 ### `action`
 
