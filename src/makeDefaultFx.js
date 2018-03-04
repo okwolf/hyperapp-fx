@@ -8,7 +8,9 @@ import {
   EVENT,
   KEY_DOWN,
   KEY_UP,
-  RANDOM
+  RANDOM,
+  DEBOUNCE,
+  THROTTLE
 } from "./fxTypes"
 import { assign, omit } from "./utils.js"
 
@@ -85,6 +87,29 @@ export default function makeDefaultFx() {
   fx[RANDOM] = function(props, getAction) {
     var randomValue = Math.random() * (props.max - props.min) + props.min
     getAction(props.action)(randomValue)
+  }
+
+  var debounceTimeouts = {}
+  fx[DEBOUNCE] = function(props, getAction) {
+    return (function(props, getAction) {
+      clearTimeout(debounceTimeouts[props.action])
+      debounceTimeouts[props.action] = setTimeout(function () {
+        getAction(props.action)(props.data)
+      }, props.wait)
+    })(props, getAction)
+  }
+
+  var throttleLocks = {}
+  fx[THROTTLE] = function(props, getAction) {
+    return (function (props, getAction) {
+      if(!throttleLocks[props.action]) {
+        getAction(props.action)(props.data)
+        throttleLocks[props.action] = true
+        setTimeout(function () {
+          throttleLocks[props.action] = false
+        }, props.rate)
+      }
+    })(props, getAction)
   }
 
   return fx
