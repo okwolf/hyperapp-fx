@@ -28,7 +28,7 @@ function runIfFx(actions, currentEvent, maybeFx, fx) {
     for (var i in maybeFx) {
       runIfFx(actions, currentEvent, maybeFx[i], fx)
     }
-  } else {
+  } else if (maybeFx.length) {
     // Run a single effect
     var getAction = getActionNamed.bind(null, actions)
     var type = maybeFx[0]
