@@ -5,7 +5,7 @@
 [![npm](https://img.shields.io/npm/v/@hyperapp/fx.svg)](https://www.npmjs.org/package/@hyperapp/fx)
 [![Slack](https://hyperappjs.herokuapp.com/badge.svg)](https://hyperappjs.herokuapp.com "Join us")
 
-A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App enabling you to write your [_effects as data_](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects). Using _effects as data_ will give your app benefits in several areas.
+A [Hyperapp](https://github.com/hyperapp/hyperapp) higher-order `app` enabling you to write your [_effects as data_](https://youtu.be/6EdXaWfoslc), inspired by [Elm Commands](https://guide.elm-lang.org/architecture/effects). Using _effects as data_ will give your app benefits in several areas.
 
 * **Purity** — All of your actions become pure functions, since you are merely returning data describing the effect(s) to run on your behalf later, rather than directly performing them yourself.
 * **Testing** — pure functions are amazingly easy to test, since they always return the same data for the same arguments.
@@ -13,7 +13,7 @@ A [Hyperapp](https://github.com/hyperapp/hyperapp) Higher-Order App enabling you
 
 ## Getting Started
 
-Here's a taste of how to use two of the most common effects for firing actions and making HTTP requests. The app displays inpsiring quotes about design, fetching a new quote each time the user clicks on the current one. Go ahead and [try it online here](https://codepen.io/okwolf/pen/QQYaad?editors=0010).
+Here's a taste of how to use two of the most common effects for firing actions and making HTTP requests. The app displays inspiring quotes about design, fetching a new quote each time the user clicks on the current one. Go ahead and [try it online here](https://codepen.io/okwolf/pen/QQYaad?editors=0010).
 
 ```js
 import { h, app } from "hyperapp"
@@ -35,9 +35,7 @@ const actions = {
   setQuote: quote => ({ quote })
 }
 
-const view = state => (
-  <h1 onclick={action("getQuote")}>{state.quote}</h1>
-)
+const view = state => <h1 onclick={action("getQuote")}>{state.quote}</h1>
 
 withFx(app)(state, actions, view, document.body)
 ```
@@ -76,7 +74,7 @@ EffectsConfig = {
 withFx = App => App | EffectsConfig => App => App
 ```
 
-This Higher-Order App function enables `actions` to return arrays which later will be run as effects.
+This higher-order `app` function enables `actions` to return arrays which later will be run as effects.
 
 Example:
 
@@ -107,11 +105,15 @@ const state = {
 }
 
 const actions = {
-  // You will probably want to write a helper function for returning these
-  // similar to the built-in effects
+  /*
+    You will probably want to write a helper function for returning these
+    similar to the built-in effects
+  */
   foo: () => [
-    // type of effect for effects data
-    // must match key used in custom effect object below
+    /*
+      type of effect for effects data
+      must match key used in custom effect object below
+    */
     "custom",
     {
       // ... props go here
@@ -122,8 +124,10 @@ const actions = {
 withFx({
   // key in this object must match type used in effect data above
   custom(props, getAction) {
-    // use props to get the props used when creating the effect
-    // use getAction for firing actions when appropriate
+    /*
+      use props to get the props used when creating the effect
+      use getAction for firing actions when appropriate
+    */
   }
 })(app)(state, actions).foo()
 ```
@@ -207,14 +211,17 @@ const state = {
 
 const actions = {
   foo: data => {
-    // data will have { message: "hello" }
-    // when the button is clicked
+    /*
+      data will have { message: "hello" }
+      when the button is clicked
+    */
   }
 }
 
-const view = () => h("button", {
-  onclick: action("foo", { message: "hello" })
-})
+const view = () =>
+  h("button", {
+    onclick: action("foo", { message: "hello" })
+  })
 
 withFx(app)(state, actions, view, document.body)
 ```
@@ -242,11 +249,13 @@ const actions = {
   update: time => [
     action("incTime", time),
 
-    // ...
-    // Other actions to update the state based on delta time
-    // ...
+    /*
+      ...
+      Other actions to update the state based on delta time
+      ...
 
-    // End with a recursive frame effect to perform the next update
+      End with a recursive frame effect to perform the next update
+    */
     frame("update")
   ],
   incTime: time => ({ time: lastTime, delta: lastDelta }) => ({
@@ -276,14 +285,12 @@ const state = {
 }
 
 const actions = {
-  startTimer: () => delay(
-    60000,
-    "alarm",
-    { name: "minute timer" }
-  ),
+  startTimer: () => delay(60000, "alarm", { name: "minute timer" }),
   alarm: data => {
-    // This action will run after a minute delay
-    // data will have { name: "minute timer" }
+    /*
+      This action will run after a minute delay
+      data will have { name: "minute timer" }
+    */
   }
 }
 
@@ -452,9 +459,10 @@ const actions = {
   }
 }
 
-const view = () => h("button", {
-  onclick: event("click")
-})
+const view = () =>
+  h("button", {
+    onclick: event("click")
+  })
 
 withFx(app)(state, actions, view, document.body)
 ```
@@ -544,6 +552,84 @@ const actions = {
 withFx(app)(state, actions).foo()
 ```
 
+### `debounce`
+
+```js
+debounce = (wait: number, action: string, data?: any) => EffectTuple
+```
+
+Describes an effect that will call an action after waiting for a delay to pass. The delay will be reset each time the action is called.
+
+Example:
+
+```js
+import { withFx, debounce } from "@hyperapp/fx"
+
+const state = {
+  // ...
+}
+
+const actions = {
+  waitForLastInput: input => debounce(
+    500,
+    "search",
+    { query: input }
+  ),
+  search: data => {
+    /*
+      This action will run after waiting
+      for 500ms since the last call
+      It will only be called once
+      data will have { query: "hyperapp" }
+    */
+  }
+}
+
+const main = withFx(app)(state, actions)
+main.waitForLastInput("hyper")
+main.waitForLastInput("hyperapp")
+```
+
+### `throttle`
+
+```js
+throttle = (rate: number, action: string, data?: any) => EffectTuple
+```
+
+Describes an effect that will call an action at a maximum rate. Where `rate` is one call per `rate` miliseconds
+
+Example:
+
+```js
+import { withFx, throttle } from "@hyperapp/fx"
+
+const state = {
+  // ...
+}
+
+const actions = {
+  doExpensiveAction: param => throttle(
+    500,
+    "calculate",
+    { foo: param }
+  ),
+  calculate: data => {
+    /*
+      This action will only run once per 500ms
+      It will be run twice
+      data will receive { foo: "foo" } and { foo: "baz" }
+    */
+  }
+}
+
+const main = withFx(app)(state, actions)
+main.doExpensiveAction("foo")
+main.doExpensiveAction("bar")
+setTimeout(function() {
+  main.doExpensiveAction("baz")
+})
+```
+
 ### `fxIf`
 
 ```js
@@ -563,88 +649,17 @@ const state = {
 }
 
 const actions = {
-  foo: () => ({ running }) => fxIf([
-    [true, action("always")],
-    [false, action("never")],
-    [running, action("ifRunning")],
-    [!running, action("ifNotRunning")]
-  ])
+  foo: () => ({ running }) =>
+    fxIf([
+      [true, action("always")],
+      [false, action("never")],
+      [running, action("ifRunning")],
+      [!running, action("ifNotRunning")]
+    ])
 }
 
 withFx(app)(state, actions).foo()
 ```
-
-### `debounce`
-
-```js
-debounce = (wait: number, action: string, data?: any) => EffectTuple
-```
-
-Describes an effect that will call an action after waiting for a delay to have passed, the delay will be reset each time the action is called.
-
-Example:
-
-```js
-import { withFx, debounce } from "@hyperapp/fx"
-
-const state = {
-  // ...
-}
-
-const actions = {
-  waitForLastInput: (input) => debounce(
-    500,
-    "search",
-    { query: input }
-  ),
-  search: data => {
-    // This action will run after  waiting 
-    // for 500ms since the last call.
-    // This action will only be called once
-    // data will have { query: "hyperapp" }
-  }
-}
-
-const ha = withFx(app)(state, actions)
-ha.waitForLastInput("hyper")
-ha.waitForLastInput("hyperapp")
-```
-### `throttle`
-
-```js
-throttle = (rate: number, action: string, data?: any) => EffectTuple
-```
-
-Describes an effect that will call an action at a maximum rate. Where `rate` is 1 call per `rate` miliseconds
-
-Example:
-
-```js
-import { withFx, throttle } from '@hyperapp/fx'
-
-const state = {
-  // ...
-}
-
-const actions = {
-  doExpensiveAction: (param) => throttle(
-    500,
-    "calculate",
-    { foo: param }
-  ),
-  expensiveAction: data => {
-    // This action will only run once per rate limit
-    // This action will only be called twice
-    // data will receive { foo: "foo" }, { foo: "baz" }
-  }
-}
-
-const ha = withFx(app)(state, actions)
-ha.doExpensiveAction("foo")
-ha.doExpensiveAction("bar")
-setTimeout(function () { ha.doExpensiveAction("baz") })
-```
-
 
 ## License
 
