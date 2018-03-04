@@ -105,7 +105,7 @@ export default function makeDefaultFx() {
       if(!throttleLocks[props.action]) {
         getAction(props.action)(props.data)
         throttleLocks[props.action] = true
-        setTimeout(() => {
+        setTimeout(function () {
           throttleLocks[props.action] = false
         }, props.rate)
       }
