@@ -574,6 +574,78 @@ const actions = {
 withFx(app)(state, actions).foo()
 ```
 
+### `debounce`
+
+```js
+debounce = (wait: number, action: string, data?: any) => EffectTuple
+```
+
+Describes an effect that will call an action after waiting for a delay to have passed, the delay will be reset each time the action is called.
+
+Example:
+
+```js
+import { withFx, debounce } from "@hyperapp/fx"
+
+const state = {
+  // ...
+}
+
+const actions = {
+  waitForLastInput: (input) => debounce(
+    500,
+    "search",
+    { query: input }
+  ),
+  search: data => {
+    // This action will run after  waiting 
+    // for 500ms since the last call.
+    // This action will only be called once
+    // data will have { query: "hyperapp" }
+  }
+}
+
+const ha = withFx(app)(state, actions)
+ha.waitForLastInput("hyper")
+ha.waitForLastInput("hyperapp")
+```
+### `throttle`
+
+```js
+throttle = (rate: number, action: string, data?: any) => EffectTuple
+```
+
+Describes an effect that will call an action at a maximum rate. Where `rate` is 1 call per `rate` miliseconds
+
+Example:
+
+```js
+import { withFx, throttle } from '@hyperapp/fx'
+
+const state = {
+  // ...
+}
+
+const actions = {
+  doExpensiveAction: (param) => throttle(
+    500,
+    "calculate",
+    { foo: param }
+  ),
+  expensiveAction: data => {
+    // This action will only run once per rate limit
+    // This action will only be called twice
+    // data will receive { foo: "foo" }, { foo: "baz" }
+  }
+}
+
+const ha = withFx(app)(state, actions)
+ha.doExpensiveAction("foo")
+ha.doExpensiveAction("bar")
+setTimeout(function () { ha.doExpensiveAction("baz") })
+```
+
+
 ## License
 
 Hyperapp FX is MIT licensed. See [LICENSE](LICENSE.md).
