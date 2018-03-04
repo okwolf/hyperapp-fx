@@ -91,13 +91,10 @@ export default function makeDefaultFx() {
   var debounceTimeouts = {}
   fx[DEBOUNCE] = function(props, getAction) {
     return (function(props, getAction) {
-      var callNow = props.immediate && !debounceTimeouts[props.action];
       clearTimeout(debounceTimeouts[props.action])
       debounceTimeouts[props.action] = setTimeout(function () {
-        debounceTimeouts[props.action] = null
-        if (!props.immediate) getAction(props.action)(props.data)
+        getAction(props.action)(props.data)
       }, props.wait)
-      if (callNow) getAction(props.action)(props.data)
     })(props, getAction)
   }
 
