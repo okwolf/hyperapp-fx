@@ -1,6 +1,6 @@
 {
   "name": "@hyperapp/fx",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "description": "Effects as data for Hyperapp",
   "main": "dist/fx.js",
   "module": "src/index.js",
