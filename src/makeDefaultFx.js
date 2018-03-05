@@ -51,6 +51,8 @@ export default function makeDefaultFx() {
       props.options
     )
     var fetchOptions = omit(options, ["response", "error"])
+    // Polyfill required for IE and documented
+    // eslint-disable-next-line compat/compat
     fetch(props.url, fetchOptions)
       .then(function(response) {
         if (!response.ok) {

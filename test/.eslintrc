@@ -5,5 +5,8 @@
   "globals": {
     "global": true,
     "Promise": true
+  },
+  "rules": {
+    "compat/compat": "off"
   }
 }

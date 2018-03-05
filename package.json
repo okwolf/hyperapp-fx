@@ -13,6 +13,8 @@
   },
   "devDependencies": {
     "babel-preset-env": "^1.6.1",
+    "eslint": "^4.18.2",
+    "eslint-plugin-compat": "^2.2.0",
     "hyperapp": "^1.1.2",
     "jest": "^21.2.1",
     "prettier": "^1.8.2",
@@ -23,7 +25,7 @@
     "clean": "npx rimraf coverage dist node_modules",
     "format": "prettier --write '{src,test}/**/*.js'",
     "format:check": "prettier --list-different {src,test}/**/*.js",
-    "lint": "npx eslint {src,test}/**/*.js",
+    "lint": "eslint {src,test}/**/*.js",
     "test": "jest --coverage --no-cache",
     "build": "npm run check && npm run bundle && npm run minify",
     "bundle": "rollup -i src/index.js -o dist/fx.js -m -f umd -n fx",
@@ -40,6 +42,9 @@
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
+    "plugins": [
+      "compat"
+    ],
     "parserOptions": {
       "sourceType": "module"
     },
@@ -47,9 +52,13 @@
       "browser": true
     },
     "rules": {
-      "no-use-before-define": "error"
+      "no-use-before-define": "error",
+      "compat/compat": "error"
     }
   },
+  "browserslist": [
+    "IE 10"
+  ],
   "author": "Wolfgang Wedemeyer <wolf@okwolf.com>",
   "license": "MIT",
   "bugs": {
