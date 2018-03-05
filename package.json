@@ -27,10 +27,10 @@
     "format:check": "prettier --list-different {src,test}/**/*.js",
     "lint": "eslint {src,test}/**/*.js",
     "test": "jest --coverage --no-cache",
-    "build": "npm run check && npm run bundle && npm run minify",
     "bundle": "rollup -i src/index.js -o dist/fx.js -m -f umd -n fx",
     "minify": "uglifyjs dist/fx.js -o dist/fx.js -mc pure_funcs=['Object.defineProperty'] --source-map includeSources,url=fx.js.map",
     "check": "npm run format:check && npm run lint && npm t",
+    "build": "npm run check && npm run bundle && npm run minify",
     "prepare": "npm run build",
     "release": "npm run clean && npm i && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
   },
@@ -54,6 +54,11 @@
     "rules": {
       "no-use-before-define": "error",
       "compat/compat": "error"
+    },
+    "settings": {
+      "polyfills": [
+        "fetch"
+      ]
     }
   },
   "browserslist": [
