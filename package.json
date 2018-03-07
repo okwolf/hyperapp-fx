@@ -15,7 +15,7 @@
     "babel-preset-env": "^1.6.1",
     "eslint": "^4.18.2",
     "eslint-plugin-compat": "^2.2.0",
-    "hyperapp": "^1.1.2",
+    "hyperapp": "hyperapp/hyperapp",
     "jest": "^21.2.1",
     "prettier": "^1.8.2",
     "rollup": "^0.55.5",
@@ -30,7 +30,8 @@
     "bundle": "rollup -i src/index.js -o dist/fx.js -m -f umd -n fx",
     "minify": "uglifyjs dist/fx.js -o dist/fx.js -mc pure_funcs=['Object.defineProperty'] --source-map includeSources,url=fx.js.map",
     "check": "npm run format:check && npm run lint && npm t",
-    "build": "npm run check && npm run bundle && npm run minify",
+    "build:hyperapp": "cd node_modules/hyperapp && npm i && npm run bundle",
+    "build": "npm run build:hyperapp && npm run check && npm run bundle && npm run minify",
     "prepare": "npm run build",
     "release": "npm run clean && npm i && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
   },

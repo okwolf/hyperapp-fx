@@ -158,7 +158,7 @@ describe("withFx", () => {
                     "<main><h1>hello</h1><button></button></main>"
                   )
                   const buttonElement = document.body.firstChild.lastChild
-                  buttonElement.onclick({ button: 0 })
+                  buttonElement.events.click({ button: 0 })
                 }
               },
               h("h1", {}, message),
@@ -443,7 +443,7 @@ describe("withFx", () => {
                     "<main><h1>hello</h1><button></button></main>"
                   )
                   const buttonElement = document.body.firstChild.lastChild
-                  buttonElement.onclick({ button: 0 })
+                  buttonElement.events.click({ button: 0 })
                 }
               },
               h("h1", {}, message),
@@ -673,7 +673,7 @@ describe("withFx", () => {
                 "<main><h1>hello</h1><button></button></main>"
               )
               const buttonElement = document.body.firstChild.lastChild
-              buttonElement.onclick({ button: 0 })
+              buttonElement.events.click({ button: 0 })
             }
           },
           h("h1", {}, message),
