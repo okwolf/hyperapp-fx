@@ -167,6 +167,38 @@ describe("withFx", () => {
           document.body
         )
       })
+      it("should attach to listeners in subviews", done => {
+        document.body.innerHTML = ""
+        const Component = () => (state, actions) =>
+          h(
+            "main",
+            {
+              oncreate: () => {
+                expect(actions).toEqual({
+                  foo: expect.any(Function)
+                })
+                expect(document.body.innerHTML).toBe(
+                  "<main><h1>hello</h1><button></button></main>"
+                )
+                const buttonElement = document.body.firstChild.lastChild
+                buttonElement.events.click({ button: 0 })
+              }
+            },
+            h("h1", {}, state.message),
+            h("button", { onclick: action("foo", { some: "data" }) })
+          )
+        withFx(app)(
+          { message: "hello" },
+          {
+            foo: data => {
+              expect(data).toEqual({ some: "data" })
+              done()
+            }
+          },
+          () => h(Component, {}),
+          document.body
+        )
+      })
     })
     describe("frame", () => {
       it("should call animation frame", done => {
