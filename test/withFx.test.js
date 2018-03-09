@@ -203,9 +203,7 @@ describe("withFx", () => {
     describe("time", () => {
       it("should get the current time", done => {
         const timestamp = 9001
-        global.performance = {
-          now: () => timestamp
-        }
+        global.performance.now = () => timestamp
         withFx(app)(
           {},
           {
@@ -218,7 +216,7 @@ describe("withFx", () => {
             }
           }
         ).foo()
-        delete global.performance
+        delete global.performance.now
       })
     })
     describe("log", () => {
