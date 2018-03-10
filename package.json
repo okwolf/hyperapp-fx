@@ -32,7 +32,7 @@
     "check": "npm run format:check && npm run lint && npm t",
     "build": "npm run check && npm run bundle && npm run minify",
     "prepare": "npm run build",
-    "release": "npm run clean && npm i && git commit -am $npm_package_version && git tag $npm_package_version && git push && git push --tags && npm publish"
+    "release": "./pre-flight-tests && npm run clean && npm i && git tag $npm_package_version && git push && git push --tags && npm publish"
   },
   "prettier": {
     "semi": false

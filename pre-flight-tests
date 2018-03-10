@@ -1,0 +1,15 @@
+#!/usr/bin/env node
+
+// eslint-disable-next-line no-undef
+const { execSync } = require("child_process")
+const exec = command => execSync(command, { encoding: "utf8" })
+
+const gitBranchName = exec("git rev-parse --abbrev-ref HEAD")
+if (gitBranchName.trim() !== "master") {
+  throw new Error("please checkout the master branch to make a release!")
+}
+
+const workingCopyChanges = exec("git status --porcelain")
+if (workingCopyChanges.trim() !== "") {
+  throw new Error("please commit your changes before making a release!")
+}
