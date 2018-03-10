@@ -23,7 +23,7 @@ describe("withFx", () => {
   it("should be a function", () => expect(withFx).toBeInstanceOf(Function))
   it("should call view without actions", done =>
     withFx(app)(undefined, undefined, () => done()))
-  it("should not interfere with non effect actions", done => {
+  it("should not interfere with non fx actions", done => {
     const main = withFx(app)(
       {
         value: 0
@@ -57,9 +57,9 @@ describe("withFx", () => {
 
     main.finish()
   })
-  it("should handle empty effects", () =>
+  it("should handle empty fx", () =>
     withFx(app)({}, { foo: () => [] }, Function.prototype).foo())
-  it("should throw for unknown effects", () =>
+  it("should throw for unknown fx", () =>
     expect(() =>
       withFx(app)(
         {},
@@ -69,7 +69,7 @@ describe("withFx", () => {
         Function.prototype
       ).foo()
     ).toThrow("no such fx type: unknown"))
-  describe("built-in effect", () => {
+  describe("built-in fx", () => {
     describe("action", () => {
       it("should throw for unknown actions", () =>
         expect(() =>
@@ -145,6 +145,22 @@ describe("withFx", () => {
           },
           Function.prototype
         ).foo())
+      it("should attach to lifecycle events in view", done => {
+        withFx(app)(
+          {},
+          {
+            foo: data => {
+              expect(data).toEqual({ some: "data" })
+              done()
+            }
+          },
+          () =>
+            h("main", {
+              oncreate: action("foo", { some: "data" })
+            }),
+          document.body
+        )
+      })
       it("should attach to listeners in view", done => {
         withFx(app)(
           {
@@ -436,6 +452,22 @@ describe("withFx", () => {
       })
     })
     describe("event", () => {
+      it("should attach to lifecycle events in view", done => {
+        withFx(app)(
+          {},
+          {
+            foo(element) {
+              expect(element.outerHTML).toBe("<main></main>")
+              done()
+            }
+          },
+          () =>
+            h("main", {
+              oncreate: event("foo")
+            }),
+          document.body
+        )
+      })
       it("should attach to listeners in view", done => {
         withFx(app)(
           {
@@ -664,108 +696,127 @@ describe("withFx", () => {
         }
       })
     })
-  })
-  it("should allow combining action and event fx in view", done => {
-    withFx(app)(
-      {
-        message: "hello"
-      },
-      {
-        foo: data => {
-          expect(data).toEqual({ button: 0 })
+    it("should allow combining fx in view", done => {
+      withFx(app)(
+        {
+          message: "hello"
         },
-        bar: data => {
-          expect(data).toEqual({ some: "data" })
+        {
+          foo: data => {
+            expect(data).toEqual({ button: 0 })
+          },
+          bar: data => {
+            expect(data).toEqual({ some: "data" })
+            done()
+          }
+        },
+        ({ message }, actions) =>
+          h(
+            "main",
+            {
+              oncreate: () => {
+                expect(actions).toEqual({
+                  foo: expect.any(Function),
+                  bar: expect.any(Function)
+                })
+                expect(document.body.innerHTML).toBe(
+                  "<main><h1>hello</h1><button></button></main>"
+                )
+                const buttonElement = document.body.firstChild.lastChild
+                buttonElement.onclick({ button: 0 })
+              }
+            },
+            h("h1", {}, message),
+            h("button", {
+              onclick: [event("foo"), action("bar", { some: "data" })]
+            })
+          ),
+        document.body
+      )
+    })
+  })
+  describe("custom fx", () => {
+    it("should allow adding new custom effect", () => {
+      const externalState = { value: 2 }
+
+      const main = withFx({
+        set(props, getAction) {
+          getAction(props.action)(externalState)
+        }
+      })(app)(
+        {
+          value: 0
+        },
+        {
+          foo: () => ["set", { action: "set" }],
+          set: state => state,
+          get: () => state => state
+        },
+        Function.prototype
+      )
+
+      expect(main.get()).toEqual({
+        value: 0
+      })
+
+      main.foo()
+      expect(main.get()).toEqual({
+        value: 2
+      })
+
+      externalState.value = 1
+
+      main.foo()
+      expect(main.get()).toEqual({
+        value: 1
+      })
+    })
+    it("should allow overriding built-in fx", () => {
+      const actionLog = []
+
+      withFx({
+        action(props) {
+          actionLog.push(props)
+        }
+      })(app)(
+        {},
+        {
+          foo: () => action("bar", { some: "data" }),
+          bar: () => {
+            throw new Error(
+              "expected bar not to be called with overridden action effect!"
+            )
+          }
+        },
+        Function.prototype
+      ).foo()
+
+      expect(actionLog).toEqual([
+        {
+          name: "bar",
+          event: null,
+          data: {
+            some: "data"
+          }
+        }
+      ])
+    })
+    it("should attach to lifecycle events in view", done => {
+      withFx({
+        yolo(props) {
+          props.event.innerHTML = "#YOLO"
+          expect(document.body.innerHTML).toBe("<main>#YOLO</main>")
           done()
         }
-      },
-      ({ message }, actions) =>
-        h(
-          "main",
-          {
-            oncreate: () => {
-              expect(actions).toEqual({
-                foo: expect.any(Function),
-                bar: expect.any(Function)
-              })
-              expect(document.body.innerHTML).toBe(
-                "<main><h1>hello</h1><button></button></main>"
-              )
-              const buttonElement = document.body.firstChild.lastChild
-              buttonElement.onclick({ button: 0 })
-            }
-          },
-          h("h1", {}, message),
-          h("button", {
-            onclick: [event("foo"), action("bar", { some: "data" })]
-          })
-        ),
-      document.body
-    )
-  })
-  it("should allow adding new custom effect", () => {
-    const externalState = { value: 2 }
-
-    const main = withFx({
-      set(props, getAction) {
-        getAction(props.action)(externalState)
-      }
-    })(app)(
-      {
-        value: 0
-      },
-      {
-        foo: () => ["set", { action: "set" }],
-        set: state => state,
-        get: () => state => state
-      },
-      Function.prototype
-    )
-
-    expect(main.get()).toEqual({
-      value: 0
+      })(app)(
+        {},
+        {},
+        () =>
+          h("main", {
+            oncreate: ["yolo", {}]
+          }),
+        document.body
+      )
     })
-
-    main.foo()
-    expect(main.get()).toEqual({
-      value: 2
-    })
-
-    externalState.value = 1
-
-    main.foo()
-    expect(main.get()).toEqual({
-      value: 1
-    })
-  })
-  it("should allow overriding built-in fx", () => {
-    const actionLog = []
-
-    withFx({
-      action(props) {
-        actionLog.push(props)
-      }
-    })(app)(
-      {},
-      {
-        foo: () => action("bar", { some: "data" }),
-        bar: () => {
-          throw new Error(
-            "expected bar not to be called with overridden action effect!"
-          )
-        }
-      },
-      Function.prototype
-    ).foo()
-
-    expect(actionLog).toEqual([
-      {
-        name: "bar",
-        event: null,
-        data: {
-          some: "data"
-        }
-      }
-    ])
   })
 })
