@@ -58,14 +58,15 @@ describe("withFx", () => {
     main.finish()
   })
   it("should handle empty effects", () =>
-    withFx(app)({}, { foo: () => [] }).foo())
+    withFx(app)({}, { foo: () => [] }, Function.prototype).foo())
   it("should throw for unknown effects", () =>
     expect(() =>
       withFx(app)(
         {},
         {
           foo: () => ["unknown"]
-        }
+        },
+        Function.prototype
       ).foo()
     ).toThrow("no such fx type: unknown"))
   describe("built-in effect", () => {
