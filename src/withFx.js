@@ -97,7 +97,7 @@ function makeEnhancedView(view, fx) {
 function makeFxApp(fx, nextApp) {
   return function(initialState, actionsTemplate, view, container) {
     var enhancedActions = enhanceActions(actionsTemplate, fx)
-    var enhancedView = isFn(view) ? makeEnhancedView(view, fx) : undefined
+    var enhancedView = makeEnhancedView(view, fx)
 
     var appActions = nextApp(
       initialState,
