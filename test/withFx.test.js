@@ -33,7 +33,8 @@ describe("withFx", () => {
         exit: () => {
           done()
         }
-      }
+      },
+      Function.prototype
     )
 
     expect(main.get()).toEqual({
@@ -58,7 +59,8 @@ describe("withFx", () => {
             {},
             {
               foo: () => action("unknown")
-            }
+            },
+            Function.prototype
           ).foo()
         ).toThrow("couldn't find action: unknown"))
       it("should throw for unknown slice actions", () =>
@@ -67,7 +69,8 @@ describe("withFx", () => {
             {},
             {
               foo: () => action("uh.oh")
-            }
+            },
+            Function.prototype
           ).foo()
         ).toThrow("couldn't find action: uh.oh"))
       it("should fire a chained action", done =>
@@ -79,7 +82,8 @@ describe("withFx", () => {
               expect(data).toEqual({ some: "data" })
               done()
             }
-          }
+          },
+          Function.prototype
         ).foo())
       it("should fire a slice action", done =>
         withFx(app)(
@@ -92,7 +96,8 @@ describe("withFx", () => {
                 done()
               }
             }
-          }
+          },
+          Function.prototype
         ).foo())
       it("should update state", done =>
         withFx(app)(
@@ -119,7 +124,8 @@ describe("withFx", () => {
               expect(data).toEqual({ moar: "stuff" })
               done()
             }
-          }
+          },
+          Function.prototype
         ).foo())
       it("should attach to listeners in view", done => {
         document.body.innerHTML = ""
@@ -169,7 +175,8 @@ describe("withFx", () => {
                 done()
               }
             }
-          }
+          },
+          Function.prototype
         )
         main.foo()
         expect(requestAnimationFrame).toBeCalledWith(expect.any(Function))
@@ -203,9 +210,7 @@ describe("withFx", () => {
     describe("time", () => {
       it("should get the current time", done => {
         const timestamp = 9001
-        global.performance = {
-          now: () => timestamp
-        }
+        global.performance.now = () => timestamp
         withFx(app)(
           {},
           {
@@ -216,9 +221,10 @@ describe("withFx", () => {
                 done()
               }
             }
-          }
+          },
+          Function.prototype
         ).foo()
-        delete global.performance
+        delete global.performance.now
       })
     })
     describe("log", () => {
@@ -233,7 +239,8 @@ describe("withFx", () => {
           {},
           {
             foo: () => log(...testArgs)
-          }
+          },
+          Function.prototype
         ).foo()
         console.log = defaultLog
       })
@@ -261,7 +268,8 @@ describe("withFx", () => {
                 done()
               }
             }
-          }
+          },
+          Function.prototype
         ).foo()
         delete global.fetch
       })
@@ -285,7 +293,8 @@ describe("withFx", () => {
                 done()
               }
             }
-          }
+          },
+          Function.prototype
         ).foo()
         delete global.fetch
       })
@@ -319,7 +328,8 @@ describe("withFx", () => {
                 done()
               }
             }
-          }
+          },
+          Function.prototype
         ).foo()
         delete global.fetch
       })
@@ -350,7 +360,8 @@ describe("withFx", () => {
                 done.fail(new Error("Should not be called"))
               }
             }
-          }
+          },
+          Function.prototype
         ).foo()
         delete global.fetch
       })
@@ -373,7 +384,8 @@ describe("withFx", () => {
                 done()
               }
             }
-          }
+          },
+          Function.prototype
         ).foo()
         delete global.fetch
       })
@@ -398,7 +410,8 @@ describe("withFx", () => {
                 done()
               }
             }
-          }
+          },
+          Function.prototype
         ).foo()
         delete global.fetch
       })
@@ -449,7 +462,8 @@ describe("withFx", () => {
               expect(data).toEqual(keyEvent)
               done()
             }
-          }
+          },
+          Function.prototype
         ).init()
         document.onkeydown(keyEvent)
       })
@@ -465,7 +479,8 @@ describe("withFx", () => {
               expect(data).toEqual(keyEvent)
               done()
             }
-          }
+          },
+          Function.prototype
         ).init()
         document.onkeyup(keyEvent)
       })
@@ -484,7 +499,8 @@ describe("withFx", () => {
               expect(data).toBeCloseTo(randomValue)
               done()
             }
-          }
+          },
+          Function.prototype
         ).foo()
 
         Math.random = defaultRandom
@@ -502,7 +518,8 @@ describe("withFx", () => {
               expect(data).toBeCloseTo(3.5)
               done()
             }
-          }
+          },
+          Function.prototype
         ).foo()
 
         Math.random = defaultRandom
@@ -563,7 +580,8 @@ describe("withFx", () => {
         foo: () => ["set", { action: "set" }],
         set: state => state,
         get: () => state => state
-      }
+      },
+      Function.prototype
     )
 
     expect(main.get()).toEqual({
@@ -598,7 +616,8 @@ describe("withFx", () => {
             "expected bar not to be called with overridden action effect!"
           )
         }
-      }
+      },
+      Function.prototype
     ).foo()
 
     expect(actionLog).toEqual([
