@@ -16,7 +16,7 @@
     "eslint": "^4.18.2",
     "eslint-plugin-compat": "^2.2.0",
     "hyperapp": "^1.1.2",
-    "jest": "^21.2.1",
+    "jest": "^22.4.2",
     "prettier": "^1.8.2",
     "rollup": "^0.55.5",
     "uglify-js": "^3.2.1"
