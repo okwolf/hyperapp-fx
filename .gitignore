@@ -1,7 +1,5 @@
 coverage/
 node_modules/
 dist/
-.idea
-*.iml
 yarn-error.log
 yarn.lock
