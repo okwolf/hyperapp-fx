@@ -80,13 +80,11 @@ function patchVdomFx(actions, vdom, fx) {
 function makeFxApp(fx, nextApp) {
   return function(initialState, actionsTemplate, view, container) {
     var enhancedActions = enhanceActions(actionsTemplate, fx)
-    var enhancedView = isFn(view)
-      ? function(state, actions) {
-          var vdom = view(state, actions)
-          patchVdomFx(actions, vdom, fx)
-          return vdom
-        }
-      : undefined
+    var enhancedView = function(state, actions) {
+      var vdom = view(state, actions)
+      patchVdomFx(actions, vdom, fx)
+      return vdom
+    }
 
     var appActions = nextApp(
       initialState,

@@ -13,6 +13,10 @@ import {
   random
 } from "../src"
 
+beforeEach(() => {
+  document.body.innerHTML = ""
+})
+
 describe("withFx", () => {
   it("should be a function", () => expect(withFx).toBeInstanceOf(Function))
   it("should call view without actions", done =>
@@ -128,7 +132,6 @@ describe("withFx", () => {
           Function.prototype
         ).foo())
       it("should attach to listeners in view", done => {
-        document.body.innerHTML = ""
         withFx(app)(
           {
             message: "hello"
@@ -418,7 +421,6 @@ describe("withFx", () => {
     })
     describe("event", () => {
       it("should attach to listeners in view", done => {
-        document.body.innerHTML = ""
         withFx(app)(
           {
             message: "hello"
@@ -527,7 +529,6 @@ describe("withFx", () => {
     })
   })
   it("should allow combining action and event fx in view", done => {
-    document.body.innerHTML = ""
     withFx(app)(
       {
         message: "hello"
