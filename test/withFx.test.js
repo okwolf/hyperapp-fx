@@ -15,6 +15,8 @@ import {
   throttle
 } from "../src"
 
+const dummyView = Function.prototype
+
 beforeEach(() => {
   document.body.innerHTML = ""
 })
@@ -40,7 +42,7 @@ describe("withFx", () => {
           done()
         }
       },
-      Function.prototype
+      dummyView
     )
 
     expect(main.get()).toEqual({
@@ -58,7 +60,7 @@ describe("withFx", () => {
     main.finish()
   })
   it("should handle empty fx", () =>
-    withFx(app)({}, { foo: () => [] }, Function.prototype).foo())
+    withFx(app)({}, { foo: () => [] }, dummyView).foo())
   it("should throw for unknown fx", () =>
     expect(() =>
       withFx(app)(
@@ -66,7 +68,7 @@ describe("withFx", () => {
         {
           foo: () => ["unknown"]
         },
-        Function.prototype
+        dummyView
       ).foo()
     ).toThrow("no such fx type: unknown"))
   describe("built-in fx", () => {
@@ -78,7 +80,7 @@ describe("withFx", () => {
             {
               foo: () => action("unknown")
             },
-            Function.prototype
+            dummyView
           ).foo()
         ).toThrow("couldn't find action: unknown"))
       it("should throw for unknown slice actions", () =>
@@ -88,7 +90,7 @@ describe("withFx", () => {
             {
               foo: () => action("uh.oh")
             },
-            Function.prototype
+            dummyView
           ).foo()
         ).toThrow("couldn't find action: uh.oh"))
       it("should fire a chained action", done =>
@@ -101,7 +103,7 @@ describe("withFx", () => {
               done()
             }
           },
-          Function.prototype
+          dummyView
         ).foo())
       it("should fire a slice action", done =>
         withFx(app)(
@@ -115,7 +117,7 @@ describe("withFx", () => {
               }
             }
           },
-          Function.prototype
+          dummyView
         ).foo())
       it("should update state", done =>
         withFx(app)(
@@ -143,7 +145,7 @@ describe("withFx", () => {
               done()
             }
           },
-          Function.prototype
+          dummyView
         ).foo())
       it("should attach to lifecycle events in view", done => {
         withFx(app)(
@@ -209,7 +211,7 @@ describe("withFx", () => {
               }
             }
           },
-          Function.prototype
+          dummyView
         )
         main.foo()
         expect(requestAnimationFrame).toBeCalledWith(expect.any(Function))
@@ -229,7 +231,7 @@ describe("withFx", () => {
                 baz: data => data
               }
             },
-            Function.prototype
+            dummyView
           )
           main.foo()
           expect(main.get()).toEqual({ bar: {} })
@@ -255,7 +257,7 @@ describe("withFx", () => {
               }
             }
           },
-          Function.prototype
+          dummyView
         ).foo()
         delete global.performance.now
       })
@@ -274,7 +276,7 @@ describe("withFx", () => {
           {
             foo: () => log(...testArgs)
           },
-          Function.prototype
+          dummyView
         ).foo()
         console.log = defaultLog
       })
@@ -304,7 +306,7 @@ describe("withFx", () => {
               }
             }
           },
-          Function.prototype
+          dummyView
         ).foo()
         delete global.fetch
       })
@@ -329,7 +331,7 @@ describe("withFx", () => {
               }
             }
           },
-          Function.prototype
+          dummyView
         ).foo()
         delete global.fetch
       })
@@ -364,7 +366,7 @@ describe("withFx", () => {
               }
             }
           },
-          Function.prototype
+          dummyView
         ).foo()
         delete global.fetch
       })
@@ -396,7 +398,7 @@ describe("withFx", () => {
               }
             }
           },
-          Function.prototype
+          dummyView
         ).foo()
         delete global.fetch
       })
@@ -420,7 +422,7 @@ describe("withFx", () => {
               }
             }
           },
-          Function.prototype
+          dummyView
         ).foo()
         delete global.fetch
       })
@@ -446,7 +448,7 @@ describe("withFx", () => {
               }
             }
           },
-          Function.prototype
+          dummyView
         ).foo()
         delete global.fetch
       })
@@ -513,7 +515,7 @@ describe("withFx", () => {
               done()
             }
           },
-          Function.prototype
+          dummyView
         ).init()
         document.onkeydown(keyEvent)
       })
@@ -530,7 +532,7 @@ describe("withFx", () => {
               done()
             }
           },
-          Function.prototype
+          dummyView
         ).init()
         document.onkeyup(keyEvent)
       })
@@ -550,7 +552,7 @@ describe("withFx", () => {
               done()
             }
           },
-          Function.prototype
+          dummyView
         ).foo()
 
         Math.random = defaultRandom
@@ -569,7 +571,7 @@ describe("withFx", () => {
               done()
             }
           },
-          Function.prototype
+          dummyView
         ).foo()
 
         Math.random = defaultRandom
@@ -588,7 +590,7 @@ describe("withFx", () => {
                 baz: data => data
               }
             },
-            Function.prototype
+            dummyView
           )
           main.foo()
           expect(main.get()).toEqual({ bar: {} })
@@ -610,7 +612,7 @@ describe("withFx", () => {
                 baz: data => data
               }
             },
-            Function.prototype
+            dummyView
           )
           jest.spyOn(main.bar, "baz")
           main.foo({ data: "updated" })
@@ -635,7 +637,7 @@ describe("withFx", () => {
                 baz: data => data
               }
             },
-            Function.prototype
+            dummyView
           )
           jest.spyOn(main.bar, "baz")
           main.foo({ data: "first" })
@@ -660,7 +662,7 @@ describe("withFx", () => {
                 baz: data => data
               }
             },
-            Function.prototype
+            dummyView
           )
           main.foo()
           expect(main.get()).toEqual({ bar: { updated: "data" } })
@@ -681,7 +683,7 @@ describe("withFx", () => {
                 baz: data => data
               }
             },
-            Function.prototype
+            dummyView
           )
           jest.spyOn(main.bar, "baz")
           main.foo({ updated: "data" })
@@ -752,7 +754,7 @@ describe("withFx", () => {
           set: state => state,
           get: () => state => state
         },
-        Function.prototype
+        dummyView
       )
 
       expect(main.get()).toEqual({
@@ -788,7 +790,7 @@ describe("withFx", () => {
             )
           }
         },
-        Function.prototype
+        dummyView
       ).foo()
 
       expect(actionLog).toEqual([
