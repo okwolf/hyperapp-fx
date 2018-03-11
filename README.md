@@ -54,7 +54,7 @@ Then with a module bundler like [parcel](https://github.com/parcel-bundler/parce
 import { withFx } from "@hyperapp/fx"
 ```
 
-If you don't want to set up a build environment, you can download Hyperapp FX from a CDN like [unpkg.com](https://unpkg.com/@hyperapp/fx) and it will be globally available through the `window.fx` object.
+If you don't want to set up a build environment, you can download Hyperapp FX from a CDN like [unpkg.com](https://unpkg.com/@hyperapp/fx) and it will be globally available through the `window.hyperappFx` object.
 
 ```html
 <script src="https://unpkg.com/@hyperapp/fx"></script>
