@@ -185,7 +185,9 @@ describe("withFx", () => {
                   expect(document.body.innerHTML).toBe(
                     "<main><h1>hello</h1><button></button></main>"
                   )
-                  const buttonElement = document.body.firstChild.lastChild
+                  const buttonElement = document.body.getElementsByTagName(
+                    "button"
+                  )[0]
                   buttonElement.events.click({ button: 0 })
                 }
               },
@@ -206,9 +208,11 @@ describe("withFx", () => {
                   foo: expect.any(Function)
                 })
                 expect(document.body.innerHTML).toBe(
-                  "<main><h1>hello</h1><button></button></main>"
+                  "<div><main><h1>hello</h1><button></button></main></div>"
                 )
-                const buttonElement = document.body.firstChild.lastChild
+                const buttonElement = document.body.getElementsByTagName(
+                  "button"
+                )[0]
                 buttonElement.events.click({ button: 0 })
               }
             },
@@ -223,7 +227,7 @@ describe("withFx", () => {
               done()
             }
           },
-          () => h(Component, {}),
+          () => h("div", {}, [h(Component, {})]),
           document.body
         )
       })
@@ -524,7 +528,9 @@ describe("withFx", () => {
                   expect(document.body.innerHTML).toBe(
                     "<main><h1>hello</h1><button></button></main>"
                   )
-                  const buttonElement = document.body.firstChild.lastChild
+                  const buttonElement = document.body.getElementsByTagName(
+                    "button"
+                  )[0]
                   buttonElement.events.click({ button: 0 })
                 }
               },
@@ -756,7 +762,9 @@ describe("withFx", () => {
                 expect(document.body.innerHTML).toBe(
                   "<main><h1>hello</h1><button></button></main>"
                 )
-                const buttonElement = document.body.firstChild.lastChild
+                const buttonElement = document.body.getElementsByTagName(
+                  "button"
+                )[0]
                 buttonElement.events.click({ button: 0 })
               }
             },
