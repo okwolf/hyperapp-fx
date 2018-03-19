@@ -17,6 +17,12 @@ import {
 
 const dummyView = Function.prototype
 
+function clickButton() {
+  const buttonElement = document.body.getElementsByTagName("button")[0]
+  const clickEvent = new Event("click")
+  buttonElement.dispatchEvent(clickEvent)
+}
+
 beforeEach(() => {
   document.body.innerHTML = ""
 })
@@ -185,10 +191,7 @@ describe("withFx", () => {
                   expect(document.body.innerHTML).toBe(
                     "<main><h1>hello</h1><button></button></main>"
                   )
-                  const buttonElement = document.body.getElementsByTagName(
-                    "button"
-                  )[0]
-                  buttonElement.events.click({ button: 0 })
+                  clickButton()
                 }
               },
               h("h1", {}, message),
@@ -210,10 +213,7 @@ describe("withFx", () => {
                 expect(document.body.innerHTML).toBe(
                   "<div><main><h1>hello</h1><button></button></main></div>"
                 )
-                const buttonElement = document.body.getElementsByTagName(
-                  "button"
-                )[0]
-                buttonElement.events.click({ button: 0 })
+                clickButton()
               }
             },
             h("h1", {}, state.message),
@@ -513,7 +513,7 @@ describe("withFx", () => {
           },
           {
             foo(data) {
-              expect(data).toEqual({ button: 0 })
+              expect(data).toMatchObject({ type: "click" })
               done()
             }
           },
@@ -528,10 +528,7 @@ describe("withFx", () => {
                   expect(document.body.innerHTML).toBe(
                     "<main><h1>hello</h1><button></button></main>"
                   )
-                  const buttonElement = document.body.getElementsByTagName(
-                    "button"
-                  )[0]
-                  buttonElement.events.click({ button: 0 })
+                  clickButton()
                 }
               },
               h("h1", {}, message),
@@ -743,7 +740,7 @@ describe("withFx", () => {
         },
         {
           foo: data => {
-            expect(data).toEqual({ button: 0 })
+            expect(data).toMatchObject({ type: "click" })
           },
           bar: data => {
             expect(data).toEqual({ some: "data" })
@@ -762,10 +759,7 @@ describe("withFx", () => {
                 expect(document.body.innerHTML).toBe(
                   "<main><h1>hello</h1><button></button></main>"
                 )
-                const buttonElement = document.body.getElementsByTagName(
-                  "button"
-                )[0]
-                buttonElement.events.click({ button: 0 })
+                clickButton()
               }
             },
             h("h1", {}, message),
