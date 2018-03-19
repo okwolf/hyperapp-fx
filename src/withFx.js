@@ -68,28 +68,35 @@ function handleEventFx(actions, currentFx, fx) {
   }
 }
 
-function patchVdomFx(actions, vdom, fx) {
-  if (typeof vdom === "object") {
-    for (var key in vdom.attributes) {
-      var maybeFx = vdom.attributes[key]
-      if (isFx(maybeFx)) {
-        vdom.attributes[key] = handleEventFx(actions, maybeFx, fx)
+function makeEnhancedView(view, fx) {
+  function patchVdomFx(actions, vdom) {
+    if (typeof vdom === "object") {
+      for (var key in vdom.attributes) {
+        var maybeFx = vdom.attributes[key]
+        if (isFx(maybeFx)) {
+          vdom.attributes[key] = handleEventFx(actions, maybeFx, fx)
+        }
+      }
+      for (var i in vdom.children) {
+        if (isFn(vdom.children[i])) {
+          vdom.children[i] = makeEnhancedView(vdom.children[i], fx)
+        } else {
+          patchVdomFx(actions, vdom.children[i], fx)
+        }
       }
     }
-    for (var i in vdom.children) {
-      patchVdomFx(actions, vdom.children[i], fx)
-    }
+  }
+  return function(state, actions) {
+    var vdom = view(state, actions)
+    patchVdomFx(actions, vdom, fx)
+    return vdom
   }
 }
 
 function makeFxApp(fx, nextApp) {
   return function(initialState, actionsTemplate, view, container) {
     var enhancedActions = enhanceActions(actionsTemplate, fx)
-    var enhancedView = function(state, actions) {
-      var vdom = view(state, actions)
-      patchVdomFx(actions, vdom, fx)
-      return vdom
-    }
+    var enhancedView = makeEnhancedView(view, fx)
 
     var appActions = nextApp(
       initialState,

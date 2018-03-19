@@ -9,13 +9,13 @@
     "url": "git+https://github.com/hyperapp/fx.git"
   },
   "peerDependencies": {
-    "hyperapp": "^1.1.2"
+    "hyperapp": "^1.2.0"
   },
   "devDependencies": {
     "babel-preset-env": "=1.6.1",
     "eslint": "=4.19.0",
     "eslint-plugin-compat": "=2.2.0",
-    "hyperapp": "=1.1.2",
+    "hyperapp": "=1.2.0",
     "jest": "=22.4.2",
     "prettier": "=1.11.1",
     "rollup": "=0.57.1",

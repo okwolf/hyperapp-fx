@@ -95,6 +95,8 @@ const actions = {
 withFx(app)(state, actions).foo()
 ```
 
+#### Custom effects
+
 For custom effects pass an object to `withFx` before composing with your `app`:
 
 ```js
@@ -465,6 +467,43 @@ const view = () =>
   })
 
 withFx(app)(state, actions, view, document.body)
+```
+
+[Custom effects](#custom-effects) recieve an `event` prop if they were fired from within an event handler. This event value is particularly useful when implementing logic for accessing the current DOM element in [Hyperapp lifecyle events](https://github.com/hyperapp/hyperapp#lifecycle-events) such as `oncreate` and `ondestroy`.
+
+Example custom effect to focus an input on create:
+
+```js
+import { withFx, event } from "@hyperapp/fx"
+
+const focus = () => ["focus"];
+const fx = {
+  focus({ event }) {
+    // Side effects are isolated to only within fx
+    event.focus();
+  }
+};
+
+const state = {
+  text: "hi"
+};
+
+const actions = {
+  type: ({ target: { value: text } }) => ({ text })
+};
+
+const view = state => (
+  <main>
+    <h1>{state.text}</h1>
+    <input
+      value={state.text}
+      oninput={event("type")}
+      oncreate={focus()}
+    />
+  </main>
+);
+
+withFx(fx)(app)(state, actions, view, document.body);
 ```
 
 ### `keydown`
