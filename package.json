@@ -4,6 +4,7 @@
   "description": "Effects as data for Hyperapp",
   "main": "dist/hyperappFx.js",
   "module": "src/index.js",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hyperapp/fx.git"
