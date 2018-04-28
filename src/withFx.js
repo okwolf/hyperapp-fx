@@ -42,21 +42,29 @@ function runIfFx(actions, currentEvent, maybeFx, fx) {
   }
 }
 
-function enhanceActions(actionsTemplate, fx) {
+function enhanceActions(actionsTemplate, fx, prefix) {
+  var namespace = prefix ? prefix + "." : ""
   return Object.keys(actionsTemplate || {}).reduce(function(
     otherActions,
     name
   ) {
+    var namedspacedName = namespace + name
     var action = actionsTemplate[name]
     otherActions[name] = isFn(action)
       ? function(data) {
           return function(state, actions) {
+            // eslint-disable-next-line no-console
+            console.warn(
+              "Still using wired action: '" +
+                namedspacedName +
+                "'. You will need to refactor this before moving to Hyperapp 2.0."
+            )
             var result = action(data)
             result = isFn(result) ? result(state, actions) : result
             return runIfFx(actions, null, result, fx)
           }
         }
-      : enhanceActions(action, fx)
+      : enhanceActions(action, fx, namedspacedName)
     return otherActions
   },
   {})
