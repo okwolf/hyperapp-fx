@@ -1,24 +1,14 @@
 import { h, app } from "hyperapp"
-import {
-  withFx,
-  action,
-  frame,
-  delay,
-  time,
-  log,
-  http,
-  event,
-  keydown,
-  keyup,
-  random,
-  debounce,
-  throttle
-} from "../src"
+import { withFx } from "../src"
 
 const dummyView = Function.prototype
+const getState = state => state
 
 function clickButton() {
   const buttonElement = document.body.getElementsByTagName("button")[0]
+  if (!buttonElement) {
+    throw new Error("Couldn't find a button in: " + document.body.innerHTML)
+  }
   const clickEvent = new Event("click")
   buttonElement.dispatchEvent(clickEvent)
 }
@@ -31,8 +21,8 @@ describe("withFx", () => {
   it("should be a function", () => expect(withFx).toBeInstanceOf(Function))
   it("should call view without actions", done =>
     withFx(app)(undefined, undefined, () => done()))
-  it("should not interfere with non fx actions", done => {
-    const main = withFx(app)(
+  it("should not interfere with 1.0 actions", done => {
+    const main = withFx({ wiredActions: true })(app)(
       {
         value: 0
       },
@@ -65,794 +55,151 @@ describe("withFx", () => {
 
     main.finish()
   })
-  it("should handle empty fx", () =>
-    withFx(app)({}, { foo: () => [] }, dummyView).foo())
-  it("should throw for unknown fx", () =>
-    expect(() =>
-      withFx(app)(
-        {},
+  it("should throw error when calling wired actions", () => {
+    const main = withFx(app)(
+      {},
+      {
+        foo: {
+          bar: () => ({})
+        }
+      },
+      dummyView
+    )
+
+    expect(main.foo.bar).toThrow(
+      "Still using wired action: 'foo.bar'. You need to refactor this before moving to Hyperapp 2.0."
+    )
+  })
+  describe("for the view", () => {
+    it("should not interfere with 1.0 actions", done =>
+      withFx({ wiredActions: true })(app)(
         {
-          foo: () => ["unknown"]
-        },
-        dummyView
-      ).foo()
-    ).toThrow("no such fx type: unknown"))
-  describe("built-in fx", () => {
-    describe("action", () => {
-      it("should throw for unknown actions", () =>
-        expect(() =>
-          withFx(app)(
-            {},
-            {
-              foo: () => action("unknown")
-            },
-            dummyView
-          ).foo()
-        ).toThrow("couldn't find action: unknown"))
-      it("should throw for unknown slice actions", () =>
-        expect(() =>
-          withFx(app)(
-            {},
-            {
-              foo: () => action("uh.oh")
-            },
-            dummyView
-          ).foo()
-        ).toThrow("couldn't find action: uh.oh"))
-      it("should fire a chained action", done =>
-        withFx(app)(
-          {},
-          {
-            foo: () => action("bar", { some: "data" }),
-            bar: data => {
-              expect(data).toEqual({ some: "data" })
-              done()
-            }
-          },
-          dummyView
-        ).foo())
-      it("should fire a slice action", done =>
-        withFx(app)(
-          {},
-          {
-            foo: () => action("bar.baz", { some: "data" }),
-            bar: {
-              baz: data => {
-                expect(data).toEqual({ some: "data" })
-                done()
-              }
-            }
-          },
-          dummyView
-        ).foo())
-      it("should update state", done =>
-        withFx(app)(
-          {},
-          {
-            update: data => data,
-            foo: () => [
-              action("update", { key: "value" }),
-              action("bar", { some: "data" }),
-              action("update", { some: "other value" }),
-              action("baz", { moar: "stuff" })
-            ],
-            bar: data => state => {
-              expect(state).toEqual({
-                key: "value"
-              })
-              expect(data).toEqual({ some: "data" })
-            },
-            baz: data => state => {
-              expect(state).toEqual({
-                key: "value",
-                some: "other value"
-              })
-              expect(data).toEqual({ moar: "stuff" })
-              done()
-            }
-          },
-          dummyView
-        ).foo())
-      it("should attach to lifecycle events in view", done => {
-        withFx(app)(
-          {},
-          {
-            foo: data => {
-              expect(data).toEqual({ some: "data" })
-              done()
-            }
-          },
-          () =>
-            h("main", {
-              oncreate: action("foo", { some: "data" })
-            }),
-          document.body
-        )
-      })
-      it("should attach to listeners in view", done => {
-        withFx(app)(
-          {
+          foo: {
             message: "hello"
-          },
-          {
-            foo: data => {
-              expect(data).toEqual({ some: "data" })
+          }
+        },
+        {
+          foo: {
+            bar: data => state => {
+              expect(data).toMatchObject({ type: "click" })
+              expect(state).toEqual({ message: "hello" })
               done()
             }
-          },
-          ({ message }, actions) =>
-            h(
-              "main",
-              {
-                oncreate: () => {
-                  expect(actions).toEqual({
-                    foo: expect.any(Function)
-                  })
-                  expect(document.body.innerHTML).toBe(
-                    "<main><h1>hello</h1><button></button></main>"
-                  )
-                  clickButton()
-                }
-              },
-              h("h1", {}, message),
-              h("button", { onclick: action("foo", { some: "data" }) })
-            ),
-          document.body
-        )
-      })
-      it("should attach to listeners in subviews", done => {
-        document.body.innerHTML = ""
-        const Component = () => (state, actions) =>
+          }
+        },
+        ({ foo: { message } }, actions) =>
           h(
             "main",
             {
               oncreate: () => {
-                expect(actions).toEqual({
-                  foo: expect.any(Function)
-                })
                 expect(document.body.innerHTML).toBe(
-                  "<div><main><h1>hello</h1><button></button></main></div>"
+                  '<main><h1 class="message">hello</h1><button>foo</button></main>'
                 )
                 clickButton()
               }
             },
-            h("h1", {}, state.message),
-            h("button", { onclick: action("foo", { some: "data" }) })
-          )
-        withFx(app)(
-          { message: "hello" },
-          {
-            foo: data => {
-              expect(data).toEqual({ some: "data" })
-              done()
-            }
-          },
-          () => h("div", {}, [h(Component, {})]),
-          document.body
-        )
-      })
-    })
-    describe("frame", () => {
-      it("should call animation frame", done => {
-        const timestamp = 9001
-        global.requestAnimationFrame = jest.fn(cb => cb(timestamp))
-        const main = withFx(app)(
-          {},
-          {
-            foo: () => frame("bar.baz"),
-            bar: {
-              baz: data => {
-                expect(data).toBe(timestamp)
-                done()
-              }
-            }
-          },
-          dummyView
-        )
-        main.foo()
-        expect(requestAnimationFrame).toBeCalledWith(expect.any(Function))
-        delete global.requestAnimationFrame
-      })
-    })
-    describe("delay", () => {
-      it("should fire an action after a delay", () => {
-        jest.useFakeTimers()
-        try {
-          const main = withFx(app)(
-            {},
-            {
-              get: () => state => state,
-              foo: () => delay(1000, "bar.baz", { updated: "data" }),
-              bar: {
-                baz: data => data
-              }
-            },
-            dummyView
-          )
-          main.foo()
-          expect(main.get()).toEqual({ bar: {} })
-          jest.runAllTimers()
-          expect(main.get()).toEqual({ bar: { updated: "data" } })
-        } finally {
-          jest.useRealTimers()
-        }
-      })
-    })
-    describe("time", () => {
-      it("should get the current time", done => {
-        const timestamp = 9001
-        global.performance.now = () => timestamp
-        withFx(app)(
-          {},
-          {
-            foo: () => time("bar.baz"),
-            bar: {
-              baz: data => {
-                expect(data).toBe(timestamp)
-                done()
-              }
-            }
-          },
-          dummyView
-        ).foo()
-        delete global.performance.now
-      })
-    })
-    /* eslint-disable no-console */
-    describe("log", () => {
-      it("should log to console", done => {
-        const testArgs = ["bar", { some: "data" }, ["list", "of", "data"]]
-        const defaultLog = console.log
-        console.log = function(...args) {
-          expect(args).toEqual(testArgs)
-          done()
-        }
-        withFx(app)(
-          {},
-          {
-            foo: () => log(...testArgs)
-          },
-          dummyView
-        ).foo()
-        console.log = defaultLog
-      })
-    })
-    /* eslint-enable no-console */
-    describe("http", () => {
-      it("should get json", done => {
-        const testUrl = "https://example.com"
-        global.fetch = (url, options) => {
-          expect(url).toBe(testUrl)
-          expect(options).toEqual({})
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ response: "data" })
-          })
-        }
-        withFx(app)(
-          {},
-          {
-            foo: () => http(testUrl, "bar.baz"),
-            bar: {
-              baz: data => {
-                expect(data).toEqual({
-                  response: "data"
-                })
-                done()
-              }
-            }
-          },
-          dummyView
-        ).foo()
-        delete global.fetch
-      })
-      it("should get text", done => {
-        const testUrl = "https://example.com/hello"
-        global.fetch = (url, options) => {
-          expect(url).toBe(testUrl)
-          expect(options).toEqual({})
-          return Promise.resolve({
-            ok: true,
-            text: () => Promise.resolve("hello world")
-          })
-        }
-        withFx(app)(
-          {},
-          {
-            foo: () => http(testUrl, "bar.baz", { response: "text" }),
-            bar: {
-              baz: data => {
-                expect(data).toBe("hello world")
-                done()
-              }
-            }
-          },
-          dummyView
-        ).foo()
-        delete global.fetch
-      })
-      it("should post json", done => {
-        const testUrl = "/login"
-        global.fetch = (url, options) => {
-          expect(url).toBe(testUrl)
-          expect(options).toEqual({
-            method: "POST",
-            body: {
-              user: "username",
-              pass: "password"
-            }
-          })
-          return Promise.resolve({
-            ok: true,
-            json: () => Promise.resolve({ result: "authenticated" })
-          })
-        }
-        withFx(app)(
-          {},
-          {
-            foo: () =>
-              http(testUrl, "bar.baz", {
-                method: "POST",
-                body: { user: "username", pass: "password" }
-              }),
-            bar: {
-              baz: data => {
-                expect(data).toEqual({ result: "authenticated" })
-                done()
-              }
-            }
-          },
-          dummyView
-        ).foo()
-        delete global.fetch
-      })
-      it("should call the error handler on error", done => {
-        const testUrl = "https://example.com/hello"
-        const error = new Error("Failed")
-        global.fetch = (url, options) => {
-          expect(url).toBe(testUrl)
-          expect(options).toEqual({})
-          return Promise.reject(error)
-        }
-        withFx(app)(
-          {},
-          {
-            foo: () =>
-              http(testUrl, "bar.baz", {
-                response: "text",
-                error: "fizz.errorHandler"
-              }),
-            fizz: {
-              errorHandler: err => {
-                expect(err).toBe(error)
-                done()
-              }
-            },
-            bar: {
-              baz: () => {
-                done.fail(new Error("Should not be called"))
-              }
-            }
-          },
-          dummyView
-        ).foo()
-        delete global.fetch
-      })
-      it("should call default action on error", done => {
-        const testUrl = "https://example.com/hello"
-        const error = new Error("Failed")
-        global.fetch = (url, options) => {
-          expect(url).toBe(testUrl)
-          expect(options).toEqual({})
-          return Promise.reject(error)
-        }
-        withFx(app)(
-          {},
-          {
-            foo: () => http(testUrl, "bar.baz", { response: "text" }),
-
-            bar: {
-              baz: data => {
-                expect(data).toBe(error)
-                done()
-              }
-            }
-          },
-          dummyView
-        ).foo()
-        delete global.fetch
-      })
-      it("should call default action on error when response is not OK", done => {
-        const testUrl = "https://example.com/hello"
-        const response = {
-          ok: false
-        }
-        global.fetch = (url, options) => {
-          expect(url).toBe(testUrl)
-          expect(options).toEqual({})
-          return Promise.resolve(response)
-        }
-        withFx(app)(
-          {},
-          {
-            foo: () => http(testUrl, "bar.baz", { response: "text" }),
-
-            bar: {
-              baz: data => {
-                expect(data).toBe(response)
-                done()
-              }
-            }
-          },
-          dummyView
-        ).foo()
-        delete global.fetch
-      })
-    })
-    describe("event", () => {
-      it("should attach to lifecycle events in view", done => {
-        withFx(app)(
-          {},
-          {
-            foo(element) {
-              expect(element.outerHTML).toBe("<main></main>")
-              done()
-            }
-          },
-          () =>
-            h("main", {
-              oncreate: event("foo")
-            }),
-          document.body
-        )
-      })
-      it("should attach to listeners in view", done => {
-        withFx(app)(
-          {
-            message: "hello"
-          },
-          {
-            foo(data) {
-              expect(data).toMatchObject({ type: "click" })
-              done()
-            }
-          },
-          ({ message }, actions) =>
-            h(
-              "main",
-              {
-                oncreate: () => {
-                  expect(actions).toEqual({
-                    foo: expect.any(Function)
-                  })
-                  expect(document.body.innerHTML).toBe(
-                    "<main><h1>hello</h1><button></button></main>"
-                  )
-                  clickButton()
-                }
-              },
-              h("h1", {}, message),
-              h("button", { onclick: event("foo") })
-            ),
-          document.body
-        )
-      })
-    })
-    describe("keydown", () => {
-      it("should attach keydown listener", done => {
-        const keyEvent = { key: "a", code: "KeyA" }
-        withFx(app)(
-          {},
-          {
-            init: () => keydown("foo"),
-            foo: data => {
-              expect(data).toEqual(keyEvent)
-              done()
-            }
-          },
-          dummyView
-        ).init()
-        document.onkeydown(keyEvent)
-      })
-    })
-    describe("keyup", () => {
-      it("should attach keyup listener", done => {
-        const keyEvent = { key: "a", code: "KeyA" }
-        withFx(app)(
-          {},
-          {
-            init: () => keyup("foo"),
-            foo: data => {
-              expect(data).toEqual(keyEvent)
-              done()
-            }
-          },
-          dummyView
-        ).init()
-        document.onkeyup(keyEvent)
-      })
-    })
-    describe("random", () => {
-      it("should call random with default range", done => {
-        const randomValue = 0.5
-        const defaultRandom = Math.random
-        Math.random = () => randomValue
-
-        withFx(app)(
-          {},
-          {
-            foo: () => random("bar"),
-            bar: data => {
-              expect(data).toBeCloseTo(randomValue)
-              done()
-            }
-          },
-          dummyView
-        ).foo()
-
-        Math.random = defaultRandom
-      })
-
-      it("should call random with custom range", done => {
-        const defaultRandom = Math.random
-        Math.random = () => 0.5
-
-        withFx(app)(
-          {},
-          {
-            foo: () => random("bar", 2, 5),
-            bar: data => {
-              expect(data).toBeCloseTo(3.5)
-              done()
-            }
-          },
-          dummyView
-        ).foo()
-
-        Math.random = defaultRandom
-      })
-    })
-    describe("debounce", () => {
-      it("should fire an action after a delay", () => {
-        jest.useFakeTimers()
-        try {
-          const main = withFx(app)(
-            {},
-            {
-              get: () => state => state,
-              foo: () => debounce(1000, "bar.baz", { updated: "data" }),
-              bar: {
-                baz: data => data
-              }
-            },
-            dummyView
-          )
-          main.foo()
-          expect(main.get()).toEqual({ bar: {} })
-          jest.runAllTimers()
-          expect(main.get()).toEqual({ bar: { updated: "data" } })
-        } finally {
-          jest.useRealTimers()
-        }
-      })
-      it("should not execute an action until the delay has passed", () => {
-        jest.useFakeTimers()
-        try {
-          const main = withFx(app)(
-            {},
-            {
-              get: () => state => state,
-              foo: data => debounce(1000, "bar.baz", data),
-              bar: {
-                baz: data => data
-              }
-            },
-            dummyView
-          )
-          jest.spyOn(main.bar, "baz")
-          main.foo({ data: "updated" })
-          expect(main.bar.baz).toHaveBeenCalledTimes(0)
-          expect(main.get()).toEqual({ bar: {} })
-          jest.runAllTimers()
-          expect(main.bar.baz).toHaveBeenCalledTimes(1)
-          expect(main.get()).toEqual({ bar: { data: "updated" } })
-        } finally {
-          jest.useRealTimers()
-        }
-      })
-      it("should receive the data of the last attempted action call", () => {
-        jest.useFakeTimers()
-        try {
-          const main = withFx(app)(
-            {},
-            {
-              get: () => state => state,
-              foo: data => debounce(1000, "bar.baz", data),
-              bar: {
-                baz: data => data
-              }
-            },
-            dummyView
-          )
-          jest.spyOn(main.bar, "baz")
-          main.foo({ data: "first" })
-          main.foo({ data: "last" })
-          jest.runAllTimers()
-          expect(main.get()).toEqual({ bar: { data: "last" } })
-        } finally {
-          jest.useRealTimers()
-        }
-      })
-    })
-    describe("throttle", () => {
-      it("should execute an action within a limit", () => {
-        jest.useFakeTimers()
-        try {
-          const main = withFx(app)(
-            {},
-            {
-              get: () => state => state,
-              foo: () => throttle(1000, "bar.baz", { updated: "data" }),
-              bar: {
-                baz: data => data
-              }
-            },
-            dummyView
-          )
-          main.foo()
-          expect(main.get()).toEqual({ bar: { updated: "data" } })
-          jest.runAllTimers()
-        } finally {
-          jest.useRealTimers()
-        }
-      })
-      it("should only execute an action once within a limit", () => {
-        jest.useFakeTimers()
-        try {
-          const main = withFx(app)(
-            {},
-            {
-              get: () => state => state,
-              foo: () => throttle(1000, "bar.baz", { updated: "data" }),
-              bar: {
-                baz: data => data
-              }
-            },
-            dummyView
-          )
-          jest.spyOn(main.bar, "baz")
-          main.foo({ updated: "data" })
-          main.foo({ updated: "again" })
-          expect(main.bar.baz).toHaveBeenCalledTimes(1)
-          expect(main.get()).toEqual({ bar: { updated: "data" } })
-          jest.runAllTimers()
-          expect(main.bar.baz).toHaveBeenCalledTimes(1)
-          expect(main.get()).toEqual({ bar: { updated: "data" } })
-        } finally {
-          jest.useRealTimers()
-        }
-      })
-    })
-    it("should allow combining fx in view", done => {
-      withFx(app)(
+            h("h1", { class: "message" }, message),
+            h("button", { onclick: actions.foo.bar }, "foo")
+          ),
+        document.body
+      ))
+    it("should dispatch new state objects", done => {
+      const { dispatch } = withFx(app)(
         {
           message: "hello"
         },
         {
-          foo: data => {
-            expect(data).toMatchObject({ type: "click" })
-          },
-          bar: data => {
-            expect(data).toEqual({ some: "data" })
-            done()
-          }
-        },
-        ({ message }, actions) =>
-          h(
-            "main",
-            {
-              oncreate: () => {
-                expect(actions).toEqual({
-                  foo: expect.any(Function),
-                  bar: expect.any(Function)
-                })
-                expect(document.body.innerHTML).toBe(
-                  "<main><h1>hello</h1><button></button></main>"
-                )
-                clickButton()
-              }
-            },
-            h("h1", {}, message),
-            h("button", {
-              onclick: [event("foo"), action("bar", { some: "data" })]
-            })
-          ),
-        document.body
-      )
-    })
-  })
-  describe("custom fx", () => {
-    it("should allow adding new custom effect", () => {
-      const externalState = { value: 2 }
-
-      const main = withFx({
-        set(props, getAction) {
-          getAction(props.action)(externalState)
-        }
-      })(app)(
-        {
-          value: 0
-        },
-        {
-          foo: () => ["set", { action: "set" }],
-          set: state => state,
           get: () => state => state
         },
-        dummyView
-      )
-
-      expect(main.get()).toEqual({
-        value: 0
-      })
-
-      main.foo()
-      expect(main.get()).toEqual({
-        value: 2
-      })
-
-      externalState.value = 1
-
-      main.foo()
-      expect(main.get()).toEqual({
-        value: 1
-      })
-    })
-    it("should allow overriding built-in fx", () => {
-      const actionLog = []
-
-      withFx({
-        action(props) {
-          actionLog.push(props)
-        }
-      })(app)(
-        {},
-        {
-          foo: () => action("bar", { some: "data" }),
-          bar: () => {
-            throw new Error(
-              "expected bar not to be called with overridden action effect!"
-            )
-          }
-        },
-        dummyView
-      ).foo()
-
-      expect(actionLog).toEqual([
-        {
-          name: "bar",
-          event: null,
-          data: {
-            some: "data"
-          }
-        }
-      ])
-    })
-    it("should attach to lifecycle events in view", done => {
-      withFx({
-        yolo(props) {
-          props.event.innerHTML = "#YOLO"
-          expect(document.body.innerHTML).toBe("<main>#YOLO</main>")
-          done()
-        }
-      })(app)(
-        {},
-        {},
-        () =>
-          h("main", {
-            oncreate: ["yolo", {}]
-          }),
+        () => h("main", {}, h("button", { onclick: { message: "goodbye" } })),
         document.body
       )
+      setTimeout(() => {
+        clickButton()
+        expect(dispatch(getState)).toEqual({ message: "goodbye" })
+        done()
+      })
+    })
+    it("should dispatch unwired action functions", done => {
+      const messageWithEmphasis = ({ message }, event) => {
+        expect(event).toMatchObject({ type: "click" })
+        return {
+          message: `${message} for reals`
+        }
+      }
+      const { dispatch } = withFx({ unwiredActions: true })(app)(
+        {
+          message: "hello"
+        },
+        {
+          get: () => state => state
+        },
+        () => h("main", {}, h("button", { onclick: messageWithEmphasis })),
+        document.body
+      )
+      setTimeout(() => {
+        clickButton()
+        expect(dispatch(getState)).toEqual({ message: "hello for reals" })
+        done()
+      })
+    })
+    it("should dispatch in subviews", done => {
+      const Component = () => () =>
+        h("main", {}, h("button", { onclick: { message: "goodbye" } }))
+      const { dispatch } = withFx(app)(
+        {
+          message: "hello"
+        },
+        {
+          get: () => state => state
+        },
+        () => h("div", {}, [h(Component, {})]),
+        document.body
+      )
+      setTimeout(() => {
+        clickButton()
+        expect(dispatch(getState)).toEqual({ message: "goodbye" })
+        done()
+      })
+    })
+  })
+  /* eslint-enable no-console */
+  describe("for interop", () => {
+    it("should return a dispatch function", () => {
+      const { dispatch } = withFx(app)({}, {}, dummyView)
+      expect(dispatch).toBeInstanceOf(Function)
+    })
+    it("should get state when dispatching an identity action", () => {
+      const { dispatch } = withFx(app)({ count: 1 }, {}, dummyView)
+      expect(dispatch(getState)).toEqual({ count: 1 })
+    })
+    it("should dispatch new state objects", () => {
+      const { dispatch } = withFx(app)({ count: 1 }, {}, dummyView)
+      expect(dispatch({ count: 0 })).toEqual({ count: 0 })
+      expect(dispatch(getState)).toEqual({ count: 0 })
+    })
+    it("should dispatch unwired action functions", () => {
+      const up = ({ count }) => ({ count: count + 1 })
+      const { dispatch } = withFx(app)({ count: 0 }, {}, dummyView)
+      expect(dispatch(up)).toEqual({ count: 1 })
+      expect(dispatch(getState)).toEqual({ count: 1 })
+    })
+    it("should log dispatched actions to console when logger enabled", done => {
+      const defaultConsole = console
+      // eslint-disable-next-line no-global-assign
+      console = {
+        log() {},
+        group() {},
+        groupEnd() {
+          done()
+        }
+      }
+      const { dispatch } = withFx({ logger: true })(app)({}, {}, dummyView)
+
+      dispatch({ count: 0 })
+
+      // eslint-disable-next-line no-global-assign
+      console = defaultConsole
     })
   })
 })
