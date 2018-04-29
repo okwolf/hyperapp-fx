@@ -184,18 +184,17 @@ describe("withFx", () => {
       expect(dispatch(getState)).toEqual({ count: 1 })
     })
     describe("delay", () => {
-      it("should fire an action after a delay", () => {
-        jest.useFakeTimers()
-        try {
-          const { dispatch } = withFx(app)({ count: 0 }, {}, dummyView)
-          const up = ({ count }, by) => ({ count: count + by })
-          dispatch([{ count: 1 }, delay(1000, up, 2)])
+      it("should fire an action after a delay", done => {
+        const { dispatch } = withFx(app)({}, {}, dummyView)
+        const up = ({ count }, by) => ({ count: count + by })
+        dispatch([{ count: 1 }, delay(10, up, 2)])
+        setTimeout(() => {
           expect(dispatch(getState)).toEqual({ count: 1 })
-          jest.runAllTimers()
-          expect(dispatch(getState)).toEqual({ count: 3 })
-        } finally {
-          jest.useRealTimers()
-        }
+          setTimeout(() => {
+            expect(dispatch(getState)).toEqual({ count: 3 })
+            done()
+          }, 10)
+        }, 5)
       })
     })
     describe("http", () => {

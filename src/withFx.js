@@ -83,8 +83,12 @@ function makeDispatch(options) {
       if (isFn(action)) {
         actionResult = action(state)
       } else if (Array.isArray(action)) {
-        action.map(actions.dispatch)
-        return
+        actionResult = state
+        action.map(function(childAction) {
+          setTimeout(function() {
+            actions.dispatch(childAction)
+          })
+        })
       } else if (INTERNAL_DISPATCH in action) {
         var actionData = action[INTERNAL_DISPATCH]
         actionResult = actionData.action(state, actionData.data)
