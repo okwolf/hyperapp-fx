@@ -1,14 +1,6 @@
+import { INTERNAL_DISPATCH, INTERNAL_COMMAND } from "./constants"
+import { makeDispatchAction } from "./fxCreators"
 import { dispatchLogger } from "./dispatchLogger"
-
-// special property used to disambiguate action dispatch data from a new state value
-// inspired by https://github.com/reactjs/redux/blob/3b600993e91d42d1569994964e9a13606edccdf0/src/utils/actionTypes.js#L9-L14
-var INTERNAL_DISPATCH =
-  "@@fx/DISPATCH" +
-  Math.random()
-    .toString(36)
-    .substring(7)
-    .split("")
-    .join(".")
 
 var isFn = function(value) {
   return typeof value === "function"
@@ -47,10 +39,7 @@ function makeEventHandler(state, actions, currentAction) {
   return function(currentEvent) {
     var actionData = {}
     if (isFn(currentAction)) {
-      actionData[INTERNAL_DISPATCH] = {
-        action: currentAction,
-        data: currentEvent
-      }
+      actionData = makeDispatchAction(currentAction, currentEvent)
     } else {
       actionData = currentAction
     }
@@ -89,13 +78,18 @@ function makeEnhancedView(options, view) {
 
 function makeDispatch(options) {
   return function(action) {
-    return function(state) {
+    return function(state, actions) {
       var actionResult = action
       if (isFn(action)) {
         actionResult = action(state)
+      } else if (Array.isArray(action)) {
+        action.map(actions.dispatch)
+        return
       } else if (INTERNAL_DISPATCH in action) {
         var actionData = action[INTERNAL_DISPATCH]
         actionResult = actionData.action(state, actionData.data)
+      } else if (INTERNAL_COMMAND in action) {
+        actionResult = action.runFx(actions.dispatch, action.props)
       }
 
       if (options.logger) {

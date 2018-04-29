@@ -1,5 +1,5 @@
 import { h, app } from "hyperapp"
-import { withFx } from "../src"
+import { withFx, delay, http } from "../src"
 
 const dummyView = Function.prototype
 const getState = state => state
@@ -163,7 +163,6 @@ describe("withFx", () => {
       })
     })
   })
-  /* eslint-enable no-console */
   describe("for interop", () => {
     it("should return a dispatch function", () => {
       const { dispatch } = withFx(app)({}, {}, dummyView)
@@ -184,9 +183,143 @@ describe("withFx", () => {
       expect(dispatch(up)).toEqual({ count: 1 })
       expect(dispatch(getState)).toEqual({ count: 1 })
     })
+    describe("delay", () => {
+      it("should fire an action after a delay", () => {
+        jest.useFakeTimers()
+        try {
+          const { dispatch } = withFx(app)({ count: 0 }, {}, dummyView)
+          const up = ({ count }, by) => ({ count: count + by })
+          dispatch([{ count: 1 }, delay(1000, up, 2)])
+          expect(dispatch(getState)).toEqual({ count: 1 })
+          jest.runAllTimers()
+          expect(dispatch(getState)).toEqual({ count: 3 })
+        } finally {
+          jest.useRealTimers()
+        }
+      })
+    })
+    describe("http", () => {
+      it("should get json", done => {
+        const defaultFetch = global.fetch
+        const testUrl = "https://example.com"
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({})
+          return Promise.resolve({
+            ok: true,
+            json: () => Promise.resolve({ results: [1, 2, 3] })
+          })
+        }
+        const { dispatch } = withFx(app)({}, {}, dummyView)
+        const setData = (state, response) => ({ data: response })
+        dispatch(http(testUrl, setData))
+        setTimeout(() => {
+          expect(dispatch(getState)).toEqual({ data: { results: [1, 2, 3] } })
+          done()
+        })
+        global.fetch = defaultFetch
+      })
+      it("should get text", done => {
+        const defaultFetch = global.fetch
+        const testUrl = "https://example.com"
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({})
+          return Promise.resolve({
+            ok: true,
+            text: () => Promise.resolve("hello world")
+          })
+        }
+        const { dispatch } = withFx(app)({}, {}, dummyView)
+        const setMessage = (state, message) => ({ message })
+        dispatch(http(testUrl, setMessage, { response: "text" }))
+        setTimeout(() => {
+          expect(dispatch(getState)).toEqual({ message: "hello world" })
+          done()
+        })
+        global.fetch = defaultFetch
+      })
+      it("should post json", done => {
+        const defaultFetch = global.fetch
+        const testUrl = "/login"
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({
+            method: "POST",
+            body: {
+              user: "username",
+              pass: "password"
+            }
+          })
+          return Promise.resolve({
+            ok: true,
+            json: () =>
+              Promise.resolve({ status: "authenticated", token: "1234" })
+          })
+        }
+        const { dispatch } = withFx(app)({}, {}, dummyView)
+        const setData = (state, response) => ({ user: response })
+        dispatch(
+          http(testUrl, setData, {
+            method: "POST",
+            body: { user: "username", pass: "password" }
+          })
+        )
+        setTimeout(() => {
+          expect(dispatch(getState)).toEqual({
+            user: { status: "authenticated", token: "1234" }
+          })
+          done()
+        })
+        global.fetch = defaultFetch
+      })
+      it("should call the error handler on network error", done => {
+        const defaultFetch = global.fetch
+        const testUrl = "https://example.com"
+        const error = new Error("Failed")
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({})
+          return Promise.reject(error)
+        }
+        const { dispatch } = withFx(app)({}, {}, dummyView)
+        const setMessage = () => {
+          done.fail(new Error("Should not be called"))
+        }
+        const errorHandler = (state, err) => {
+          expect(err).toBe(error)
+          done()
+        }
+        dispatch(http(testUrl, setMessage, { error: errorHandler }))
+
+        global.fetch = defaultFetch
+      })
+      it("should call the error handler when response is not OK", done => {
+        const defaultFetch = global.fetch
+        const testUrl = "https://example.com"
+        const response = {
+          ok: false
+        }
+        global.fetch = (url, options) => {
+          expect(url).toBe(testUrl)
+          expect(options).toEqual({})
+          return Promise.resolve(response)
+        }
+        const { dispatch } = withFx(app)({}, {}, dummyView)
+        const setMessage = () => {
+          done.fail(new Error("Should not be called"))
+        }
+        const errorHandler = (state, err) => {
+          expect(err).toBe(response)
+          done()
+        }
+        dispatch(http(testUrl, setMessage, { error: errorHandler }))
+
+        global.fetch = defaultFetch
+      })
+    })
     it("should log dispatched actions to console when logger enabled", done => {
       const defaultConsole = console
-      // eslint-disable-next-line no-global-assign
       console = {
         log() {},
         group() {},
@@ -198,7 +331,6 @@ describe("withFx", () => {
 
       dispatch({ count: 0 })
 
-      // eslint-disable-next-line no-global-assign
       console = defaultConsole
     })
   })

@@ -7,6 +7,8 @@
     "Promise": true
   },
   "rules": {
-    "compat/compat": "off"
+    "compat/compat": "off",
+    "no-console": "off",
+    "no-global-assign": "off"
   }
 }
