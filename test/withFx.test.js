@@ -139,7 +139,7 @@ describe("withFx", () => {
           message: `${message} for reals`
         }
       }
-      const { dispatch } = withFx({ unwiredActions: true })(app)(
+      const { dispatch } = withFx(app)(
         {
           message: "hello"
         },
