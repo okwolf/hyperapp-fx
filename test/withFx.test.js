@@ -1,5 +1,17 @@
 import { h, app } from "hyperapp"
-import { withFx, delay, http } from "../src"
+import {
+  withFx,
+  frame,
+  delay,
+  time,
+  log,
+  http,
+  keydown,
+  keyup,
+  random,
+  debounce,
+  throttle
+} from "../src"
 
 const dummyView = Function.prototype
 const getState = state => state
@@ -183,20 +195,79 @@ describe("withFx", () => {
       expect(dispatch(up)).toEqual({ count: 1 })
       expect(dispatch(getState)).toEqual({ count: 1 })
     })
-    describe("delay", () => {
-      it("should fire an action after a delay", done => {
+    it("should dispatch mix of state and actions in an array", () => {
+      jest.useFakeTimers()
+      try {
         const { dispatch } = withFx(app)({}, {}, dummyView)
-        const up = ({ count }, by) => ({ count: count + by })
-        dispatch([{ count: 1 }, delay(10, up, 2)])
-        setTimeout(() => {
-          expect(dispatch(getState)).toEqual({ count: 1 })
-          setTimeout(() => {
-            expect(dispatch(getState)).toEqual({ count: 3 })
+        const up = ({ count }) => ({ count: count + 1 })
+
+        dispatch([{ count: 1 }, up])
+        expect(dispatch(getState)).toEqual({})
+        jest.runAllTimers()
+        expect(dispatch(getState)).toEqual({ count: 2 })
+      } finally {
+        jest.useRealTimers()
+      }
+    })
+    describe("frame", () => {
+      it("should call animation frame", done => {
+        const timestamp = 9001
+        global.requestAnimationFrame = jest.fn(cb => cb(timestamp))
+        const { dispatch } = withFx(app)({}, {}, dummyView)
+        dispatch(
+          frame((state, data) => {
+            expect(data).toBe(timestamp)
             done()
-          }, 10)
-        }, 5)
+          })
+        )
+        expect(requestAnimationFrame).toBeCalledWith(expect.any(Function))
+        delete global.requestAnimationFrame
       })
     })
+    describe("delay", () => {
+      it("should fire an action after a delay", () => {
+        jest.useFakeTimers()
+        try {
+          const { dispatch } = withFx(app)({ count: 1 }, {}, dummyView)
+          const up = ({ count }, by) => ({ count: count + by })
+          dispatch(delay(1000, up, 2))
+          expect(dispatch(getState)).toEqual({ count: 1 })
+          jest.runAllTimers()
+          expect(dispatch(getState)).toEqual({ count: 3 })
+        } finally {
+          jest.useRealTimers()
+        }
+      })
+    })
+    describe("time", () => {
+      it("should get the current time", done => {
+        const timestamp = 9001
+        global.performance.now = () => timestamp
+        const { dispatch } = withFx(app)({}, {}, dummyView)
+        dispatch(
+          time((state, data) => {
+            expect(data).toBe(timestamp)
+            done()
+          })
+        )
+        delete global.performance.now
+      })
+    })
+    /* eslint-disable no-console */
+    describe("log", () => {
+      it("should log to console", done => {
+        const testArgs = ["bar", { some: "data" }, ["list", "of", "data"]]
+        const defaultLog = console.log
+        console.log = function(...args) {
+          expect(args).toEqual(testArgs)
+          done()
+        }
+        const { dispatch } = withFx(app)({}, {}, dummyView)
+        dispatch(log(...testArgs))
+        console.log = defaultLog
+      })
+    })
+    /* eslint-enable no-console */
     describe("http", () => {
       it("should get json", done => {
         const defaultFetch = global.fetch
@@ -315,6 +386,141 @@ describe("withFx", () => {
         dispatch(http(testUrl, setMessage, { error: errorHandler }))
 
         global.fetch = defaultFetch
+      })
+    })
+    describe("keydown", () => {
+      it("should attach keydown listener", done => {
+        const keyEvent = { key: "a", code: "KeyA" }
+        const { dispatch } = withFx(app)({}, {}, dummyView)
+        dispatch(
+          keydown((state, data) => {
+            expect(data).toEqual(keyEvent)
+            done()
+          })
+        )
+        document.onkeydown(keyEvent)
+      })
+    })
+    describe("keyup", () => {
+      it("should attach keyup listener", done => {
+        const keyEvent = { key: "a", code: "KeyA" }
+        const { dispatch } = withFx(app)({}, {}, dummyView)
+        dispatch(
+          keyup((state, data) => {
+            expect(data).toEqual(keyEvent)
+            done()
+          })
+        )
+        document.onkeyup(keyEvent)
+      })
+    })
+    describe("random", () => {
+      it("should call random with default range", done => {
+        const randomValue = 0.5
+        const defaultRandom = Math.random
+        Math.random = () => randomValue
+
+        const { dispatch } = withFx(app)({}, {}, dummyView)
+        dispatch(
+          random((state, data) => {
+            expect(data).toBeCloseTo(randomValue)
+            done()
+          })
+        )
+
+        Math.random = defaultRandom
+      })
+
+      it("should call random with custom range", done => {
+        const defaultRandom = Math.random
+        Math.random = () => 0.5
+
+        const { dispatch } = withFx(app)({}, {}, dummyView)
+        dispatch(
+          random(
+            (state, data) => {
+              expect(data).toBeCloseTo(3.5)
+              done()
+            },
+            // min
+            2,
+            // max
+            5
+          )
+        )
+
+        Math.random = defaultRandom
+      })
+    })
+    describe("debounce", () => {
+      it("should fire an action after a delay", () => {
+        jest.useFakeTimers()
+        try {
+          const { dispatch } = withFx(app)({ count: 0 }, {}, dummyView)
+          const up = (state, by) => ({ count: state.count + by })
+          dispatch(debounce(1000, up, 2))
+          expect(dispatch(getState)).toEqual({ count: 0 })
+          jest.runAllTimers()
+          expect(dispatch(getState)).toEqual({ count: 2 })
+        } finally {
+          jest.useRealTimers()
+        }
+      })
+      it("should not execute an action until the delay has passed", () => {
+        jest.useFakeTimers()
+        try {
+          const { dispatch } = withFx(app)({ count: 0 }, {}, dummyView)
+          const actions = {
+            up: (state, by) => ({ count: state.count + by })
+          }
+
+          jest.spyOn(actions, "up")
+          dispatch(debounce(1000, actions.up, 2))
+          expect(actions.up).toHaveBeenCalledTimes(0)
+          expect(dispatch(getState)).toEqual({ count: 0 })
+          jest.runAllTimers()
+          expect(actions.up).toHaveBeenCalledTimes(1)
+          expect(dispatch(getState)).toEqual({ count: 2 })
+        } finally {
+          jest.useRealTimers()
+        }
+      })
+      it("should receive the data of the last attempted action call", () => {
+        jest.useFakeTimers()
+        try {
+          const { dispatch } = withFx(app)({}, {}, dummyView)
+          const set = (state, data) => data
+
+          dispatch(debounce(1000, set, { data: "first" }))
+          dispatch(debounce(1000, set, { data: "last" }))
+          jest.runAllTimers()
+          expect(dispatch(getState)).toEqual({ data: "last" })
+        } finally {
+          jest.useRealTimers()
+        }
+      })
+    })
+    describe("throttle", () => {
+      it("should execute an action immediately", () => {
+        const { dispatch } = withFx(app)({ count: 0 }, {}, dummyView)
+        const up = (state, by) => ({ count: state.count + by })
+        dispatch(throttle(1000, up, 2))
+        expect(dispatch(getState)).toEqual({ count: 2 })
+      })
+      it("should only execute an action once within a limit", () => {
+        jest.useFakeTimers()
+        try {
+          const { dispatch } = withFx(app)({}, {}, dummyView)
+          const set = (state, data) => data
+
+          dispatch(throttle(1000, set, { updated: "data" }))
+          dispatch(throttle(1000, set, { updated: "again" }))
+          expect(dispatch(getState)).toEqual({ updated: "data" })
+          jest.runAllTimers()
+          expect(dispatch(getState)).toEqual({ updated: "data" })
+        } finally {
+          jest.useRealTimers()
+        }
       })
     })
     it("should log dispatched actions to console when logger enabled", done => {
