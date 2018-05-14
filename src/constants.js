@@ -15,3 +15,6 @@ export var INTERNAL_COMMAND =
     .substring(7)
     .split("")
     .join(".")
+
+export var REFACTOR_FOR_V2 =
+  " You need to refactor this before moving to Hyperapp 2.0."

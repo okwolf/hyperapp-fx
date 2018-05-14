@@ -34,7 +34,7 @@ describe("withFx", () => {
   it("should call view without actions", done =>
     withFx(app)(undefined, undefined, () => done()))
   it("should not interfere with 1.0 actions", done => {
-    const main = withFx({ wiredActions: true })(app)(
+    const main = withFx(app)(
       {
         value: 0
       },
@@ -67,24 +67,9 @@ describe("withFx", () => {
 
     main.finish()
   })
-  it("should throw error when calling wired actions", () => {
-    const main = withFx(app)(
-      {},
-      {
-        foo: {
-          bar: () => ({})
-        }
-      },
-      dummyView
-    )
-
-    expect(main.foo.bar).toThrow(
-      "Still using wired action: 'foo.bar'. You need to refactor this before moving to Hyperapp 2.0."
-    )
-  })
   describe("for the view", () => {
     it("should not interfere with 1.0 actions", done =>
-      withFx({ wiredActions: true })(app)(
+      withFx(app)(
         {
           foo: {
             message: "hello"
@@ -93,7 +78,7 @@ describe("withFx", () => {
         {
           foo: {
             bar: data => state => {
-              expect(data).toMatchObject({ type: "click" })
+              expect(data).toEqual({ message: "goodbye" })
               expect(state).toEqual({ message: "hello" })
               done()
             }
@@ -111,7 +96,16 @@ describe("withFx", () => {
               }
             },
             h("h1", { class: "message" }, message),
-            h("button", { onclick: actions.foo.bar }, "foo")
+            h(
+              "button",
+              {
+                onclick(event) {
+                  expect(event).toMatchObject({ type: "click" })
+                  actions.foo.bar({ message: "goodbye" })
+                }
+              },
+              "foo"
+            )
           ),
         document.body
       ))
@@ -134,7 +128,9 @@ describe("withFx", () => {
     })
     it("should dispatch unwired action functions", done => {
       const messageWithEmphasis = ({ message }, event) => {
-        expect(event).toMatchObject({ type: "click" })
+        if (event) {
+          expect(event).toMatchObject({ type: "click" })
+        }
         return {
           message: `${message} for reals`
         }
@@ -143,9 +139,7 @@ describe("withFx", () => {
         {
           message: "hello"
         },
-        {
-          get: () => state => state
-        },
+        {},
         () => h("main", {}, h("button", { onclick: messageWithEmphasis })),
         document.body
       )
@@ -537,6 +531,23 @@ describe("withFx", () => {
       dispatch({ count: 0 })
 
       console = defaultConsole
+    })
+  })
+  describe("with strictMode option", () => {
+    it("should throw error when calling wired actions from interop", () => {
+      const main = withFx({ strictMode: true })(app)(
+        {},
+        {
+          foo: {
+            bar: () => ({})
+          }
+        },
+        dummyView
+      )
+
+      expect(main.foo.bar).toThrow(
+        "Still using wired action: 'foo.bar'. You need to refactor this before moving to Hyperapp 2.0."
+      )
     })
   })
 })

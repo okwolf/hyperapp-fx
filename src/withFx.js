@@ -1,4 +1,9 @@
-import { INTERNAL_DISPATCH, INTERNAL_COMMAND } from "./constants"
+import {
+  INTERNAL_DISPATCH,
+  INTERNAL_COMMAND,
+  REFACTOR_FOR_V2
+} from "./constants"
+import { assign } from "./utils.js"
 import { makeDispatchAction } from "./fxCreators"
 import { dispatchLogger } from "./dispatchLogger"
 
@@ -17,13 +22,7 @@ function makeEnhancedActions(options, actionsTemplate, prefix) {
     otherActions[name] = isFn(action)
       ? function(data) {
           return function(state, actions) {
-            if (options.wiredActions !== true) {
-              throw new Error(
-                "Still using wired action: '" +
-                  namedspacedName +
-                  "'. You need to refactor this before moving to Hyperapp 2.0."
-              )
-            }
+            options.warn("Still using wired action: '" + namedspacedName + "'.")
             var result = action(data)
             result = isFn(result) ? result(state, actions) : result
             return result
@@ -35,15 +34,23 @@ function makeEnhancedActions(options, actionsTemplate, prefix) {
   {})
 }
 
-function makeEventHandler(state, actions, currentAction) {
+function makeEventHandler(options, actions, currentAction, key) {
   return function(currentEvent) {
-    var actionData = {}
+    var actionData
     if (isFn(currentAction)) {
-      actionData = makeDispatchAction(currentAction, currentEvent)
+      if (!currentAction(currentEvent)) {
+        options.warn(
+          "Still using old-style event listener for event: '" + key + "'."
+        )
+      } else {
+        actionData = makeDispatchAction(currentAction, currentEvent)
+      }
     } else {
       actionData = currentAction
     }
-    actions.dispatch(actionData)
+    if (actionData) {
+      actions.dispatch(actionData)
+    }
   }
 }
 
@@ -51,17 +58,18 @@ function makeEnhancedView(options, view) {
   function patchVdom(state, actions, vdom) {
     if (typeof vdom === "object") {
       for (var key in vdom.attributes) {
-        if (options.wiredActions !== true && key[0] === "o" && key[1] === "n") {
+        if (key[0] === "o" && key[1] === "n") {
           vdom.attributes[key] = makeEventHandler(
-            state,
+            options,
             actions,
-            vdom.attributes[key]
+            vdom.attributes[key],
+            key
           )
         }
       }
       for (var i in vdom.children) {
         if (isFn(vdom.children[i])) {
-          // TODO: warn if using lazy components?
+          // TODO: error if using lazy components?
           vdom.children[i] = makeEnhancedView(options, vdom.children[i])
         } else {
           patchVdom(state, actions, vdom.children[i])
@@ -106,9 +114,20 @@ function makeDispatch(options) {
 
 function makeFxApp(options, nextApp) {
   return function(initialState, actionsTemplate, view, container) {
-    var enhancedActions = makeEnhancedActions(options, actionsTemplate)
-    enhancedActions.dispatch = makeDispatch(options)
-    var enhancedView = makeEnhancedView(options, view)
+    var optionsWithWarn = assign(options, {
+      warn: function(message) {
+        var completeMessage = message + REFACTOR_FOR_V2
+        if (options.strictMode) {
+          throw new Error(completeMessage)
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn(completeMessage)
+        }
+      }
+    })
+    var enhancedActions = makeEnhancedActions(optionsWithWarn, actionsTemplate)
+    enhancedActions.dispatch = makeDispatch(optionsWithWarn)
+    var enhancedView = makeEnhancedView(optionsWithWarn, view)
 
     var appActions = nextApp(
       initialState,
