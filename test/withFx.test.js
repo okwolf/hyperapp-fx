@@ -549,5 +549,19 @@ describe("withFx", () => {
         "Still using wired action: 'foo.bar'. You need to refactor this before moving to Hyperapp 2.0."
       )
     })
+    it("should throw error when omitting state and relying on shallow merge of state", () => {
+      const { dispatch } = withFx({ strictMode: true })(app)(
+        {
+          foo: "bar",
+          bar: "baz"
+        },
+        {},
+        dummyView
+      )
+
+      expect(() => dispatch({ fizz: "buzz" })).toThrow(
+        "New state will no longer be shallow-merged with existing state. The following state keys were ommited: 'foo, bar'. You need to refactor this before moving to Hyperapp 2.0."
+      )
+    })
   })
 })

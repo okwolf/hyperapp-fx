@@ -3,7 +3,7 @@ import {
   INTERNAL_COMMAND,
   REFACTOR_FOR_V2
 } from "./constants"
-import { assign } from "./utils.js"
+import { assign, difference } from "./utils.js"
 import { makeDispatchAction } from "./fxCreators"
 import { dispatchLogger } from "./dispatchLogger"
 
@@ -106,6 +106,17 @@ function makeDispatch(options) {
 
       if (options.logger) {
         dispatchLogger(state, action, actionResult)
+      }
+      var omittedStateKeys = difference(
+        Object.keys(state),
+        Object.keys(actionResult || {})
+      )
+      if (omittedStateKeys.length) {
+        options.warn(
+          "New state will no longer be shallow-merged with existing state. The following state keys were ommited: '" +
+            omittedStateKeys.join(", ") +
+            "'."
+        )
       }
       return actionResult
     }

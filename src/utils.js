@@ -17,3 +17,9 @@ export function omit(object, keys) {
     })
   return copy
 }
+
+export function difference(source, exclude) {
+  return source.filter(function(currentValue) {
+    return exclude.indexOf(currentValue) === -1
+  })
+}
