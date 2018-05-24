@@ -69,7 +69,7 @@ function makeEnhancedView(options, view) {
       }
       for (var i in vdom.children) {
         if (isFn(vdom.children[i])) {
-          // TODO: error if using lazy components?
+          options.warn("Still using lazy components/subviews.")
           vdom.children[i] = makeEnhancedView(options, vdom.children[i])
         } else {
           patchVdom(state, actions, vdom.children[i])
