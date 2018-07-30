@@ -1,9 +1,9 @@
 {
   "env": {
+    "node": true,
     "jest": true
   },
   "globals": {
-    "global": true,
     "Promise": true
   },
   "rules": {

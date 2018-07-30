@@ -1,15 +1,12 @@
 {
   "name": "@hyperapp/fx",
-  "version": "0.7.0",
-  "description": "Effects as data for Hyperapp",
+  "version": "0.20.0-HAv2",
+  "description": "Effects as data for Hyperapp v2",
   "main": "dist/hyperappFx.js",
   "module": "src/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/hyperapp/fx.git"
-  },
-  "peerDependencies": {
-    "hyperapp": "^1.2.0"
   },
   "devDependencies": {
     "babel-preset-env": "=1.6.1",
