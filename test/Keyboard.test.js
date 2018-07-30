@@ -15,7 +15,7 @@ describe("Keyboard effect", () => {
     document.dispatchEvent(new KeyboardEvent("keydown", keyEvent))
     expect(dispatch).not.toBeCalled()
   })
-  it("should attach keyup listener", () => {
+  it("should add and remove keyup listener", () => {
     const keyEvent = new KeyboardEvent("keyup", { key: "a", code: "KeyA" })
     const action = jest.fn()
     const keyboardFx = Keyboard({ ups: true, action })
@@ -28,7 +28,7 @@ describe("Keyboard effect", () => {
     document.dispatchEvent(new KeyboardEvent("keyup", keyEvent))
     expect(dispatch).not.toBeCalled()
   })
-  it("should attach keypress listener", () => {
+  it("should add and remove keypress listener", () => {
     const keyEvent = new KeyboardEvent("keypress", { key: "a", code: "KeyA" })
     const action = jest.fn()
     const keyboardFx = Keyboard({ presses: true, action })
