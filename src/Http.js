@@ -1,8 +1,7 @@
-import { assign, omit } from "./utils.js"
+import { assign } from "./utils.js"
 
 function httpEffect(props, dispatch) {
-  var fetchOptions = omit(props, ["url", "action", "response", "error"])
-  fetch(props.url, fetchOptions)
+  fetch(props.url, props.options)
     .then(function(response) {
       if (!response.ok) {
         throw response
@@ -20,14 +19,15 @@ function httpEffect(props, dispatch) {
     })
 }
 
-export function Http(options) {
+export function Http(props) {
   return {
     props: assign(
       {
+        options: {},
         response: "json",
-        error: options.action
+        error: props.action
       },
-      options
+      props
     ),
     effect: httpEffect
   }

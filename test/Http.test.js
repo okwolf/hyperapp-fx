@@ -62,8 +62,10 @@ describe("Http effect", () => {
     const action = jest.fn()
     const httpFx = Http({
       url: testUrl,
-      method: "POST",
-      body: { user: "username", pass: "password" },
+      options: {
+        method: "POST",
+        body: { user: "username", pass: "password" }
+      },
       action
     })
     const { dispatch } = runFx(httpFx)
