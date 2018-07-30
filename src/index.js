@@ -1,2 +1,2 @@
-export * from "./fx"
-export * from "./subs"
+export * from "./fx.js"
+export * from "./subs.js"
