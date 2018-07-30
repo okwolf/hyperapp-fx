@@ -1,15 +1,21 @@
 #!/usr/bin/env node
 
-// eslint-disable-next-line no-undef
+/* eslint-disable no-undef */
 const { execSync } = require("child_process")
-const exec = command => execSync(command, { encoding: "utf8" })
+const exec = command => execSync(command, { encoding: "utf8" }).trim()
+
+const exitWithError = error => {
+  process.stderr.write(`\x1b[1;31m${error}\x1b[0m\n\n`)
+  process.exit(1)
+}
+/* eslint-enable no-undef */
 
 const gitBranchName = exec("git rev-parse --abbrev-ref HEAD")
-if (gitBranchName.trim() !== "master") {
-  throw new Error("please checkout the master branch to make a release!")
+if (gitBranchName !== "master") {
+  exitWithError("please checkout the master branch to make a release!")
 }
 
 const workingCopyChanges = exec("git status --porcelain")
-if (workingCopyChanges.trim() !== "") {
-  throw new Error("please commit your changes before making a release!")
+if (workingCopyChanges) {
+  exitWithError("please commit your changes before making a release!")
 }
