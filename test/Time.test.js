@@ -13,7 +13,19 @@ describe("Time effect", () => {
 
     delete global.performance.now
   })
-  it("should fire an action after a delay", () => {
+  it("should get the current date", () => {
+    const timestamp = 9001
+    const defaultDate = global.Date
+    global.Date = () => ({ timestamp })
+
+    const action = jest.fn()
+    const timeFx = Time({ now: true, asDate: true, action })
+    const { dispatch } = runFx(timeFx)
+    expect(dispatch).toBeCalledWith(action, { timestamp })
+
+    global.Date = defaultDate
+  })
+  it("should get the current time after a delay", () => {
     jest.useFakeTimers()
     const timestamp = 666
     global.performance.now = () => timestamp
@@ -29,7 +41,24 @@ describe("Time effect", () => {
       jest.useRealTimers()
     }
   })
-  it("should cancel fire an action before delay ends", () => {
+  it("should get the current date after a delay", () => {
+    jest.useFakeTimers()
+    const timestamp = 666
+    const defaultDate = global.Date
+    global.Date = () => ({ timestamp })
+    try {
+      const action = jest.fn()
+      const timeFx = Time({ after: timestamp, asDate: true, action })
+      const { dispatch } = runFx(timeFx)
+      expect(dispatch).not.toBeCalled()
+      jest.runAllTimers()
+      expect(dispatch).toBeCalledWith(action, { timestamp })
+    } finally {
+      global.Date = defaultDate
+      jest.useRealTimers()
+    }
+  })
+  it("should cancel getting the current time before the delay ends", () => {
     jest.useFakeTimers()
     const timestamp = 666
     global.performance.now = () => timestamp
@@ -46,7 +75,7 @@ describe("Time effect", () => {
       jest.useRealTimers()
     }
   })
-  it("should fire an action after an interval until unsubscribed", () => {
+  it("should get the current time at an interval until unsubscribed", () => {
     jest.useFakeTimers()
     const every = 1000
     let now = 0
@@ -69,6 +98,33 @@ describe("Time effect", () => {
       expect(dispatch).not.toBeCalled()
     } finally {
       delete global.performance.now
+      jest.useRealTimers()
+    }
+  })
+  it("should get the current date at an interval until unsubscribed", () => {
+    jest.useFakeTimers()
+    const every = 1000
+    let now = 0
+    const defaultDate = global.Date
+    global.Date = () => ({ now: (now += every) })
+    try {
+      const action = jest.fn()
+      const timeFx = Time({ every, asDate: true, action })
+      const { dispatch, unsubscribe } = runFx(timeFx)
+      expect(dispatch).not.toBeCalled()
+      jest.runOnlyPendingTimers()
+      expect(dispatch).toBeCalledWith(action, { now: every })
+
+      dispatch.mockReset()
+      jest.runOnlyPendingTimers()
+      expect(dispatch).toBeCalledWith(action, { now: 2 * every })
+
+      dispatch.mockReset()
+      unsubscribe()
+      jest.runOnlyPendingTimers()
+      expect(dispatch).not.toBeCalled()
+    } finally {
+      global.Date = defaultDate
       jest.useRealTimers()
     }
   })

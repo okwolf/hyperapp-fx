@@ -2,7 +2,7 @@ function timeEffect(props, dispatch) {
   var afterTimeout
   var everyInterval
   function dispatchTime() {
-    dispatch(props.action, performance.now())
+    dispatch(props.action, props.asDate ? new Date() : performance.now())
   }
   if (props.now) {
     dispatchTime()
