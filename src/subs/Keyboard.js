@@ -1,4 +1,4 @@
-import { makeRemoveListener } from "./utils.js"
+import { makeRemoveListener } from "../utils.js"
 
 function keyboardEffect(props, dispatch) {
   var action = props.action

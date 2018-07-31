@@ -1,5 +1,5 @@
-import { runFx } from "./runFx"
-import { Keyboard } from "../src"
+import { runFx } from "../utils"
+import { Keyboard } from "../../src"
 
 describe("Keyboard effect", () => {
   it("should add and remove keydown listener", () => {

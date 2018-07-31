@@ -1,5 +1,5 @@
-import { runFx } from "./runFx"
-import { BatchFx } from "../src"
+import { runFx } from "../utils"
+import { BatchFx } from "../../src"
 
 describe("BatchFx effect", () => {
   it("should dispatch nothing with no fx", () => {

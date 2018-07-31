@@ -1,5 +1,5 @@
-import { runFx } from "./runFx"
-import { Time } from "../src"
+import { runFx } from "../utils"
+import { Time } from "../../src"
 
 describe("Time effect", () => {
   it("should get the current time", () => {

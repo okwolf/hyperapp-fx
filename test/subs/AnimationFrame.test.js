@@ -1,5 +1,5 @@
-import { runFx } from "./runFx"
-import { AnimationFrame } from "../src"
+import { runFx } from "../utils"
+import { AnimationFrame } from "../../src"
 
 describe("AnimationFrame effect", () => {
   it("should fire an action each frame until unsubscribed", () => {

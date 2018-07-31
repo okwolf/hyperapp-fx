@@ -1,5 +1,5 @@
-import { runFx } from "./runFx"
-import { Http } from "../src"
+import { runFx } from "../utils"
+import { Http } from "../../src"
 
 describe("Http effect", () => {
   it("should get json", done => {

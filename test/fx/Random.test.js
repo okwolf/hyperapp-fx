@@ -1,5 +1,5 @@
-import { runFx } from "./runFx"
-import { Random } from "../src"
+import { runFx } from "../utils"
+import { Random } from "../../src"
 
 describe("Random effect", () => {
   it("should call Math.random with default range", () => {
