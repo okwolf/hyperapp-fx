@@ -1,7 +1,7 @@
 import { runFx } from "../utils"
 import { Time } from "../../src"
 
-describe("Time effect", () => {
+describe("Time subscription", () => {
   it("should get the current time", () => {
     const timestamp = 9001
     global.performance.now = () => timestamp

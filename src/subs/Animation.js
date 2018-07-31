@@ -1,4 +1,4 @@
-function frameEffect(action, dispatch) {
+function animationEffect(action, dispatch) {
   var cancelId
 
   function frame(timestamp) {
@@ -12,9 +12,9 @@ function frameEffect(action, dispatch) {
   }
 }
 
-export function AnimationFrame(action) {
+export function Animation(action) {
   return {
     props: action,
-    effect: frameEffect
+    effect: animationEffect
   }
 }

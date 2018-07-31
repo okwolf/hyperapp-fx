@@ -1,7 +1,7 @@
 import { runFx } from "../utils"
-import { AnimationFrame } from "../../src"
+import { Animation } from "../../src"
 
-describe("AnimationFrame effect", () => {
+describe("Animation subscription", () => {
   it("should fire an action each frame until unsubscribed", () => {
     const cancelId = 9001
     const timestamp = 1001
@@ -13,7 +13,7 @@ describe("AnimationFrame effect", () => {
     })
     global.cancelAnimationFrame = jest.fn()
     const action = jest.fn()
-    const frameFx = AnimationFrame(action)
+    const frameFx = Animation(action)
     const { dispatch, unsubscribe } = runFx(frameFx)
     expect(dispatch).toBeCalledWith(action, timestamp)
     expect(requestAnimationFrame).toBeCalledWith(expect.any(Function))

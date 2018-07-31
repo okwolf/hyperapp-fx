@@ -1,7 +1,7 @@
 import { runFx } from "../utils"
 import { Keyboard } from "../../src"
 
-describe("Keyboard effect", () => {
+describe("Keyboard subscription", () => {
   it("should add and remove keydown listener", () => {
     const keyEvent = new KeyboardEvent("keydown", { key: "a", code: "KeyA" })
     const action = jest.fn()
