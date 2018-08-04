@@ -6,12 +6,10 @@ export function assign(source, assignments) {
   return result
 }
 
-export function makeRemoveListener(eventName, dispatch, action) {
-  function handler(eventData) {
-    dispatch(action, eventData)
-  }
-  document.addEventListener(eventName, handler)
+export function makeRemoveListener(attachTo, dispatch, action, eventName) {
+  var handler = dispatch.bind(null, action)
+  attachTo.addEventListener(eventName, handler)
   return function() {
-    document.removeEventListener(eventName, handler)
+    attachTo.removeEventListener(eventName, handler)
   }
 }
