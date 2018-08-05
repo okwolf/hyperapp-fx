@@ -50,7 +50,7 @@ describe("WebSocketClient", () => {
     mockWebSocket.readyState = 0
     const message = { some: "message value" }
     const webSocketFx = WebSocketClient({ url, send: message })
-    const { dispatch, unsubscribe } = runFx(webSocketFx)
+    const { unsubscribe } = runFx(webSocketFx)
 
     expect(mockWebSocket.addEventListener).toBeCalledWith(
       "open",
@@ -61,15 +61,9 @@ describe("WebSocketClient", () => {
 
     const openListener = mockWebSocket.addEventListener.mock.calls[0][1]
     openListener()
-    expect(dispatch).toBeCalledWith(expect.any(Function))
-    dispatch.mock.calls[0][0]()
     expect(mockWebSocket.send).toBeCalledWith(message)
 
     unsubscribe()
-    expect(mockWebSocket.removeEventListener).toBeCalledWith(
-      "open",
-      expect.any(Function)
-    )
   })
   it("should listen for messages and remove the listener on unsubscribe", () => {
     const message = JSON.stringify({ some: "message value" })

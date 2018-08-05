@@ -12,19 +12,12 @@ function webSocketEffect(props, dispatch) {
     }
     connections[props.url] = connection
   }
-  function sendMessage(state) {
+  function sendMessage() {
     connection.socket.send(props.send)
-    return state
   }
-  var removeOpen
   if (props.send) {
     if (connection.socket.readyState === CONNECTING) {
-      removeOpen = makeRemoveListener(
-        connection.socket,
-        dispatch,
-        sendMessage,
-        "open"
-      )
+      connection.socket.addEventListener("open", sendMessage)
     } else {
       sendMessage()
     }
@@ -51,7 +44,6 @@ function webSocketEffect(props, dispatch) {
   }
 
   return function() {
-    removeOpen && removeOpen()
     removeListen && removeListen()
     removeError && removeError()
     connection.listeners = connection.listeners.filter(function(listener) {
