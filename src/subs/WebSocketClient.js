@@ -25,7 +25,6 @@ function webSocketEffect(props, dispatch) {
         sendMessage,
         "open"
       )
-      connection.listeners.push(removeOpen)
     } else {
       sendMessage()
     }
@@ -56,11 +55,7 @@ function webSocketEffect(props, dispatch) {
     removeListen && removeListen()
     removeError && removeError()
     connection.listeners = connection.listeners.filter(function(listener) {
-      return (
-        listener !== removeOpen &&
-        listener !== removeListen &&
-        listener !== removeError
-      )
+      return listener !== removeListen && listener !== removeError
     })
     if (connection.listeners.length === 0) {
       connection.socket.close()
