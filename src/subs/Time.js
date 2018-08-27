@@ -1,17 +1,19 @@
-function timeEffect(props, dispatch) {
+import { assign } from "../utils.js"
+
+function timeEffect(sub, dispatch) {
   var afterTimeout
   var everyInterval
   function dispatchTime() {
-    dispatch(props.action, props.asDate ? new Date() : performance.now())
+    dispatch(sub.action, sub.asDate ? new Date() : performance.now())
   }
-  if (props.now) {
+  if (sub.now) {
     dispatchTime()
   }
-  if (props.after) {
-    afterTimeout = setTimeout(dispatchTime, props.after)
+  if (sub.after) {
+    afterTimeout = setTimeout(dispatchTime, sub.after)
   }
-  if (props.every) {
-    everyInterval = setInterval(dispatchTime, props.every)
+  if (sub.every) {
+    everyInterval = setInterval(dispatchTime, sub.every)
   }
   return function() {
     afterTimeout && clearTimeout(afterTimeout)
@@ -20,8 +22,7 @@ function timeEffect(props, dispatch) {
 }
 
 export function Time(props) {
-  return {
-    props: props,
+  return assign(props, {
     effect: timeEffect
-  }
+  })
 }
