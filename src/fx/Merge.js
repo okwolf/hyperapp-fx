@@ -1,14 +1,14 @@
 import { assign } from "../utils.js"
 
-function mergeEffect(action, dispatch) {
+function mergeEffect(props, dispatch) {
   dispatch(function(state) {
-    return assign(state, action(state))
+    return assign(state, props.action(state))
   })
 }
 
 export function Merge(action) {
   return {
-    props: action,
+    action: action,
     effect: mergeEffect
   }
 }

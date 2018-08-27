@@ -1,3 +1,5 @@
+import { assign } from "../utils.js"
+
 var throttleLocks = []
 function throttleEffect(props, dispatch) {
   var lock = throttleLocks.find(function(nextLock) {
@@ -18,8 +20,5 @@ function throttleEffect(props, dispatch) {
 }
 
 export function Throttle(props) {
-  return {
-    props: props,
-    effect: throttleEffect
-  }
+  return assign({ effect: throttleEffect }, props)
 }

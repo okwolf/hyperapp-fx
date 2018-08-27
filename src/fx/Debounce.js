@@ -1,3 +1,5 @@
+import { assign } from "../utils.js"
+
 var debounceTimeouts = []
 function debounceEffect(props, dispatch) {
   var timeout = debounceTimeouts.find(function(nextTimeout) {
@@ -16,8 +18,5 @@ function debounceEffect(props, dispatch) {
 }
 
 export function Debounce(props) {
-  return {
-    props: props,
-    effect: debounceEffect
-  }
+  return assign({ effect: debounceEffect }, props)
 }

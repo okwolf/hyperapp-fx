@@ -5,11 +5,9 @@ function randomEffect(props, dispatch) {
 
 export function Random(props) {
   return {
-    props: {
-      action: props.action,
-      min: props.min || 0,
-      max: props.max || 1
-    },
+    action: props.action,
+    min: props.min || 0,
+    max: props.max || 1,
     effect: randomEffect
   }
 }
