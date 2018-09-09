@@ -1,13 +1,9 @@
 {
-  "name": "@hyperapp/fx",
+  "name": "hyperapp-fx",
   "version": "0.7.0",
   "description": "Effects as data for Hyperapp",
   "main": "dist/hyperappFx.js",
   "module": "src/index.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/hyperapp/fx.git"
-  },
   "peerDependencies": {
     "hyperapp": "^1.2.0"
   },
@@ -67,8 +63,9 @@
   ],
   "author": "Wolfgang Wedemeyer <wolf@okwolf.com>",
   "license": "MIT",
+  "repository": "okwolf/hyperapp-fx",
+  "homepage": "https://github.com/okwolf/hyperapp-fx",
   "bugs": {
-    "url": "https://github.com/hyperapp/fx/issues"
-  },
-  "homepage": "https://github.com/hyperapp/fx"
+    "url": "https://github.com/okwolf/hyperapp-fx/issues"
+  }
 }

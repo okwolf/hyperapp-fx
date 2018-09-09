@@ -10,8 +10,9 @@ env:
 before_install:
   - npm i -g npx
 
-install:
-  - npm i
+cache:
+  directories:
+    - "node_modules"
 
 script:
   - npm run build
