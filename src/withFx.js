@@ -1,102 +1,144 @@
-import { assign } from "./utils.js"
-import makeDefaultFx from "./makeDefaultFx"
+import {
+  INTERNAL_DISPATCH,
+  INTERNAL_COMMAND,
+  REFACTOR_FOR_V2
+} from "./constants"
+import { assign, difference } from "./utils.js"
+import { makeDispatchAction } from "./fxCreators"
+import { dispatchLogger } from "./dispatchLogger"
 
-var isFx = Array.isArray
 var isFn = function(value) {
   return typeof value === "function"
 }
 
-function getActionNamed(actions, name) {
-  function getNextAction(partialActions, paths) {
-    var nextAction = partialActions[paths[0]]
-    if (!nextAction) {
-      throw new Error("couldn't find action: " + name)
-    }
-    return paths.length === 1
-      ? nextAction
-      : getNextAction(nextAction, paths.slice(1))
-  }
-  return getNextAction(actions, name.split("."))
-}
-
-function runIfFx(actions, currentEvent, maybeFx, fx) {
-  if (!isFx(maybeFx)) {
-    // Not an effect
-    return maybeFx
-  } else if (isFx(maybeFx[0])) {
-    // Run an array of effects
-    for (var i in maybeFx) {
-      runIfFx(actions, currentEvent, maybeFx[i], fx)
-    }
-  } else if (maybeFx.length) {
-    // Run a single effect
-    var getAction = getActionNamed.bind(null, actions)
-    var type = maybeFx[0]
-    var props = assign(maybeFx[1], { event: currentEvent })
-    var fxRunner = fx[type]
-    if (isFn(fxRunner)) {
-      fxRunner(props, getAction)
-    } else {
-      throw new Error("no such fx type: " + type)
-    }
-  }
-}
-
-function enhanceActions(actionsTemplate, fx) {
+function makeEnhancedActions(options, actionsTemplate, prefix) {
+  var namespace = prefix ? prefix + "." : ""
   return Object.keys(actionsTemplate || {}).reduce(function(
     otherActions,
     name
   ) {
+    var namedspacedName = namespace + name
     var action = actionsTemplate[name]
     otherActions[name] = isFn(action)
       ? function(data) {
           return function(state, actions) {
+            options.warn("Still using wired action: '" + namedspacedName + "'.")
             var result = action(data)
             result = isFn(result) ? result(state, actions) : result
-            return runIfFx(actions, null, result, fx)
+            return result
           }
         }
-      : enhanceActions(action, fx)
+      : makeEnhancedActions(options, action, namedspacedName)
     return otherActions
   },
   {})
 }
 
-function handleEventFx(actions, currentFx, fx) {
+function makeEventHandler(options, actions, currentAction, key) {
   return function(currentEvent) {
-    runIfFx(actions, currentEvent, currentFx, fx)
+    var actionData
+    if (isFn(currentAction)) {
+      if (!currentAction(currentEvent)) {
+        options.warn(
+          "Still using old-style event listener for event: '" + key + "'."
+        )
+      } else {
+        actionData = makeDispatchAction(currentAction, currentEvent)
+      }
+    } else {
+      actionData = currentAction
+    }
+    if (actionData) {
+      actions.dispatch(actionData)
+    }
   }
 }
 
-function makeEnhancedView(view, fx) {
-  function patchVdomFx(actions, vdom) {
+function makeEnhancedView(options, view) {
+  function patchVdom(state, actions, vdom) {
     if (typeof vdom === "object") {
       for (var key in vdom.attributes) {
-        var maybeFx = vdom.attributes[key]
-        if (isFx(maybeFx)) {
-          vdom.attributes[key] = handleEventFx(actions, maybeFx, fx)
+        if (key[0] === "o" && key[1] === "n") {
+          vdom.attributes[key] = makeEventHandler(
+            options,
+            actions,
+            vdom.attributes[key],
+            key
+          )
         }
       }
       for (var i in vdom.children) {
         if (isFn(vdom.children[i])) {
-          vdom.children[i] = makeEnhancedView(vdom.children[i], fx)
+          options.warn("Still using lazy components/subviews.")
+          vdom.children[i] = makeEnhancedView(options, vdom.children[i])
         } else {
-          patchVdomFx(actions, vdom.children[i], fx)
+          patchVdom(state, actions, vdom.children[i])
         }
       }
     }
   }
   return function(state, actions) {
     var vdom = view(state, actions)
-    patchVdomFx(actions, vdom, fx)
+    patchVdom(state, actions, vdom)
     return vdom
   }
 }
 
-function makeFxApp(fx, nextApp) {
+function makeDispatch(options) {
+  return function(action) {
+    return function(state, actions) {
+      var actionResult = action
+      if (isFn(action)) {
+        actionResult = action(state)
+      } else if (Array.isArray(action)) {
+        actionResult = state
+        action.map(function(childAction) {
+          setTimeout(function() {
+            actions.dispatch(childAction)
+          })
+        })
+      } else if (INTERNAL_DISPATCH in action) {
+        var actionData = action[INTERNAL_DISPATCH]
+        actionResult = actionData.action(state, actionData.data)
+      } else if (INTERNAL_COMMAND in action) {
+        actionResult = action.runFx(actions.dispatch, action.props)
+      }
+
+      if (options.logger) {
+        dispatchLogger(state, action, actionResult)
+      }
+      var omittedStateKeys = difference(
+        Object.keys(state),
+        Object.keys(actionResult || {})
+      )
+      if (omittedStateKeys.length) {
+        options.warn(
+          "New state will no longer be shallow-merged with existing state. The following state keys were ommited: '" +
+            omittedStateKeys.join(", ") +
+            "'."
+        )
+      }
+      return actionResult
+    }
+  }
+}
+
+function makeFxApp(options, nextApp) {
   return function(initialState, actionsTemplate, view, container) {
-    var enhancedActions = enhanceActions(actionsTemplate, fx)
-    var enhancedView = makeEnhancedView(view, fx)
+    var optionsWithWarn = assign(options, {
+      warn: function(message) {
+        var completeMessage = message + REFACTOR_FOR_V2
+        if (options.strictMode) {
+          throw new Error(completeMessage)
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn(completeMessage)
+        }
+      }
+    })
+    var enhancedActions = makeEnhancedActions(optionsWithWarn, actionsTemplate)
+    enhancedActions.dispatch = makeDispatch(optionsWithWarn)
+    var enhancedView = makeEnhancedView(optionsWithWarn, view)
 
     var appActions = nextApp(
       initialState,
@@ -108,16 +150,12 @@ function makeFxApp(fx, nextApp) {
   }
 }
 
-export function withFx(fxOrApp) {
-  var fx = makeDefaultFx()
-  if (typeof fxOrApp === "function") {
-    return makeFxApp(fx, fxOrApp)
+export function withFx(optionsOrApp) {
+  if (isFn(optionsOrApp)) {
+    return makeFxApp({}, optionsOrApp)
   } else {
-    for (var name in fxOrApp) {
-      fx[name] = fxOrApp[name]
-    }
     return function(nextApp) {
-      return makeFxApp(fx, nextApp)
+      return makeFxApp(optionsOrApp, nextApp)
     }
   }
 }
