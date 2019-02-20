@@ -1,15 +1,15 @@
-import { makeRemoveListener, assign } from "../utils.js"
+import { makeRemoveListener } from "../utils.js"
 
-function keyboardEffect(sub, dispatch) {
+function keyboardEffect(props, dispatch) {
   var removeListenerForEvent = makeRemoveListener.bind(
     null,
     document,
     dispatch,
-    sub.action
+    props.action
   )
-  var removeDown = sub.downs ? removeListenerForEvent("keydown") : null
-  var removeUp = sub.ups ? removeListenerForEvent("keyup") : null
-  var removePress = sub.presses ? removeListenerForEvent("keypress") : null
+  var removeDown = props.downs ? removeListenerForEvent("keydown") : null
+  var removeUp = props.ups ? removeListenerForEvent("keyup") : null
+  var removePress = props.presses ? removeListenerForEvent("keypress") : null
   return function() {
     removeDown && removeDown()
     removeUp && removeUp()
@@ -18,7 +18,5 @@ function keyboardEffect(sub, dispatch) {
 }
 
 export function Keyboard(props) {
-  return assign(props, {
-    effect: keyboardEffect
-  })
+  return [keyboardEffect, props]
 }

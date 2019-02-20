@@ -1,13 +1,9 @@
-function batchEffect(props, dispatch) {
-  var fx = props.fx
+function batchEffect(fx, dispatch) {
   for (var i = 0; i < fx.length; i++) {
-    fx[i].effect(fx[i], dispatch)
+    fx[i][0](fx[i][1], dispatch)
   }
 }
 
 export function BatchFx() {
-  return {
-    fx: arguments,
-    effect: batchEffect
-  }
+  return [batchEffect, arguments]
 }

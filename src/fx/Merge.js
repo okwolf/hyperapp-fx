@@ -7,8 +7,5 @@ function mergeEffect(props, dispatch) {
 }
 
 export function Merge(action) {
-  return {
-    action: action,
-    effect: mergeEffect
-  }
+  return [mergeEffect, { action: action }]
 }

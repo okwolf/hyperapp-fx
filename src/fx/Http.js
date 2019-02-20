@@ -20,13 +20,15 @@ function httpEffect(props, dispatch) {
 }
 
 export function Http(props) {
-  return assign(
-    {
-      options: {},
-      response: "json",
-      error: props.action,
-      effect: httpEffect
-    },
-    props
-  )
+  return [
+    httpEffect,
+    assign(
+      {
+        options: {},
+        response: "json",
+        error: props.action
+      },
+      props
+    )
+  ]
 }

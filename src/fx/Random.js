@@ -4,10 +4,12 @@ function randomEffect(props, dispatch) {
 }
 
 export function Random(props) {
-  return {
-    action: props.action,
-    min: props.min || 0,
-    max: props.max || 1,
-    effect: randomEffect
-  }
+  return [
+    randomEffect,
+    {
+      action: props.action,
+      min: props.min || 0,
+      max: props.max || 1
+    }
+  ]
 }
