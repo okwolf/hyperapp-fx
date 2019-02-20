@@ -1,8 +1,8 @@
-function animationEffect(sub, dispatch) {
+function animationEffect(action, dispatch) {
   var cancelId
 
   function frame(timestamp) {
-    dispatch(sub.action, timestamp)
+    dispatch(action, timestamp)
     cancelId = requestAnimationFrame(frame)
   }
 
@@ -13,8 +13,5 @@ function animationEffect(sub, dispatch) {
 }
 
 export function Animation(action) {
-  return {
-    action: action,
-    effect: animationEffect
-  }
+  return [animationEffect, action]
 }

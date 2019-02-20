@@ -1,11 +1,8 @@
-function consoleEffect(props) {
+function consoleEffect(args) {
   // eslint-disable-next-line no-console
-  console.log.apply(null, props.args)
+  console.log.apply(null, args)
 }
 
 export function Console() {
-  return {
-    args: arguments,
-    effect: consoleEffect
-  }
+  return [consoleEffect, arguments]
 }

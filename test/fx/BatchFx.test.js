@@ -8,22 +8,20 @@ describe("BatchFx effect", () => {
     expect(dispatch).not.toBeCalled()
   })
   it("should dispatch single fx", () => {
+    const props = {}
     const effect = jest.fn()
-    const fx = { key: "value", effect }
-    const batchFx = BatchFx(fx)
+    const batchFx = BatchFx([effect, props])
     const { dispatch } = runFx(batchFx)
-    expect(effect).toBeCalledWith(fx, dispatch)
+    expect(effect).toBeCalledWith(props, dispatch)
   })
   it("should dispatch multiple fx", () => {
     const props1 = { first: "props" }
     const effect1 = jest.fn()
     const props2 = { second: "props" }
     const effect2 = jest.fn()
-    const fx1 = { props: props1, effect: effect1 }
-    const fx2 = { props: props2, effect: effect2 }
-    const batchFx = BatchFx(fx1, fx2)
+    const batchFx = BatchFx([effect1, props1], [effect2, props2])
     const { dispatch } = runFx(batchFx)
-    expect(effect1).toBeCalledWith(fx1, dispatch)
-    expect(effect2).toBeCalledWith(fx2, dispatch)
+    expect(effect1).toBeCalledWith(props1, dispatch)
+    expect(effect2).toBeCalledWith(props2, dispatch)
   })
 })

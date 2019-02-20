@@ -1,21 +1,21 @@
-import { makeRemoveListener, assign } from "../utils.js"
+import { makeRemoveListener } from "../utils.js"
 
 var CONNECTING = 0
 var connections = {}
 
-function webSocketEffect(sub, dispatch) {
-  var connection = connections[sub.url]
+function webSocketEffect(props, dispatch) {
+  var connection = connections[props.url]
   if (!connection) {
     connection = {
-      socket: new WebSocket(sub.url, sub.protocols),
+      socket: new WebSocket(props.url, props.protocols),
       listeners: []
     }
-    connections[sub.url] = connection
+    connections[props.url] = connection
   }
   function sendMessage() {
-    connection.socket.send(sub.send)
+    connection.socket.send(props.send)
   }
-  if (sub.send) {
+  if (props.send) {
     if (connection.socket.readyState === CONNECTING) {
       connection.socket.addEventListener("open", sendMessage)
     } else {
@@ -23,21 +23,21 @@ function webSocketEffect(sub, dispatch) {
     }
   }
   var removeListen
-  if (sub.listen) {
+  if (props.listen) {
     removeListen = makeRemoveListener(
       connection.socket,
       dispatch,
-      sub.listen,
+      props.listen,
       "message"
     )
     connection.listeners.push(removeListen)
   }
   var removeError
-  if (sub.error) {
+  if (props.error) {
     removeError = makeRemoveListener(
       connection.socket,
       dispatch,
-      sub.error,
+      props.error,
       "error"
     )
     connection.listeners.push(removeError)
@@ -51,13 +51,11 @@ function webSocketEffect(sub, dispatch) {
     })
     if (connection.listeners.length === 0) {
       connection.socket.close()
-      delete connections[sub.url]
+      delete connections[props.url]
     }
   }
 }
 
 export function WebSocketClient(props) {
-  return assign(props, {
-    effect: webSocketEffect
-  })
+  return [webSocketEffect, props]
 }
