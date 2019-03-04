@@ -17,6 +17,16 @@ function throttleEffect(props, dispatch) {
   }
 }
 
+/**
+ * Describes an effect that will call an action at a maximum rate. Where `rate` is one call per `rate` milliseconds.
+ *
+ * @memberof module:fx
+ * @param {object} props
+ * @param {number} props.rate - minimum time between action calls
+ * @param {*} props.action - action to throttle
+ * @example
+ * import { Throttle } from "hyperapp-fx"
+ */
 export function Throttle(props) {
   return [throttleEffect, props]
 }

@@ -4,6 +4,12 @@ function batchEffect(fx, dispatch) {
   }
 }
 
+/**
+ * @memberof module:fx
+ * @param {...*} fx - FX to run together in a batch
+ * @example
+ * import { BatchFx } from "hyperapp-fx"
+ */
 export function BatchFx() {
   return [batchEffect, arguments]
 }
