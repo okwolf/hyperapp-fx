@@ -1,11 +1,11 @@
 {
   "name": "hyperapp-fx",
-  "version": "0.7.0",
-  "description": "Effects as data for Hyperapp",
+  "version": "1.0.0",
+  "description": "Effects as data for Hyperapp v1",
   "main": "dist/hyperappFx.js",
   "module": "src/index.js",
   "peerDependencies": {
-    "hyperapp": "^1.2.0"
+    "hyperapp": "^1.2.9"
   },
   "devDependencies": {
     "babel-preset-env": "=1.6.1",
