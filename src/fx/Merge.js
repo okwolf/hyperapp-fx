@@ -6,6 +6,12 @@ function mergeEffect(props, dispatch) {
   })
 }
 
+/**
+ * @memberof module:fx
+ * @param {function(object): object} action - an action function that takes state and returns a partial new state which will be shallow-merged with the previous state
+ * @example
+ * import { Merge } from "hyperapp-fx"
+ */
 export function Merge(action) {
   return [mergeEffect, { action: action }]
 }

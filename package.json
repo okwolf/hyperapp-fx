@@ -1,7 +1,7 @@
 {
   "name": "hyperapp-fx",
   "version": "2.0.0-alpha.0",
-  "description": "Effects as data for Hyperapp",
+  "description": "Effects for use with Hyperapp",
   "main": "dist/hyperappFx.js",
   "module": "src/index.js",
   "peerDependencies": {
@@ -12,6 +12,7 @@
     "eslint": "=4.19.0",
     "eslint-plugin-compat": "=2.2.0",
     "jest": "=22.4.4",
+    "jsdoc-to-markdown": "=4.0.1",
     "jsdom": "=11.11.0",
     "prettier": "=1.11.1",
     "rollup": "=0.57.1",
@@ -23,6 +24,7 @@
     "format:check": "prettier --list-different {src,test}/**/*.js",
     "lint": "eslint {src,test}/**/*.js",
     "test": "jest --coverage --no-cache",
+    "doc": "jsdoc2md src/fx/*.js src/subs/*.js > api.md",
     "bundle": "rollup -i src/index.js -o dist/hyperappFx.js -m -f umd -n hyperappFx",
     "minify": "uglifyjs dist/hyperappFx.js -o dist/hyperappFx.js -mc pure_funcs=['Object.defineProperty'] --source-map includeSources,url=hyperappFx.js.map",
     "check": "npm run format:check && npm run lint && npm t",
