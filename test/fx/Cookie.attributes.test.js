@@ -40,7 +40,9 @@ describe("Cookie effect", () => {
       const writeCookie = WriteCookie({ name: "name", value: "value", ttl })
       runFx(writeCookie)
 
-      expect(document.cookie).toEqual("name=value;expires=" + expires.toUTCString())
+      expect(document.cookie).toEqual(
+        "name=value;expires=" + expires.toUTCString()
+      )
     })
 
     it("expiry date", () => {
@@ -54,7 +56,9 @@ describe("Cookie effect", () => {
       })
       runFx(writeCookie)
 
-      expect(document.cookie).toEqual("name=value;expires=" + expires.toUTCString())
+      expect(document.cookie).toEqual(
+        "name=value;expires=" + expires.toUTCString()
+      )
     })
 
     it("multiple attributes", () => {
