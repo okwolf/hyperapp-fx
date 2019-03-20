@@ -1,13 +1,16 @@
 import { assign } from "../utils.js"
 
-var validCookieNameChars = "abdefghijklmnqrstuvxyzABDEFGHIJKLMNQRSTUVXYZ0123456789!#$%&'*+-.^_`|~"
+var validCookieNameChars =
+  "abdefghijklmnqrstuvxyzABDEFGHIJKLMNQRSTUVXYZ0123456789!#$%&'*+-.^_`|~"
 var validCookieValueChars = validCookieNameChars + "()/:<>?@[]{}"
 
 function nameEncoder(value) {
   return value
     .toString()
     .split("")
-    .map(function(c) { return validCookieNameChars.indexOf(c) > -1 ? c : encodeURIComponent(c) })
+    .map(function(c) {
+      return validCookieNameChars.indexOf(c) > -1 ? c : encodeURIComponent(c)
+    })
     .join("")
 }
 
@@ -15,13 +18,17 @@ function valueEncoder(value) {
   return value
     .toString()
     .split("")
-    .map(function(c) { return validCookieValueChars.indexOf(c) > -1 ? c : encodeURIComponent(c) })
+    .map(function(c) {
+      return validCookieValueChars.indexOf(c) > -1 ? c : encodeURIComponent(c)
+    })
     .join("")
 }
 
 function writeCookie(name, value, attributes) {
   var attrs = Object.keys(attributes)
-    .map(function(k) { return k + "=" + attributes[k] })
+    .map(function(k) {
+      return k + "=" + attributes[k]
+    })
     .join(";")
   document.cookie = name + "=" + value + (attrs ? ";" + attrs : "")
 }
@@ -44,7 +51,8 @@ function writeCookieEffect(props) {
   var name = (props.nameEncoder || nameEncoder)(props.name)
   var value = (props.encoder || valueEncoder)(props.converter(props.value))
   var attributes = {}
-  if (props.ttl) props.expires = new Date(new Date().getTime() + props.ttl * 1000)
+  if (props.ttl)
+    props.expires = new Date(new Date().getTime() + props.ttl * 1000)
   if (props.path) attributes.path = props.path
   if (props.domain) attributes.domain = props.domain
   if (props.expires) attributes.expires = props.expires.toUTCString()
@@ -53,7 +61,7 @@ function writeCookieEffect(props) {
 }
 
 /**
- * Describes an effect that will read a cookie and then call an action with its value. If no `prop` is specified the action will receive the value of the cookie in the `value` prop. Extra properties may be added using by specifying `props`. If `json` is set to `true` the value will be converted from JSON. 
+ * Describes an effect that will read a cookie and then call an action with its value. If no `prop` is specified the action will receive the value of the cookie in the `value` prop. Extra properties may be added using by specifying `props`. If `json` is set to `true` the value will be converted from JSON.
  *
  * @memberof module:fx
  * @param {object} props
@@ -74,7 +82,14 @@ export function ReadCookie(props) {
     assign(
       {
         nameEncoder: nameEncoder,
-        converter: props.converter || props.json ? function(v) { return JSON.parse(v) } : function(v) { return v },
+        converter:
+          props.converter || props.json
+            ? function(v) {
+                return JSON.parse(v)
+              }
+            : function(v) {
+                return v
+              },
         decoder: props.decoder || decodeURIComponent
       },
       props
@@ -83,7 +98,7 @@ export function ReadCookie(props) {
 }
 
 /**
- * Describes an effect that will write a cookie. 
+ * Describes an effect that will write a cookie.
  *
  * @memberof module:fx
  * @param {object} props
@@ -106,7 +121,14 @@ export function WriteCookie(props) {
     writeCookieEffect,
     assign(
       {
-        converter: props.converter || props.json ? function(v) { return JSON.stringify(v) } : function(v) { return v }
+        converter:
+          props.converter || props.json
+            ? function(v) {
+                return JSON.stringify(v)
+              }
+            : function(v) {
+                return v
+              }
       },
       props
     )
