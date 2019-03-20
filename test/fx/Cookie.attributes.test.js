@@ -1,5 +1,5 @@
 import { runFx } from "../utils"
-import { WriteCookie } from "../../src/fx/cookie"
+import { WriteCookie } from "../../src"
 
 describe("Cookie effect", () => {
   describe("Should be able to set cookie attributes", () => {

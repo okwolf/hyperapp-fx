@@ -1,5 +1,5 @@
 import { runFx } from "../utils"
-import { ReadCookie, WriteCookie, DeleteCookie } from "../../src/fx/cookie"
+import { ReadCookie, WriteCookie, DeleteCookie } from "../../src"
 
 describe("Cookie effect", () => {
   beforeEach(() => {
