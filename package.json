@@ -1,6 +1,6 @@
 {
   "name": "hyperapp-fx",
-  "version": "2.0.0-alpha.0",
+  "version": "2.0.0-alpha.1",
   "description": "Effects for use with Hyperapp",
   "main": "dist/hyperappFx.js",
   "module": "src/index.js",
@@ -29,8 +29,8 @@
     "minify": "uglifyjs dist/hyperappFx.js -o dist/hyperappFx.js -mc pure_funcs=['Object.defineProperty'] --source-map includeSources,url=hyperappFx.js.map",
     "check": "npm run format:check && npm run lint && npm t",
     "build": "npm run check && npm run bundle && npm run minify",
-    "prepare": "npm run build",
-    "release": "./pre-flight-tests && npm run clean && npm i && git tag $npm_package_version && git push && git push --tags && npm publish"
+    "prepare": "npm run build && npm run doc",
+    "release": "./pre-flight-tests && npm run clean && npm i && ./pre-flight-tests && git tag $npm_package_version && git push && git push --tags && npm publish --tag next"
   },
   "prettier": {
     "semi": false
