@@ -7,6 +7,32 @@
 
 A handy set of effects for use with [Hyperapp](https://github.com/jorgebucaran/hyperapp).
 
+## Getting Started
+
+Here's a taste of how to use a common effect for making HTTP requests. The app displays inspiring quotes about design, fetching a new quote each time the user clicks on the current one. Go ahead and [try it online here](https://codepen.io/okwolf/pen/vPbMaa?editors=0010).
+
+```js
+import { h, app } from "hyperapp"
+import { Http } from "hyperapp-fx"
+
+const GetQuote = () => [
+  "...",
+  Http({
+    url:
+      "https://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1",
+    action: (_, [{ content }]) => content
+  })
+]
+
+app({
+  init: "Click here for quotes",
+  view: quote => <h1 onclick={GetQuote}>{quote}</h1>,
+  container: document.body
+})
+```
+
+More [examples](https://codepen.io/collection/ArmxQj) are available to show other in action.
+
 ## Installation
 
 <pre>
