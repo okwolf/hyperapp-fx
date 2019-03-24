@@ -68,6 +68,14 @@ function webSocketEffect(props, dispatch) {
  * @param {*} props.error - action to call if an error occurs
  * @example
  * import { WebSocketClient } from "hyperapp-fx"
+ *
+ * const WebSocketSub = WebSocketClient({
+ *   url: "wss://example.com",
+ *   send: JSON.stringify({
+ *     sendThisData: "on connecting"
+ *   }),
+ *   listen: ReceivedMessageAction
+ * })
  */
 export function WebSocketClient(props) {
   return [webSocketEffect, props]

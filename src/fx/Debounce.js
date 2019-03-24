@@ -24,6 +24,16 @@ function debounceEffect(props, dispatch) {
  * @param {*} props.action - action to debounce
  * @example
  * import { Debounce } from "hyperapp-fx"
+ *
+ * const DebouncedAction = state => [
+ *   state,
+ *   Debounce({
+ *     wait: 500,
+ *     action() {
+ *       // This action will run after waiting for 500ms since the last call
+ *     }
+ *   })
+ * ]
  */
 export function Debounce(props) {
   return [debounceEffect, props]

@@ -9,6 +9,15 @@ function batchEffect(fx, dispatch) {
  * @param {...*} fx - FX to run together in a batch
  * @example
  * import { BatchFx } from "hyperapp-fx"
+ *
+ * const BatchedAction = state => [
+ *   state,
+ *   BatchFx(
+ *     Effect1,
+ *     Effect2,
+ *     // ...
+ *   )
+ * ]
  */
 export function BatchFx() {
   return [batchEffect, arguments]
