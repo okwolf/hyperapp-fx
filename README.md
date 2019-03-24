@@ -31,7 +31,7 @@ app({
 })
 ```
 
-More [examples](https://codepen.io/collection/ArmxQj) are available to show other in action.
+More [examples](https://codepen.io/collection/ArmxQj) are available to show other effects in action.
 
 ## Installation
 
