@@ -30,7 +30,34 @@ function timeEffect(props, dispatch) {
  * @param {boolean} props.asDate - use a Date object instead of a timestamp
  * @param {*} props.action - action to call with the time
  * @example
+ * import { h, app } from "hyperapp"
  * import { Time } from "hyperapp-fx"
+ *
+ * const UpdateDate = (_, date) =>
+ *   date.toLocaleString("uk", {
+ *     hour: "numeric",
+ *     minute: "numeric",
+ *     second: "numeric"
+ *   })
+ *
+ * const InitialTime = Time({
+ *   now: true,
+ *   asDate: true,
+ *   action: UpdateDate
+ * })
+ *
+ * const TimeSub = Time({
+ *   every: 100,
+ *   asDate: true,
+ *   action: UpdateDate
+ * })
+ *
+ * app({
+ *   init: ["", InitialTime],
+ *   view: time => <h1>{time}</h1>,
+ *   container: document.body,
+ *   subscriptions: () => [TimeSub]
+ * })
  */
 export function Time(props) {
   return [timeEffect, props]

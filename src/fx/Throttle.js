@@ -26,6 +26,16 @@ function throttleEffect(props, dispatch) {
  * @param {*} props.action - action to throttle
  * @example
  * import { Throttle } from "hyperapp-fx"
+ *
+ * const ThrottledAction = state => [
+ *   state,
+ *   Throttle({
+ *     rate: 500,
+ *     action() {
+ *       // This action will only run once per 500ms
+ *     }
+ *   })
+ * ]
  */
 export function Throttle(props) {
   return [throttleEffect, props]

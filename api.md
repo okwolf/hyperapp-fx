@@ -32,6 +32,15 @@
 **Example**  
 ```js
 import { BatchFx } from "hyperapp-fx"
+
+const BatchedAction = state => [
+  state,
+  BatchFx(
+    Effect1,
+    Effect2,
+    // ...
+  )
+]
 ```
 <a name="module_fx.exports.Console"></a>
 
@@ -47,6 +56,16 @@ Describes an effect that will call [`console.log`](https://developer.mozilla.org
 **Example**  
 ```js
 import { Console } from "hyperapp-fx"
+
+const ConsoleAction = state => [
+  state,
+  Console(
+    "string arg",
+    { object: "arg" },
+    ["list", "of", "args"],
+    someOtherArg
+  )
+]
 ```
 <a name="module_fx.exports.Debounce"></a>
 
@@ -64,24 +83,53 @@ Describes an effect that will call an action after waiting for a delay to pass. 
 **Example**  
 ```js
 import { Debounce } from "hyperapp-fx"
+
+const DebouncedAction = state => [
+  state,
+  Debounce({
+    wait: 500,
+    action() {
+      // This action will run after waiting for 500ms since the last call
+    }
+  })
+]
 ```
 <a name="module_fx.exports.Http"></a>
 
 ### fx.exports.Http(props)
-Describes an effect that will send an HTTP request using [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch) and then call an action with the response. If you are using a browser from the Proterozoic Eon like Internet Explorer you will want one of the [available](https://github.com/developit/unfetch) `fetch` [polyfills](https://github.com/github/fetch). Supports the same [options as `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#Parameters) plus the following additional properties:
+Describes an effect that will send an HTTP request using [`fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch) and then call an action with the response. If you are using a browser from the Proterozoic Eon like Internet Explorer you will want one of the [available](https://github.com/developit/unfetch) `fetch` [polyfills](https://github.com/github/fetch).
 
 **Kind**: static method of [<code>fx</code>](#module_fx)  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | props | <code>object</code> |  |
-| props.response | <code>string</code> | Specify which method to use on the response body, defaults to "json" |
+| props.url | <code>string</code> | URL for sending HTTP request |
+| props.options | <code>string</code> | same [options as `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#Parameters) |
+| props.response | <code>string</code> | Specify which method to use on the response body, defaults to `"json"`, other [supported methods](https://developer.mozilla.org/en-US/docs/Web/API/Response#Methods) include `"text"` |
 | props.action | <code>\*</code> | Action to call with the results of a successful HTTP response |
 | props.error | <code>\*</code> | Action to call if there is a problem making the request or a not-ok HTTP response, defaults to the same action defined for success |
 
 **Example**  
 ```js
 import { Http } from "hyperapp-fx"
+
+const Login = state => [
+  state,
+  Http({
+    url: "/login",
+    options: {
+      method: "POST",
+      body: form
+    },
+    action(state, loginResponse) {
+      // loginResponse will have the JSON-decoded response from POSTing to /login
+    },
+    error(state, error) {
+      // please handle your errors...
+    }
+  })
+]
 ```
 <a name="module_fx.exports.Merge"></a>
 
@@ -95,13 +143,20 @@ import { Http } from "hyperapp-fx"
 **Example**  
 ```js
 import { Merge } from "hyperapp-fx"
+
+const MergingAction = state => [
+  state,
+  Merge(ActionReturningPartialState)
+]
 ```
 <a name="module_fx.exports.Random"></a>
 
 ### fx.exports.Random(props)
-Describes an effect that will call an action with a [randomly generated number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random) within a range. If provided the range will be `[min, max)` or else the default range is `[0, 1)`. The random number will be provided as the action `data`.
+Describes an effect that will call an action with a [randomly generated number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random) within a range.
+If provided the range will be `[min, max)` or else the default range is `[0, 1)`. The random number will be provided as the action `data`.
 
-Use [`Math.floor`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor) if you want a random integer instead of a floating-point number. Remember the range will be `max` exclusive, so use your largest desired int + 1.
+Use [`Math.floor`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor) if you want a random integer instead of a floating-point number.
+Remember the range will be `max` exclusive, so use your largest desired int + 1.
 
 **Kind**: static method of [<code>fx</code>](#module_fx)  
 
@@ -115,6 +170,21 @@ Use [`Math.floor`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refer
 **Example**  
 ```js
 import { Random } from "hyperapp-fx"
+
+const RollDie = state => [
+  state,
+  Random({
+    min: 1,
+    // We use the max of 7 to include all values of 6.x
+    max: 7,
+    action: (_, randomNumber) => {
+      const roll = Math.floor(randomNumber)
+      // roll will be an int from 1-6
+
+      // return new state using roll
+    }
+  })
+]
 ```
 <a name="module_fx.exports.Throttle"></a>
 
@@ -132,6 +202,16 @@ Describes an effect that will call an action at a maximum rate. Where `rate` is 
 **Example**  
 ```js
 import { Throttle } from "hyperapp-fx"
+
+const ThrottledAction = state => [
+  state,
+  Throttle({
+    rate: 500,
+    action() {
+      // This action will only run once per 500ms
+    }
+  })
+]
 ```
 <a name="module_subs"></a>
 
@@ -146,7 +226,8 @@ import { Throttle } from "hyperapp-fx"
 <a name="module_subs.exports.Animation"></a>
 
 ### subs.exports.Animation(action)
-Describes an effect that will call an action from inside a [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame) loop, which is also where the render triggered by the action will run. A relative timestamp will be provided as the action `data`.
+Describes an effect that will call an action from inside a [`requestAnimationFrame`](https://developer.mozilla.org/en-US/docs/Web/API/Window/requestAnimationFrame) loop, which is also where the render triggered by the action will run.
+A relative timestamp will be provided as the action `data`.
 
 **Kind**: static method of [<code>subs</code>](#module_subs)  
 
@@ -156,7 +237,33 @@ Describes an effect that will call an action from inside a [`requestAnimationFra
 
 **Example**  
 ```js
-import { Animation } from "hyperapp-fx"
+import { h, app } from "hyperapp"
+import { Animation, BatchFx, Merge } from "hyperapp-fx"
+
+const UpdateTime = time => ({ time: lastTime, delta: lastDelta }) => ({
+  time,
+  delta: time && lastTime ? time - lastTime : lastDelta
+})
+
+const AnimationFrame = (state, time) => [
+  state,
+  BatchFx(
+    Merge(UpdateTime(time)),
+    Merge(UpdateStateForDelta),
+    Merge(UpdateMoreStateForDelta),
+    // ...
+  )
+]
+
+app({
+  init: {
+    time: 0,
+    delta: 0,
+    running: true
+  }
+  // ...
+  subscriptions: ({ running }) => (running ? [Animation(AnimationFrame)] : [])
+})
 ```
 <a name="module_subs.exports.Keyboard"></a>
 
@@ -176,6 +283,15 @@ Describes an effect that can capture [keydown](https://developer.mozilla.org/en-
 **Example**  
 ```js
 import { Keyboard } from "hyperapp-fx"
+
+const KeySub = Keyboard({
+  downs: true,
+  ups: true,
+  action: (_, keyEvent) => {
+    // keyEvent has the props of the KeyboardEvent
+    // action will be called for keydown and keyup
+  }
+})
 ```
 <a name="module_subs.exports.Time"></a>
 
@@ -195,7 +311,34 @@ Describes an effect that can provide timestamps to actions using [`performance.n
 
 **Example**  
 ```js
+import { h, app } from "hyperapp"
 import { Time } from "hyperapp-fx"
+
+const UpdateDate = (_, date) =>
+  date.toLocaleString("uk", {
+    hour: "numeric",
+    minute: "numeric",
+    second: "numeric"
+  })
+
+const InitialTime = Time({
+  now: true,
+  asDate: true,
+  action: UpdateDate
+})
+
+const TimeSub = Time({
+  every: 100,
+  asDate: true,
+  action: UpdateDate
+})
+
+app({
+  init: ["", InitialTime],
+  view: time => <h1>{time}</h1>,
+  container: document.body,
+  subscriptions: () => [TimeSub]
+})
 ```
 <a name="module_subs.exports.WebSocketClient"></a>
 
@@ -216,4 +359,12 @@ Describes an effect that will open a [`WebSocket`](https://developer.mozilla.org
 **Example**  
 ```js
 import { WebSocketClient } from "hyperapp-fx"
+
+const WebSocketSub = WebSocketClient({
+  url: "wss://example.com",
+  send: JSON.stringify({
+    sendThisData: "on connecting"
+  }),
+  listen: ReceivedMessageAction
+})
 ```

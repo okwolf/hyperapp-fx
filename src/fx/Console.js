@@ -10,6 +10,16 @@ function consoleEffect(args) {
  * @param {...*} args - arguments to log to the console
  * @example
  * import { Console } from "hyperapp-fx"
+ *
+ * const ConsoleAction = state => [
+ *   state,
+ *   Console(
+ *     "string arg",
+ *     { object: "arg" },
+ *     ["list", "of", "args"],
+ *     someOtherArg
+ *   )
+ * ]
  */
 export function Console() {
   return [consoleEffect, arguments]

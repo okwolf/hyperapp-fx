@@ -4,9 +4,11 @@ function randomEffect(props, dispatch) {
 }
 
 /**
- * Describes an effect that will call an action with a [randomly generated number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random) within a range. If provided the range will be `[min, max)` or else the default range is `[0, 1)`. The random number will be provided as the action `data`.
-
-Use [`Math.floor`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor) if you want a random integer instead of a floating-point number. Remember the range will be `max` exclusive, so use your largest desired int + 1.
+ * Describes an effect that will call an action with a [randomly generated number](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random) within a range.
+ * If provided the range will be `[min, max)` or else the default range is `[0, 1)`. The random number will be provided as the action `data`.
+ *
+ * Use [`Math.floor`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/floor) if you want a random integer instead of a floating-point number.
+ * Remember the range will be `max` exclusive, so use your largest desired int + 1.
  *
  * @memberof module:fx
  * @param {object} props
@@ -15,6 +17,21 @@ Use [`Math.floor`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Refer
  * @param {number} props.max - maximum random number to generate
  * @example
  * import { Random } from "hyperapp-fx"
+ *
+ * const RollDie = state => [
+ *   state,
+ *   Random({
+ *     min: 1,
+ *     // We use the max of 7 to include all values of 6.x
+ *     max: 7,
+ *     action: (_, randomNumber) => {
+ *       const roll = Math.floor(randomNumber)
+ *       // roll will be an int from 1-6
+ *
+ *       // return new state using roll
+ *     }
+ *   })
+ * ]
  */
 export function Random(props) {
   return [

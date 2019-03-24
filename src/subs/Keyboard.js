@@ -28,6 +28,15 @@ function keyboardEffect(props, dispatch) {
  * @param {*} props.action - action to call when keyboard events are fired
  * @example
  * import { Keyboard } from "hyperapp-fx"
+ *
+ * const KeySub = Keyboard({
+ *   downs: true,
+ *   ups: true,
+ *   action: (_, keyEvent) => {
+ *     // keyEvent has the props of the KeyboardEvent
+ *     // action will be called for keydown and keyup
+ *   }
+ * })
  */
 export function Keyboard(props) {
   return [keyboardEffect, props]
