@@ -74,6 +74,17 @@ function writeCookieEffect(props) {
  * @param {function} props.decoder - Function used to decode cookie value
  * @example
  * import { ReadCookie } from "hyperapp-fx"
+ *
+ * const LoadPreferences = state => [
+ *   state,
+ *   ReadCookie({
+ *     name: "preferences",
+ *     action: function (state, { value }) {
+ *       // this action will receive the cookie value
+ *     },
+ *     json: true
+ *   })
+ * ]
  */
 
 export function ReadCookie(props) {
@@ -113,7 +124,16 @@ export function ReadCookie(props) {
  * @param {function} props.converter - Function used to convert cookie value
  * @param {function} props.encoder - Function used to encode cookie value
  * @example
- * import { ReadCookie } from "hyperapp-fx"
+ * import { WriteCookie } from "hyperapp-fx"
+ *
+ * const SavePreferences = state => [
+ *   state,
+ *   WriteCookie({
+ *     name: "preferences",
+ *     value: state.preferences
+ *     json: true
+ *   })
+ * ]
  */
 
 export function WriteCookie(props) {
@@ -144,6 +164,13 @@ export function WriteCookie(props) {
 
  * @example
  * import { DeleteCookie } from "hyperapp-fx"
+ * 
+ *  const ClearPreferences = state => [
+ *   state,
+ *   DeleteCookie({
+ *     name: "preferences"
+ *   })
+ * ]
  */
 
 export function DeleteCookie(props) {
