@@ -133,6 +133,69 @@ Describes an effect that will delete a cookie.
 ```js
 import { DeleteCookie } from "hyperapp-fx"
 ```
+<a name="module_fx.exports.ReadCookie"></a>
+
+### fx.exports.ReadCookie(props)
+Describes an effect that will read a cookie and then call an action with its value. If no `prop` is specified the action will receive the value of the cookie in the `value` prop. Extra properties may be added using by specifying `props`. If `json` is set to `true` the value will be converted from JSON.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.name | <code>string</code> | Name of the cookie |
+| props.action | <code>string</code> | Action to call when cookie is read |
+| props.prop | <code>string</code> | Name of prop to which the cookie value is passed |
+| props.props | <code>object</code> | Props to pass to action |
+| props.json | <code>boolean</code> | Indicates whether cookie value should be converted from JSON |
+| props.converter | <code>function</code> | Function used to convert cookie value |
+| props.decoder | <code>function</code> | Function used to decode cookie value |
+
+**Example**  
+```js
+import { ReadCookie } from "hyperapp-fx"
+```
+<a name="module_fx.exports.WriteCookie"></a>
+
+### fx.exports.WriteCookie(props)
+Describes an effect that will write a cookie.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.name | <code>string</code> | Name of the cookie |
+| props.value | <code>string</code> | Value to save in cookie |
+| props.domain | <code>string</code> | Domain of the cookie |
+| props.path | <code>string</code> | Path of the cookie |
+| props.expires | <code>date</code> | Expiry date of the cookie |
+| props.ttl | <code>number</code> | Time to live of the cookie in seconds, this property has precedence over the `expires` property |
+| props.json | <code>boolean</code> | Indicates whether the cookie value should be converted to JSON |
+| props.nameEncoder | <code>function</code> | Function used to encode the cookie name |
+| props.converter | <code>function</code> | Function used to convert cookie value |
+| props.encoder | <code>function</code> | Function used to encode cookie value |
+
+**Example**  
+```js
+import { ReadCookie } from "hyperapp-fx"
+```
+<a name="module_fx.exports.DeleteCookie"></a>
+
+### fx.exports.DeleteCookie(props)
+Describes an effect that will delete a cookie.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.name | <code>string</code> | Name of the cookie to delete |
+
+**Example**  
+```js
+import { DeleteCookie } from "hyperapp-fx"
+```
 <a name="module_fx.exports.Debounce"></a>
 
 ### fx.exports.Debounce(props)
