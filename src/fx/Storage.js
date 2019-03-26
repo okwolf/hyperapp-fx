@@ -16,15 +16,15 @@ function readFromStorage(props, dispatch) {
 
 function removeFromStorage(props) {
   var storage = window[(props.storage || "session") + "Storage"]
-  storage.removeItem(props.key)  
+  storage.removeItem(props.key)
 }
 
 /**
- * Describes an effect that will write a key value pair to Storage. By default the item is written to `sessionStorage`, to write to `localStorage` set the `storage` prop to `local`. Values can be saved as json by specifying `json` as true. 
+ * Describes an effect that will write a key value pair to Storage. By default the item is written to `sessionStorage`, to write to `localStorage` set the `storage` prop to `local`. Values can be saved as json by specifying `json` as true.
  *
  * @memberof module:fx
  * @param {object} props
- * @param {string} props.key - Specify key to use 
+ * @param {string} props.key - Specify key to use
  * @param {*} props.value - Value to write to storage
  * @param {string} props.storage - Storage area to write to, can be either "session" or "local"
  * @param {boolean} props.json - Converts the value of the item to JSON
@@ -53,7 +53,7 @@ export function WriteToStorage(props) {
 }
 
 /**
- * Describes an effect that will read the value of a key from Storage. By default the item is read from `sessionStorage`, to read from `localStorage` set the `storage` prop to `local`. Values can be read as json by specifying `json` as true. 
+ * Describes an effect that will read the value of a key from Storage. By default the item is read from `sessionStorage`, to read from `localStorage` set the `storage` prop to `local`. Values can be read as json by specifying `json` as true.
  *
  * @memberof module:fx
  * @param {object} props
@@ -98,8 +98,5 @@ export function ReadFromStorage(props) {
  */
 
 export function RemoveFromStorage(props) {
-  return [
-    removeFromStorage,
-    props
-  ]
+  return [removeFromStorage, props]
 }
