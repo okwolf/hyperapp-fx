@@ -1,14 +1,14 @@
 import { assign } from "../utils.js"
 
-function historyPush(data, title, url) {
-  history.pushState(data, title, url)
+function historyPush(state, title, url) {
+  history.pushState(state, title, url)
 }
 
 function historyPushEffect(props) {
   var title = props.title || document.title
   var url = props.url || location.href
 
-  historyPush(props.data, title, url)
+  historyPush(props.state, title, url)
 }
 
 export function HistoryPush(props) {

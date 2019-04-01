@@ -15,7 +15,7 @@ describe("History effect", () => {
   it("pushing to state should send correct params", () => {
     history.pushState = jest.fn()
     const historyPush = HistoryPush({
-      data: {},
+      state: {},
       title: "new title",
       url: "#foo"
     })
