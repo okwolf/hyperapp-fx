@@ -1,5 +1,3 @@
-import { assign } from "../utils.js"
-
 function historyPush(state, title, url) {
   history.pushState(state, title, url)
 }
