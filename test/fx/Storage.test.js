@@ -18,8 +18,8 @@ const reverser = s =>
 
 describe("WriteToStorage effect", () => {
   beforeEach(() => {
-    window.localStorage = mockStorage()
-    window.sessionStorage = mockStorage()
+    global.localStorage = mockStorage()
+    global.sessionStorage = mockStorage()
   })
 
   it("writes to sessionStorage by default", () => {
