@@ -22,6 +22,4 @@ describe("History effect", () => {
     runFx(historyPush)
     expect(history.pushState).toHaveBeenCalledWith({}, "new title", "#foo")
   })
-
 })
-
