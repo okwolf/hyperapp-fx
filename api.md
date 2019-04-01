@@ -15,6 +15,7 @@
     * [.exports.BatchFx(...fx)](#module_fx.exports.BatchFx)
     * [.exports.Console(...args)](#module_fx.exports.Console)
     * [.exports.Debounce(props)](#module_fx.exports.Debounce)
+    * [.exports.HistoryPush(props)](#module_fx.exports.HistoryPush)
     * [.exports.Http(props)](#module_fx.exports.Http)
     * [.exports.Merge(action)](#module_fx.exports.Merge)
     * [.exports.Random(props)](#module_fx.exports.Random)
@@ -91,6 +92,33 @@ const DebouncedAction = state => [
     action() {
       // This action will run after waiting for 500ms since the last call
     }
+  })
+]
+```
+<a name="module_fx.exports.HistoryPush"></a>
+
+### fx.exports.HistoryPush(props)
+Describes an effect that will update the browsers navigation history with the supplied location and state.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.state | <code>\*</code> | data to add to browser history |
+| props.url | <code>string</code> | url to add to browser history |
+| props.title | <code>string</code> | title to set document to |
+
+**Example**  
+```js
+import { Console } from "hyperapp-fx"
+
+export const UpdateHistory = state => [
+  state,
+  HistoryPush({
+    state,
+    title: document.title,
+    url: '#foo'
   })
 ]
 ```
@@ -219,6 +247,7 @@ const ThrottledAction = state => [
 
 * [subs](#module_subs)
     * [.exports.Animation(action)](#module_subs.exports.Animation)
+    * [.exports.HistoryPop(action)](#module_subs.exports.HistoryPop)
     * [.exports.Keyboard(props)](#module_subs.exports.Keyboard)
     * [.exports.Time(props)](#module_subs.exports.Time)
     * [.exports.WebSocketClient(props)](#module_subs.exports.WebSocketClient)
@@ -264,6 +293,21 @@ app({
   // ...
   subscriptions: ({ running }) => (running ? [Animation(AnimationFrame)] : [])
 })
+```
+<a name="module_subs.exports.HistoryPop"></a>
+
+### subs.exports.HistoryPop(action)
+Describes an effect that will call an action whenever a user navigates through their browser history. The action will receive the state at that point in the browsers history
+
+**Kind**: static method of [<code>subs</code>](#module_subs)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| action | <code>\*</code> | Action to call |
+
+**Example**  
+```js
+import { HistoryPop } from "hyperapp-fx"
 ```
 <a name="module_subs.exports.Keyboard"></a>
 
