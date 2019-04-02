@@ -3,11 +3,9 @@ import { WriteToStorage, ReadFromStorage } from "../../src"
 import { RemoveFromStorage } from "../../src/fx/Storage"
 
 const mockStorage = (store = {}) => {
-  return {
-    setItem: jest.fn(),
-    getItem: jest.fn(key => store[key] || null),
-    removeItem: jest.fn()
-  }
+  jest.spyOn(Storage.prototype, 'setItem').mockImplementation(jest.fn())
+  jest.spyOn(Storage.prototype, 'getItem').mockImplementation(key => store[key] || null)
+  jest.spyOn(Storage.prototype, 'removeItem').mockImplementation(jest.fn())
 }
 
 const reverser = s =>
@@ -18,8 +16,7 @@ const reverser = s =>
 
 describe("WriteToStorage effect", () => {
   beforeEach(() => {
-    global.localStorage = mockStorage()
-    global.sessionStorage = mockStorage()
+    mockStorage()
   })
 
   it("writes to sessionStorage by default", () => {
@@ -61,8 +58,7 @@ describe("WriteToStorage effect", () => {
 
 describe("ReadFromStorage effect", () => {
   beforeEach(() => {
-    window.localStorage = mockStorage({ foo: "bar" })
-    window.sessionStorage = mockStorage({ soo: "cat" })
+    mockStorage({ foo: "bar", soo: "cat" })
   })
 
   it("reads from sessionStorage by default", () => {
@@ -86,7 +82,7 @@ describe("ReadFromStorage effect", () => {
   })
 
   it("can convert from JSON", () => {
-    window.sessionStorage = mockStorage({ foo: '{"bar":"baz"}' })
+    mockStorage({ foo: '{"bar":"baz"}' })
     const action = jest.fn()
     const readFromStorageFx = ReadFromStorage({
       key: "foo",
@@ -99,7 +95,7 @@ describe("ReadFromStorage effect", () => {
   })
 
   it("can use a custom converter to read", () => {
-    window.sessionStorage = mockStorage({ foo: "rab" })
+    mockStorage({ foo: "rab" })
     const action = jest.fn()
     const readFromStorageFx = ReadFromStorage({
       key: "foo",
@@ -112,7 +108,6 @@ describe("ReadFromStorage effect", () => {
   })
 
   it("can specify which action prop receives the value", () => {
-    window.sessionStorage = mockStorage({ foo: "bar" })
     const action = jest.fn()
     const readFromStorageFx = ReadFromStorage({
       key: "foo",
@@ -127,7 +122,7 @@ describe("ReadFromStorage effect", () => {
 
 describe("DeleteFromStorage effect", () => {
   it("can remove from storage", () => {
-    window.sessionStorage = mockStorage({ foo: "bar" })
+    mockStorage({ foo: "bar" })
     const removeFromStorageFx = RemoveFromStorage({ key: "foo" })
     runFx(removeFromStorageFx)
     expect(sessionStorage.removeItem).toBeCalledWith("foo")
