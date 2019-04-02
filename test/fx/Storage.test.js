@@ -125,7 +125,7 @@ describe("ReadFromStorage effect", () => {
   })
 })
 
-describe("WriteToStorage effect", () => {
+describe("DeleteFromStorage effect", () => {
   it("can remove from storage", () => {
     window.sessionStorage = mockStorage({ foo: "bar" })
     const removeFromStorageFx = RemoveFromStorage({ key: "foo" })
