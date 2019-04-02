@@ -3,9 +3,11 @@ import { WriteToStorage, ReadFromStorage } from "../../src"
 import { RemoveFromStorage } from "../../src/fx/Storage"
 
 const mockStorage = (store = {}) => {
-  jest.spyOn(Storage.prototype, 'setItem').mockImplementation(jest.fn())
-  jest.spyOn(Storage.prototype, 'getItem').mockImplementation(key => store[key] || null)
-  jest.spyOn(Storage.prototype, 'removeItem').mockImplementation(jest.fn())
+  jest.spyOn(Storage.prototype, "setItem").mockImplementation(jest.fn())
+  jest
+    .spyOn(Storage.prototype, "getItem")
+    .mockImplementation(key => store[key] || null)
+  jest.spyOn(Storage.prototype, "removeItem").mockImplementation(jest.fn())
 }
 
 const reverser = s =>
