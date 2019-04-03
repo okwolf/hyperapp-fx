@@ -40,9 +40,7 @@ export function WriteToStorage(props) {
       {
         converter:
           props.converter || props.json
-            ? function(v) {
-                return JSON.stringify(v)
-              }
+            ? JSON.stringify
             : function(v) {
                 return v
               }
@@ -74,9 +72,7 @@ export function ReadFromStorage(props) {
       {
         converter:
           props.converter || props.json
-            ? function(v) {
-                return JSON.parse(v)
-              }
+            ? JSON.parse
             : function(v) {
                 return v
               }
