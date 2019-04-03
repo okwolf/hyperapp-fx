@@ -41,7 +41,7 @@ function removeFromStorageEffect(props) {
  *     json: true
  *   })
  * ]
- * 
+ *
  */
 
 export function WriteToStorage(props) {
@@ -74,7 +74,7 @@ export function WriteToStorage(props) {
  * @param {function} props.converter - Use a custom converter function to decode the value of the item
  * @example
  * import { ReadFromStorage } from "hyperapp-fx"
- * 
+ *
  * const LoadPreferences = state => [
  *  state,
  *  ReadFromStorage({
@@ -84,7 +84,7 @@ export function WriteToStorage(props) {
  *    }
  *  })
  * ]
- * 
+ *
  */
 
 export function ReadFromStorage(props) {
@@ -113,7 +113,7 @@ export function ReadFromStorage(props) {
  * @param {string} props.storage - Storage area to delete from, can be either "session" or "local"
  * @example
  * import { RemoveFromStorage } from "hyperapp-fx"
- * 
+ *
  * const ClearPreferences = state => [
  *  state,
  *  RemoveFromStorage({
