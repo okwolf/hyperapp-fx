@@ -208,6 +208,16 @@ Describes an effect that will write a key value pair to Storage. By default the 
 **Example**  
 ```js
 import { WriteToStorage } from "hyperapp-fx"
+
+const SavePreferences = (state, preferences) => [
+  state,
+  WriteToStorage({
+    name: "preferences",
+    value: preferences,
+    storage: "local"
+    json: true
+  })
+]
 ```
 <a name="module_fx.exports.ReadFromStorage"></a>
 
@@ -228,7 +238,17 @@ Describes an effect that will read the value of a key from Storage. By default t
 
 **Example**  
 ```js
-import { WriteToStorage } from "hyperapp-fx"
+import { ReadFromStorage } from "hyperapp-fx"
+
+const LoadPreferences = state => [
+ state,
+ ReadFromStorage({
+   key: "preferences",
+   action: function (state, { value }) {
+     // this action will receive the value of the item in storage
+   }
+ })
+]
 ```
 <a name="module_fx.exports.RemoveFromStorage"></a>
 
@@ -246,6 +266,14 @@ Describes an effect that will remove a key value pair Storage. By default the it
 **Example**  
 ```js
 import { RemoveFromStorage } from "hyperapp-fx"
+
+const ClearPreferences = state => [
+ state,
+ RemoveFromStorage({
+   key: "preferences",
+   storage: "local"
+ })
+]
 ```
 <a name="module_fx.exports.Throttle"></a>
 
