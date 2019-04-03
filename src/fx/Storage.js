@@ -31,6 +31,17 @@ function removeFromStorage(props) {
  * @param {function} props.converter - Use a custom converter function to encode the value of the item
  * @example
  * import { WriteToStorage } from "hyperapp-fx"
+ *
+ * const SavePreferences = (state, preferences) => [
+ *   state,
+ *   WriteToStorage({
+ *     name: "preferences",
+ *     value: preferences,
+ *     storage: "local"
+ *     json: true
+ *   })
+ * ]
+ * 
  */
 
 export function WriteToStorage(props) {
@@ -62,7 +73,18 @@ export function WriteToStorage(props) {
  * @param {boolean} props.json - Convert the value of the item from JSON
  * @param {function} props.converter - Use a custom converter function to decode the value of the item
  * @example
- * import { WriteToStorage } from "hyperapp-fx"
+ * import { ReadFromStorage } from "hyperapp-fx"
+ * 
+ * const LoadPreferences = state => [
+ *  state,
+ *  ReadFromStorage({
+ *    key: "preferences",
+ *    action: function (state, { value }) {
+ *      // this action will receive the value of the item in storage
+ *    }
+ *  })
+ * ]
+ * 
  */
 
 export function ReadFromStorage(props) {
@@ -91,6 +113,15 @@ export function ReadFromStorage(props) {
  * @param {string} props.storage - Storage area to delete from, can be either "session" or "local"
  * @example
  * import { RemoveFromStorage } from "hyperapp-fx"
+ * 
+ * const ClearPreferences = state => [
+ *  state,
+ *  RemoveFromStorage({
+ *    key: "preferences",
+ *    storage: "local"
+ *  })
+ * ]
+ *
  */
 
 export function RemoveFromStorage(props) {
