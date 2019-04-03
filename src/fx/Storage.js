@@ -1,12 +1,12 @@
 import { assign } from "../utils.js"
 
-function writeToStorage(props) {
+function writeToStorageEffect(props) {
   var storage = window[(props.storage || "session") + "Storage"]
   var value = props.converter(props.value)
   storage.setItem(props.key, value)
 }
 
-function readFromStorage(props, dispatch) {
+function readFromStorageEffect(props, dispatch) {
   var storage = window[(props.storage || "session") + "Storage"]
   var value = props.converter(storage.getItem(props.key))
   var dispatchProps = assign({}, props.props || {})
@@ -14,7 +14,7 @@ function readFromStorage(props, dispatch) {
   dispatch(props.action, dispatchProps)
 }
 
-function removeFromStorage(props) {
+function removeFromStorageEffect(props) {
   var storage = window[(props.storage || "session") + "Storage"]
   storage.removeItem(props.key)
 }
@@ -46,7 +46,7 @@ function removeFromStorage(props) {
 
 export function WriteToStorage(props) {
   return [
-    writeToStorage,
+    writeToStorageEffect,
     assign(
       {
         converter:
@@ -89,7 +89,7 @@ export function WriteToStorage(props) {
 
 export function ReadFromStorage(props) {
   return [
-    readFromStorage,
+    readFromStorageEffect,
     assign(
       {
         converter:
@@ -125,5 +125,5 @@ export function ReadFromStorage(props) {
  */
 
 export function RemoveFromStorage(props) {
-  return [removeFromStorage, props]
+  return [removeFromStorageEffect, props]
 }
