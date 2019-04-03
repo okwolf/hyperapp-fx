@@ -310,7 +310,7 @@ Describes an effect that will call an action whenever a user navigates through t
 import { HistoryPop } from "hyperapp-fx"
 
 app({
- init: { page },
+ init: { page: 1 },
  view: state => <App page={state.page} />,
  container: document.body,
  subscriptions: state => [HistoryPop({ action: (state, event) => event.state || state })]
