@@ -13,7 +13,7 @@ function historyPopEffect(props, dispatch) {
  * import { HistoryPop } from "hyperapp-fx"
  *
  * app({
- *  init: { page },
+ *  init: { page: 1 },
  *  view: state => <App page={state.page} />,
  *  container: document.body,
  *  subscriptions: state => [HistoryPop({ action: (state, event) => event.state || state })]
