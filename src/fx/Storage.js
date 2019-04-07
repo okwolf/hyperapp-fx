@@ -10,10 +10,15 @@ function writeToStorageEffect(props) {
 }
 
 function readFromStorageEffect(props, dispatch) {
-  var value = props.converter(storageArea(props.area).getItem(props.key))
-  var dispatchProps = assign({}, props.props || {})
-  dispatchProps[props.prop || "value"] = value
-  dispatch(props.action, dispatchProps)
+  try {
+    var value = props.converter(storageArea(props.area).getItem(props.key))
+    var dispatchProps = assign({}, props.props || {})
+    dispatchProps[props.prop || "value"] = value
+    dispatch(props.action, dispatchProps)
+  }
+  catch (error) {
+    dispatch(props.error)
+  }
 }
 
 function removeFromStorageEffect(props) {
@@ -85,7 +90,8 @@ export function ReadFromStorage(props) {
     readFromStorageEffect,
     assign(
       {
-        converter: props.converter || JSON.parse
+        converter: props.converter || JSON.parse,
+        error: props.error || function () {}
       },
       props
     )

@@ -51,6 +51,15 @@ describe("ReadFromStorage effect", () => {
     expect(sessionStorage.getItem).toBeCalledWith("soo")
   })
 
+  it("should call error function on parse error", () => {
+    mockStorage({ foo: "rab" })
+    const action = jest.fn()
+    const readFromStorageFx = ReadFromStorage({ key: "foo", error: action })
+    const { dispatch } = runFx(readFromStorageFx)
+    expect(dispatch).toBeCalledWith(action)
+    expect(sessionStorage.getItem).toBeCalledWith("soo")
+  })
+
   it("can use a custom converter to read", () => {
     mockStorage({ foo: "rab" })
     const action = jest.fn()
