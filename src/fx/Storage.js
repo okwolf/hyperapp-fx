@@ -110,7 +110,7 @@ export function ReadFromStorage(props) {
  *
  * @memberof module:fx
  * @param {object} props
- * @param {string} props.key - Specify key to use with which to write to storage
+ * @param {string} props.key - Specify key to delete from storage
  * @param {string} props.storage - Storage area to delete from, can be either "session" or "local"
  * @example
  * import { RemoveFromStorage } from "hyperapp-fx"
