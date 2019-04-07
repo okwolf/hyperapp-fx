@@ -1,22 +1,23 @@
 import { assign } from "../utils.js"
 
+function storageArea(area) {
+  return window[area + "Storage"] || sessionStorage
+}
+
 function writeToStorageEffect(props) {
-  var storage = window[(props.storage || "session") + "Storage"]
   var value = props.converter(props.value)
-  storage.setItem(props.key, value)
+  storageArea(props.area).setItem(props.key, value)
 }
 
 function readFromStorageEffect(props, dispatch) {
-  var storage = window[(props.storage || "session") + "Storage"]
-  var value = props.converter(storage.getItem(props.key))
+  var value = props.converter(storageArea(props.area).getItem(props.key))
   var dispatchProps = assign({}, props.props || {})
   dispatchProps[props.prop || "value"] = value
   dispatch(props.action, dispatchProps)
 }
 
 function removeFromStorageEffect(props) {
-  var storage = window[(props.storage || "session") + "Storage"]
-  storage.removeItem(props.key)
+  storageArea(props.area).removeItem(props.key)
 }
 
 /**
