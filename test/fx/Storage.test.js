@@ -24,7 +24,7 @@ describe("WriteToStorage effect", () => {
   it("writes to storage", () => {
     const writeToStorageFx = WriteToStorage({ key: "bar", value: "123" })
     runFx(writeToStorageFx)
-    expect(sessionStorage.setItem).toBeCalledWith("bar", "\"123\"")
+    expect(sessionStorage.setItem).toBeCalledWith("bar", '"123"')
   })
 
   it("can use a custom converter", () => {
@@ -40,7 +40,7 @@ describe("WriteToStorage effect", () => {
 
 describe("ReadFromStorage effect", () => {
   beforeEach(() => {
-    mockStorage({ foo: "\"bar\"", soo: "\"cat\"" })
+    mockStorage({ foo: '"bar"', soo: '"cat"' })
   })
 
   it("reads from storage", () => {

@@ -15,8 +15,7 @@ function readFromStorageEffect(props, dispatch) {
     var dispatchProps = assign({}, props.props || {})
     dispatchProps[props.prop || "value"] = value
     dispatch(props.action, dispatchProps)
-  }
-  catch (error) {
+  } catch (error) {
     dispatch(props.error)
   }
 }
@@ -61,7 +60,7 @@ export function WriteToStorage(props) {
 }
 
 /**
- * Describes an effect that will read the value of a key from Storage. By default the item is read from `localStorage`, to read from `sessionStorage` set the `storage` prop to `session`. Values are converted from JSON, unless a custom converter is provided. 
+ * Describes an effect that will read the value of a key from Storage. By default the item is read from `localStorage`, to read from `sessionStorage` set the `storage` prop to `session`. Values are converted from JSON, unless a custom converter is provided.
  *
  * @memberof module:fx
  * @param {object} props
@@ -91,7 +90,7 @@ export function ReadFromStorage(props) {
     assign(
       {
         converter: props.converter || JSON.parse,
-        error: props.error || function () {}
+        error: props.error || function() {}
       },
       props
     )
