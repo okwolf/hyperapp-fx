@@ -28,7 +28,6 @@ function removeFromStorageEffect(props) {
  * @param {string} props.key - Specify key to use
  * @param {*} props.value - Value to write to storage
  * @param {string} props.storage - Storage area to write to, can be either "session" or "local"
- * @param {boolean} props.json - Converts the value of the item to JSON
  * @param {function} props.converter - Use a custom converter function to encode the value of the item
  * @example
  * import { WriteToStorage } from "hyperapp-fx"
@@ -39,7 +38,6 @@ function removeFromStorageEffect(props) {
  *     name: "preferences",
  *     value: preferences,
  *     storage: "local"
- *     json: true
  *   })
  * ]
  *
@@ -50,12 +48,7 @@ export function WriteToStorage(props) {
     writeToStorageEffect,
     assign(
       {
-        converter:
-          props.converter || props.json
-            ? JSON.stringify
-            : function(v) {
-                return v
-              }
+        converter: props.converter || JSON.stringify
       },
       props
     )
@@ -71,7 +64,6 @@ export function WriteToStorage(props) {
  * @param {*} props.action - Action to call with the value of the item in storage
  * @param {string} props.storage - Storage area to read from, can be either "session" or "local"
  * @param {string} props.prop - Property of the action where the value is received, defaults to "value"
- * @param {boolean} props.json - Convert the value of the item from JSON
  * @param {function} props.converter - Use a custom converter function to decode the value of the item
  * @example
  * import { ReadFromStorage } from "hyperapp-fx"
@@ -93,12 +85,7 @@ export function ReadFromStorage(props) {
     readFromStorageEffect,
     assign(
       {
-        converter:
-          props.converter || props.json
-            ? JSON.parse
-            : function(v) {
-                return v
-              }
+        converter: props.converter || JSON.parse
       },
       props
     )
