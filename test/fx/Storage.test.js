@@ -21,20 +21,10 @@ describe("WriteToStorage effect", () => {
     mockStorage()
   })
 
-  it("writes to sessionStorage by default", () => {
+  it("writes to storage", () => {
     const writeToStorageFx = WriteToStorage({ key: "bar", value: "123" })
     runFx(writeToStorageFx)
     expect(sessionStorage.setItem).toBeCalledWith("bar", "123")
-  })
-
-  it("writes to localStorage if asked to do so", () => {
-    const writeToStorageFx = WriteToStorage({
-      key: "bar",
-      value: "123",
-      storage: "local"
-    })
-    runFx(writeToStorageFx)
-    expect(localStorage.setItem).toBeCalledWith("bar", "123")
   })
 
   it("can convert to JSON", () => {
@@ -63,24 +53,12 @@ describe("ReadFromStorage effect", () => {
     mockStorage({ foo: "bar", soo: "cat" })
   })
 
-  it("reads from sessionStorage by default", () => {
+  it("reads from storage", () => {
     const action = jest.fn()
     const readFromStorageFx = ReadFromStorage({ key: "soo", action })
     const { dispatch } = runFx(readFromStorageFx)
     expect(dispatch).toBeCalledWith(action, { value: "cat" })
     expect(sessionStorage.getItem).toBeCalledWith("soo")
-  })
-
-  it("reads from localStorage if asked to", () => {
-    const action = jest.fn()
-    const readFromStorageFx = ReadFromStorage({
-      key: "foo",
-      action,
-      storage: "local"
-    })
-    const { dispatch } = runFx(readFromStorageFx)
-    expect(dispatch).toBeCalledWith(action, { value: "bar" })
-    expect(localStorage.getItem).toBeCalledWith("foo")
   })
 
   it("can convert from JSON", () => {
