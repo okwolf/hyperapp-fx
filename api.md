@@ -16,6 +16,7 @@
     * [.exports.Console(...args)](#module_fx.exports.Console)
     * [.exports.Debounce(props)](#module_fx.exports.Debounce)
     * [.exports.HistoryPush(props)](#module_fx.exports.HistoryPush)
+    * [.exports.HistoryReplace(props)](#module_fx.exports.HistoryReplace)
     * [.exports.Http(props)](#module_fx.exports.Http)
     * [.exports.Merge(action)](#module_fx.exports.Merge)
     * [.exports.Random(props)](#module_fx.exports.Random)
@@ -116,6 +117,33 @@ import { Console } from "hyperapp-fx"
 export const UpdateHistory = state => [
   state,
   HistoryPush({
+    state,
+    title: document.title,
+    url: '#foo'
+  })
+]
+```
+<a name="module_fx.exports.HistoryReplace"></a>
+
+### fx.exports.HistoryReplace(props)
+Describes an effect that will replace the browsers navigation history with the supplied location and state.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.state | <code>\*</code> | data to add to browser history |
+| props.url | <code>string</code> | url to add to browser history |
+| props.title | <code>string</code> | title to set document to |
+
+**Example**  
+```js
+import { Console } from "hyperapp-fx"
+
+export const InitialiseHistory = state => [
+  state,
+  HistoryReplace({
     state,
     title: document.title,
     url: '#foo'
