@@ -2,7 +2,6 @@ import { runFx } from "../utils"
 import { HistoryReplace } from "../../src"
 
 describe("HistoryReplace Effect", () => {
-
   it("replacing state should update location and state, and not increment history length", () => {
     const historyReplace = HistoryReplace({
       state: {},
@@ -28,5 +27,4 @@ describe("HistoryReplace Effect", () => {
     runFx(historyReplace)
     expect(history.replaceState).toHaveBeenCalledWith({}, "new title", "#foo")
   })
-
 })
