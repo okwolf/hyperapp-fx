@@ -4,7 +4,7 @@ import { HistoryPush } from "../../src"
 describe("History effect", () => {
   it("pushing to state should update location", () => {
     const historyPush = HistoryPush({
-      data: {},
+      state: {},
       title: "new title",
       url: "#foo"
     })
