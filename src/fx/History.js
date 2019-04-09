@@ -1,23 +1,15 @@
-function historyPush(state, title, url) {
-  history.pushState(state, title, url)
-}
-
-function historyReplace(state, title, url) {
-  history.replaceState(state, title, url)
-}
-
 function historyPushEffect(props) {
   var title = props.title || document.title
   var url = props.url || location.href
 
-  historyPush(props.state, title, url)
+  history.pushState(props.state, title, url)
 }
 
 function historyReplaceEffect(props) {
   var title = props.title || document.title
   var url = props.url || location.href
 
-  historyReplace(props.state, title, url)
+  history.replaceState(props.state, title, url)
 }
 
 /**
