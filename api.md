@@ -95,6 +95,53 @@ Describes an effect that will read a cookie and then call an action with its val
 ```js
 import { ReadCookie } from "hyperapp-fx"
 
+const LoadPreferences = state => [
+  state,
+  ReadCookie({
+    name: "preferences",
+    action: function (state, { value }) {
+      // this action will receive the cookie value
+    },
+    json: true
+  })
+]
+```
+<a name="module_fx.exports.WriteCookie"></a>
+
+### fx.exports.WriteCookie(props)
+Describes an effect that will write a cookie.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.name | <code>string</code> | Name of the cookie |
+| props.value | <code>string</code> | Value to save in cookie |
+| props.domain | <code>string</code> | Domain of the cookie |
+| props.path | <code>string</code> | Path of the cookie |
+| props.expires | <code>date</code> | Expiry date of the cookie |
+| props.ttl | <code>number</code> | Time to live of the cookie in seconds, this property has precedence over the `expires` property |
+| props.json | <code>boolean</code> | Indicates whether the cookie value should be converted to JSON |
+| props.nameEncoder | <code>function</code> | Function used to encode the cookie name |
+| props.converter | <code>function</code> | Function used to convert cookie value |
+| props.encoder | <code>function</code> | Function used to encode cookie value |
+
+**Example**  
+```js
+import { WriteCookie } from "hyperapp-fx"
+
+const SavePreferences = state => [
+  state,
+  WriteCookie({
+    name: "preferences",
+    value: state.preferences
+    json: true
+  })
+]
+```
+<a name="module_fx.exports.DeleteCookie"></a>
+
 ### fx.exports.DeleteCookie(props)
 Describes an effect that will delete a cookie.
 
@@ -108,6 +155,13 @@ Describes an effect that will delete a cookie.
 **Example**  
 ```js
 import { DeleteCookie } from "hyperapp-fx"
+
+ const ClearPreferences = state => [
+  state,
+  DeleteCookie({
+    name: "preferences"
+  })
+]
 ```
 <a name="module_fx.exports.Debounce"></a>
 
