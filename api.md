@@ -18,6 +18,9 @@
     * [.exports.Http(props)](#module_fx.exports.Http)
     * [.exports.Merge(action)](#module_fx.exports.Merge)
     * [.exports.Random(props)](#module_fx.exports.Random)
+    * [.exports.WriteToStorage(props)](#module_fx.exports.WriteToStorage)
+    * [.exports.ReadFromStorage(props)](#module_fx.exports.ReadFromStorage)
+    * [.exports.RemoveFromStorage(props)](#module_fx.exports.RemoveFromStorage)
     * [.exports.Throttle(props)](#module_fx.exports.Throttle)
 
 <a name="module_fx.exports.BatchFx"></a>
@@ -184,6 +187,89 @@ const RollDie = state => [
       // return new state using roll
     }
   })
+]
+```
+<a name="module_fx.exports.WriteToStorage"></a>
+
+### fx.exports.WriteToStorage(props)
+Describes an effect that will write a key value pair to Storage. By default the item is written to `localStorage`, to write to `sessionStorage` set the `storage` prop to `session`. Values are saved in JSON, unless a custom converter is provided.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.key | <code>string</code> | Specify key to use |
+| props.value | <code>\*</code> | Value to write to storage |
+| props.storage | <code>string</code> | Storage area to write to, can be either "session" or "local" |
+| props.converter | <code>function</code> | Use a custom converter function to encode the value of the item |
+
+**Example**  
+```js
+import { WriteToStorage } from "hyperapp-fx"
+
+const SavePreferences = (state, preferences) => [
+  state,
+  WriteToStorage({
+    name: "preferences",
+    value: preferences,
+    storage: "local"
+  })
+]
+```
+<a name="module_fx.exports.ReadFromStorage"></a>
+
+### fx.exports.ReadFromStorage(props)
+Describes an effect that will read the value of a key from Storage. By default the item is read from `localStorage`, to read from `sessionStorage` set the `storage` prop to `session`. Values are converted from JSON, unless a custom converter is provided.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.key | <code>string</code> | Specify key to use with which to write to storage |
+| props.action | <code>\*</code> | Action to call with the value of the item in storage |
+| props.storage | <code>string</code> | Storage area to read from, can be either "session" or "local" |
+| props.prop | <code>string</code> | Property of the action where the value is received, defaults to "value" |
+| props.converter | <code>function</code> | Use a custom converter function to decode the value of the item |
+
+**Example**  
+```js
+import { ReadFromStorage } from "hyperapp-fx"
+
+const LoadPreferences = state => [
+ state,
+ ReadFromStorage({
+   key: "preferences",
+   action: function (state, { value }) {
+     // this action will receive the value of the item in storage
+   }
+ })
+]
+```
+<a name="module_fx.exports.RemoveFromStorage"></a>
+
+### fx.exports.RemoveFromStorage(props)
+Describes an effect that will remove a key value pair Storage. By default the item is deleted from `localStorage`, to delete from `sessionStorage` set the `storage` prop to `session`.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.key | <code>string</code> | Specify key to delete from storage |
+| props.storage | <code>string</code> | Storage area to delete from, can be either "session" or "local" |
+
+**Example**  
+```js
+import { RemoveFromStorage } from "hyperapp-fx"
+
+const ClearPreferences = state => [
+ state,
+ RemoveFromStorage({
+   key: "preferences",
+   storage: "local"
+ })
 ]
 ```
 <a name="module_fx.exports.Throttle"></a>
