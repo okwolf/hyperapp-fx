@@ -102,7 +102,7 @@ const DebouncedAction = state => [
 <a name="module_fx.exports.HistoryPush"></a>
 
 ### fx.exports.HistoryPush(props)
-Describes an effect that will update the browsers navigation history with the supplied location and state.
+Describes an effect that will add an entry to the browsers navigation [`history`](https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries) with the supplied location and state.
 
 **Kind**: static method of [<code>fx</code>](#module_fx)  
 
@@ -129,7 +129,7 @@ export const UpdateHistory = state => [
 <a name="module_fx.exports.HistoryReplace"></a>
 
 ### fx.exports.HistoryReplace(props)
-Describes an effect that will replace the browsers navigation history with the supplied location and state.
+Describes an effect that will replace the browsers current [`history`](https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries) navigation entry with the supplied location and state.
 
 **Kind**: static method of [<code>fx</code>](#module_fx)  
 
@@ -248,7 +248,7 @@ const RollDie = state => [
 <a name="module_fx.exports.WriteToStorage"></a>
 
 ### fx.exports.WriteToStorage(props)
-Describes an effect that will write a key value pair to Storage. By default the item is written to `localStorage`, to write to `sessionStorage` set the `storage` prop to `session`. Values are saved in JSON, unless a custom converter is provided.
+Describes an effect that will write a key value pair to Storage. By default the item is written to [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), to write to [`sessionStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) set the `storage` prop to `session`. Values are saved in JSON, unless a custom converter is provided.
 
 **Kind**: static method of [<code>fx</code>](#module_fx)  
 
@@ -276,7 +276,7 @@ const SavePreferences = (state, preferences) => [
 <a name="module_fx.exports.ReadFromStorage"></a>
 
 ### fx.exports.ReadFromStorage(props)
-Describes an effect that will read the value of a key from Storage. By default the item is read from `localStorage`, to read from `sessionStorage` set the `storage` prop to `session`. Values are converted from JSON, unless a custom converter is provided.
+Describes an effect that will read the value of a key from Storage. By default the item is read from [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), to read from [`sessionStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) set the `storage` prop to `session`. Values are converted from JSON, unless a custom converter is provided.
 
 **Kind**: static method of [<code>fx</code>](#module_fx)  
 
@@ -306,7 +306,7 @@ const LoadPreferences = state => [
 <a name="module_fx.exports.RemoveFromStorage"></a>
 
 ### fx.exports.RemoveFromStorage(props)
-Describes an effect that will remove a key value pair Storage. By default the item is deleted from `localStorage`, to delete from `sessionStorage` set the `storage` prop to `session`.
+Describes an effect that will remove a key value pair Storage. By default the item is deleted from [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), to delete from [`sessionStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) set the `storage` prop to `session`.
 
 **Kind**: static method of [<code>fx</code>](#module_fx)  
 
@@ -411,7 +411,7 @@ app({
 <a name="module_subs.exports.HistoryPop"></a>
 
 ### subs.exports.HistoryPop(action)
-Describes an effect that will call an action whenever a user navigates through their browser history. The action will receive the state at that point in the browsers history
+Describes an effect that will call an action whenever a user navigates through their browser [`history`](https://developer.mozilla.org/en-US/docs/Web/API/Document/defaultView/popstate_event). The action will receive the state at that point in the browsers history.
 
 **Kind**: static method of [<code>subs</code>](#module_subs)  
 
