@@ -5,7 +5,7 @@ function historyPopEffect(props, dispatch) {
 }
 
 /**
- * Describes an effect that will call an action whenever a user navigates through their browser history. The action will receive the state at that point in the browsers history
+ * Describes an effect that will call an action whenever a user navigates through their browser [`history`](https://developer.mozilla.org/en-US/docs/Web/API/Document/defaultView/popstate_event). The action will receive the state at that point in the browsers history.
  *
  * @memberof module:subs
  * @param {*} action - Action to call
