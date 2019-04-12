@@ -24,6 +24,8 @@
     * [.exports.ReadFromStorage(props)](#module_fx.exports.ReadFromStorage)
     * [.exports.RemoveFromStorage(props)](#module_fx.exports.RemoveFromStorage)
     * [.exports.Throttle(props)](#module_fx.exports.Throttle)
+    * [.exports.Now(props)](#module_fx.exports.Now)
+    * [.exports.Delay(props)](#module_fx.exports.Delay)
 
 <a name="module_fx.exports.BatchFx"></a>
 
@@ -115,7 +117,7 @@ Describes an effect that will add an entry to the browsers navigation [`history`
 
 **Example**  
 ```js
-import { Console } from "hyperapp-fx"
+import { HistoryPush } from "hyperapp-fx"
 
 export const UpdateHistory = state => [
   state,
@@ -142,7 +144,7 @@ Describes an effect that will replace the browsers current [`history`](https://d
 
 **Example**  
 ```js
-import { Console } from "hyperapp-fx"
+import { HistoryReplace } from "hyperapp-fx"
 
 export const InitialiseHistory = state => [
   state,
@@ -355,17 +357,100 @@ const ThrottledAction = state => [
   })
 ]
 ```
+<a name="module_fx.exports.Now"></a>
+
+### fx.exports.Now(props)
+Describes an effect that provides the current timestamp (using [`performance.now`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now)) or current date (using [`new Date()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#Syntax)). The timestamp/date will be provided as the action `data`.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.asDate | <code>boolean</code> | use a Date object instead of a timestamp |
+| props.action | <code>\*</code> | action to call with the timestamp/date |
+
+**Example**  
+```js
+import { Now } from "hyperapp-fx"
+
+const NowAction = state => [
+  state,
+  Now({
+    asDate: true,
+    action(currentDate) {
+    }
+  })
+]
+```
+<a name="module_fx.exports.Delay"></a>
+
+### fx.exports.Delay(props)
+Describes an effect that provides a timestamp (using [`performance.now`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now)) or date (using [`new Date()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#Syntax)) after a delay. The timestamp/date will be provided as the action `data`.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.wait | <code>number</code> | delay to wait before calling action |
+| props.asDate | <code>boolean</code> | use a Date object instead of a timestamp |
+| props.action | <code>\*</code> | action to call with the timestamp/date |
+
+**Example**  
+```js
+import { Delay } from "hyperapp-fx"
+
+const DelayedAction = state => [
+  state,
+  Delay({
+    wait: 500,
+    action() {
+      // This action will run after a 500ms delay
+    }
+  })
+]
+```
 <a name="module_subs"></a>
 
 ## subs
 
 * [subs](#module_subs)
+    * [.exports.WebSocketSend(props)](#module_subs.exports.WebSocketSend)
     * [.exports.Animation(action)](#module_subs.exports.Animation)
     * [.exports.HistoryPop(action)](#module_subs.exports.HistoryPop)
     * [.exports.Keyboard(props)](#module_subs.exports.Keyboard)
-    * [.exports.Time(props)](#module_subs.exports.Time)
-    * [.exports.WebSocketClient(props)](#module_subs.exports.WebSocketClient)
+    * [.exports.Interval(props)](#module_subs.exports.Interval)
+    * [.exports.WebSocketListen(props)](#module_subs.exports.WebSocketListen)
 
+<a name="module_subs.exports.WebSocketSend"></a>
+
+### subs.exports.WebSocketSend(props)
+Describes an effect that will open a [`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket) connection for a given URL (and optional protocols) and send a message reusing existing connections.
+
+**Kind**: static method of [<code>subs</code>](#module_subs)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.url | <code>string</code> | The URL to which to connect; this should be the URL to which the WebSocket server will respond |
+| props.protocols | <code>string</code> \| <code>Array.&lt;string&gt;</code> | Either a single protocol string or an array of protocol strings. These strings are used to indicate sub-protocols, so that a single server can implement multiple WebSocket sub-protocols (for example, you might want one server to be able to handle different types of interactions depending on the specified `protocol`). If you don't specify a protocol string, an empty string is assumed. |
+| props.data | <code>\*</code> | data to send once connected |
+
+**Example**  
+```js
+import { WebSocketSend } from "hyperapp-fx"
+
+ const SendAction = state => [
+  state,
+  WebSocketSend({
+    url: "wss://example.com",
+    data: JSON.stringify({
+      sendThisData: "on connecting"
+    })
+  })
+]
+```
 <a name="module_subs.exports.Animation"></a>
 
 ### subs.exports.Animation(action)
@@ -421,13 +506,16 @@ Describes an effect that will call an action whenever a user navigates through t
 
 **Example**  
 ```js
+import { h, app } from "hyperapp"
 import { HistoryPop } from "hyperapp-fx"
 
 app({
- init: { page: 1 },
- view: state => <App page={state.page} />,
- container: document.body,
- subscriptions: state => [HistoryPop({ action: (state, event) => event.state || state })]
+  init: { page: 1 },
+  view: state => <App page={state.page} />,
+  container: document.body,
+  subscriptions: state => [
+    HistoryPop({ action: (state, event) => event.state || state })
+  ]
 })
 ```
 <a name="module_subs.exports.Keyboard"></a>
@@ -458,26 +546,24 @@ const KeySub = Keyboard({
   }
 })
 ```
-<a name="module_subs.exports.Time"></a>
+<a name="module_subs.exports.Interval"></a>
 
-### subs.exports.Time(props)
-Describes an effect that can provide timestamps to actions using [`performance.now`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now) or dates using the [`new Date()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#Syntax) API. The action can be fired now, after a delay, or at a regular interval. The timestamp/date will be provided as the action `data`.
+### subs.exports.Interval(props)
+Describes an effect that provides a timestamp (using [`performance.now`](https://developer.mozilla.org/en-US/docs/Web/API/Performance/now)) or date (using [`new Date()`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date#Syntax)) at a regular interval. The timestamp/date will be provided as the action `data`.
 
 **Kind**: static method of [<code>subs</code>](#module_subs)  
 
 | Param | Type | Description |
 | --- | --- | --- |
 | props | <code>object</code> |  |
-| props.now | <code>boolean</code> | get the current time immediately |
-| props.after | <code>number</code> | get the time after a delay |
-| props.every | <code>number</code> | get the time repeatedly after waiting a set interval |
 | props.asDate | <code>boolean</code> | use a Date object instead of a timestamp |
-| props.action | <code>\*</code> | action to call with the time |
+| props.every | <code>number</code> | get the time repeatedly after waiting a set interval |
+| props.action | <code>\*</code> | action to call with the timestamp/date |
 
 **Example**  
 ```js
 import { h, app } from "hyperapp"
-import { Time } from "hyperapp-fx"
+import { Now, Interval } from "hyperapp-fx"
 
 const UpdateDate = (_, date) =>
   date.toLocaleString("uk", {
@@ -486,13 +572,12 @@ const UpdateDate = (_, date) =>
     second: "numeric"
   })
 
-const InitialTime = Time({
-  now: true,
+const InitialTime = Now({
   asDate: true,
   action: UpdateDate
 })
 
-const TimeSub = Time({
+const TimeSub = Interval({
   every: 100,
   asDate: true,
   action: UpdateDate
@@ -505,10 +590,10 @@ app({
   subscriptions: () => [TimeSub]
 })
 ```
-<a name="module_subs.exports.WebSocketClient"></a>
+<a name="module_subs.exports.WebSocketListen"></a>
 
-### subs.exports.WebSocketClient(props)
-Describes an effect that will open a [`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket) connection for a given URL and optional protocols. A message may be sent to the server on connection and messages to the client may be listened for. Connections will remain open until the last subscription for that URL are cancelled.
+### subs.exports.WebSocketListen(props)
+Describes an effect that will open a [`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket) connection for a given URL and optional protocols. Connections will remain open until the last subscription for that URL are cancelled.
 
 **Kind**: static method of [<code>subs</code>](#module_subs)  
 
@@ -517,19 +602,15 @@ Describes an effect that will open a [`WebSocket`](https://developer.mozilla.org
 | props | <code>object</code> |  |
 | props.url | <code>string</code> | The URL to which to connect; this should be the URL to which the WebSocket server will respond |
 | props.protocols | <code>string</code> \| <code>Array.&lt;string&gt;</code> | Either a single protocol string or an array of protocol strings. These strings are used to indicate sub-protocols, so that a single server can implement multiple WebSocket sub-protocols (for example, you might want one server to be able to handle different types of interactions depending on the specified `protocol`). If you don't specify a protocol string, an empty string is assumed. |
-| props.send | <code>\*</code> | data to send once connected |
-| props.listen | <code>\*</code> | action to call with new incoming messages |
+| props.action | <code>\*</code> | action to call with new incoming messages |
 | props.error | <code>\*</code> | action to call if an error occurs |
 
 **Example**  
 ```js
-import { WebSocketClient } from "hyperapp-fx"
+import { WebSocketListen } from "hyperapp-fx"
 
-const WebSocketSub = WebSocketClient({
+const WebSocketSub = WebSocketListen({
   url: "wss://example.com",
-  send: JSON.stringify({
-    sendThisData: "on connecting"
-  }),
-  listen: ReceivedMessageAction
+  action: ReceivedMessageAction
 })
 ```

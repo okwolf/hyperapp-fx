@@ -13,3 +13,29 @@ export function makeRemoveListener(attachTo, dispatch, action, eventName) {
     attachTo.removeEventListener(eventName, handler)
   }
 }
+
+export function makeDispatchTime(props, dispatch) {
+  return function() {
+    dispatch(props.action, props.asDate ? new Date() : performance.now())
+  }
+}
+
+var webSocketConnections = {}
+
+export function getOpenWebSocket(props) {
+  var connection = webSocketConnections[props.url]
+  if (!connection) {
+    connection = {
+      socket: new WebSocket(props.url, props.protocols),
+      listeners: []
+    }
+    webSocketConnections[props.url] = connection
+  }
+  return connection
+}
+
+export function closeWebSocket(props) {
+  var connection = getOpenWebSocket(props)
+  connection.socket.close()
+  delete webSocketConnections[props.url]
+}
