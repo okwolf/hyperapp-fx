@@ -26,6 +26,7 @@
     * [.exports.Throttle(props)](#module_fx.exports.Throttle)
     * [.exports.Now(props)](#module_fx.exports.Now)
     * [.exports.Delay(props)](#module_fx.exports.Delay)
+    * [.exports.WebSocketSend(props)](#module_fx.exports.WebSocketSend)
 
 <a name="module_fx.exports.BatchFx"></a>
 
@@ -411,24 +412,12 @@ const DelayedAction = state => [
   })
 ]
 ```
-<a name="module_subs"></a>
+<a name="module_fx.exports.WebSocketSend"></a>
 
-## subs
-
-* [subs](#module_subs)
-    * [.exports.WebSocketSend(props)](#module_subs.exports.WebSocketSend)
-    * [.exports.Animation(action)](#module_subs.exports.Animation)
-    * [.exports.HistoryPop(action)](#module_subs.exports.HistoryPop)
-    * [.exports.Keyboard(props)](#module_subs.exports.Keyboard)
-    * [.exports.Interval(props)](#module_subs.exports.Interval)
-    * [.exports.WebSocketListen(props)](#module_subs.exports.WebSocketListen)
-
-<a name="module_subs.exports.WebSocketSend"></a>
-
-### subs.exports.WebSocketSend(props)
+### fx.exports.WebSocketSend(props)
 Describes an effect that will open a [`WebSocket`](https://developer.mozilla.org/en-US/docs/Web/API/WebSocket/WebSocket) connection for a given URL (and optional protocols) and send a message reusing existing connections.
 
-**Kind**: static method of [<code>subs</code>](#module_subs)  
+**Kind**: static method of [<code>fx</code>](#module_fx)  
 
 | Param | Type | Description |
 | --- | --- | --- |
@@ -451,6 +440,17 @@ import { WebSocketSend } from "hyperapp-fx"
   })
 ]
 ```
+<a name="module_subs"></a>
+
+## subs
+
+* [subs](#module_subs)
+    * [.exports.Animation(action)](#module_subs.exports.Animation)
+    * [.exports.HistoryPop(action)](#module_subs.exports.HistoryPop)
+    * [.exports.Keyboard(props)](#module_subs.exports.Keyboard)
+    * [.exports.Interval(props)](#module_subs.exports.Interval)
+    * [.exports.WebSocketListen(props)](#module_subs.exports.WebSocketListen)
+
 <a name="module_subs.exports.Animation"></a>
 
 ### subs.exports.Animation(action)
