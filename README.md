@@ -45,7 +45,7 @@ Then with a module bundler like [Rollup](https://rollupjs.org) or [Webpack](http
 import { Http } from "hyperapp-fx"
 ```
 
-If you don't want to set up a build environment, you can download Hyperapp FX from a CDN like [unpkg.com](https://unpkg.com/hyperapp-fx@next) and it will be globally available through the <samp>window.hyperappFx</samp> object. We support all ES5-compliant browsers, including Internet Explorer 10 and above.
+If you don't want to set up a build environment, you can download Hyperapp FX from a CDN like [unpkg.com](https://unpkg.com/hyperapp-fx@next) and it will be globally available through the <samp>window.hyperappFx</samp> object. We support all ES5-compliant browsers, including Internet Explorer 10 and above. Use of the [`Http`](api.md#module_fx.exports.Http) effect requires a polyfill.
 
 ```html
 <script src="https://unpkg.com/hyperapp-fx@next"></script>

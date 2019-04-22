@@ -25,7 +25,7 @@ function removeFromStorageEffect(props) {
 }
 
 /**
- * Describes an effect that will write a key value pair to Storage. By default the item is written to `localStorage`, to write to `sessionStorage` set the `storage` prop to `session`. Values are saved in JSON, unless a custom converter is provided.
+ * Describes an effect that will write a key value pair to Storage. By default the item is written to [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), to write to [`sessionStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) set the `storage` prop to `session`. Values are saved in JSON, unless a custom converter is provided.
  *
  * @memberof module:fx
  * @param {object} props
@@ -60,7 +60,7 @@ export function WriteToStorage(props) {
 }
 
 /**
- * Describes an effect that will read the value of a key from Storage. By default the item is read from `localStorage`, to read from `sessionStorage` set the `storage` prop to `session`. Values are converted from JSON, unless a custom converter is provided.
+ * Describes an effect that will read the value of a key from Storage. By default the item is read from [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), to read from [`sessionStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) set the `storage` prop to `session`. Values are converted from JSON, unless a custom converter is provided.
  *
  * @memberof module:fx
  * @param {object} props
@@ -98,7 +98,7 @@ export function ReadFromStorage(props) {
 }
 
 /**
- * Describes an effect that will remove a key value pair Storage. By default the item is deleted from `localStorage`, to delete from `sessionStorage` set the `storage` prop to `session`.
+ * Describes an effect that will remove a key value pair Storage. By default the item is deleted from [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), to delete from [`sessionStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/sessionStorage) set the `storage` prop to `session`.
  *
  * @memberof module:fx
  * @param {object} props

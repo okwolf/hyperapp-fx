@@ -13,7 +13,7 @@ function historyReplaceEffect(props) {
 }
 
 /**
- * Describes an effect that will update the browsers navigation history with the supplied location and state.
+ * Describes an effect that will add an entry to the browsers navigation [`history`](https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries) with the supplied location and state.
  *
  * @memberof module:fx
  * @param {object} props
@@ -21,7 +21,7 @@ function historyReplaceEffect(props) {
  * @param {string} props.url - url to add to browser history
  * @param {string} props.title - title to set document to
  * @example
- * import { Console } from "hyperapp-fx"
+ * import { HistoryPush } from "hyperapp-fx"
  *
  * export const UpdateHistory = state => [
  *   state,
@@ -38,7 +38,7 @@ export function HistoryPush(props) {
 }
 
 /**
- * Describes an effect that will replace the browsers navigation history with the supplied location and state.
+ * Describes an effect that will replace the browsers current [`history`](https://developer.mozilla.org/en-US/docs/Web/API/History_API#Adding_and_modifying_history_entries) navigation entry with the supplied location and state.
  *
  * @memberof module:fx
  * @param {object} props
@@ -46,7 +46,7 @@ export function HistoryPush(props) {
  * @param {string} props.url - url to add to browser history
  * @param {string} props.title - title to set document to
  * @example
- * import { Console } from "hyperapp-fx"
+ * import { HistoryReplace } from "hyperapp-fx"
  *
  * export const InitialiseHistory = state => [
  *   state,

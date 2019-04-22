@@ -1,7 +1,7 @@
 import { runFx } from "../utils"
-import { WebSocketClient } from "../../src"
+import { WebSocketListen } from "../../src"
 
-describe("WebSocketClient", () => {
+describe("WebSocketListen subscription", () => {
   const url = "wss://localhost"
   const mockWebSocket = {}
   const defaultWebSocket = global.WebSocket
@@ -17,7 +17,7 @@ describe("WebSocketClient", () => {
     global.WebSocket = defaultWebSocket
   })
   it("should create a new WebSocket without protocols if not connected and close on unsubscribe", () => {
-    const webSocketFx = WebSocketClient({ url })
+    const webSocketFx = WebSocketListen({ url })
     const { unsubscribe } = runFx(webSocketFx)
 
     expect(WebSocket).toBeCalledWith(url, undefined)
@@ -28,7 +28,7 @@ describe("WebSocketClient", () => {
   })
   it("should create a new WebSocket with protocols if not connected and close on unsubscribe", () => {
     const protocols = ["soap", "wamp"]
-    const webSocketFx = WebSocketClient({ url, protocols })
+    const webSocketFx = WebSocketListen({ url, protocols })
     const { unsubscribe } = runFx(webSocketFx)
 
     expect(WebSocket).toBeCalledWith(url, protocols)
@@ -37,38 +37,10 @@ describe("WebSocketClient", () => {
     unsubscribe()
     expect(mockWebSocket.close).toBeCalled()
   })
-
-  it("should send a message if connected", () => {
-    const message = { some: "message value" }
-    const webSocketFx = WebSocketClient({ url, send: message })
-    const { unsubscribe } = runFx(webSocketFx)
-
-    expect(mockWebSocket.send).toBeCalledWith(message)
-    unsubscribe()
-  })
-  it("should queue sending a message if not connected and remove the listener on unsubscribe", () => {
-    mockWebSocket.readyState = 0
-    const message = { some: "message value" }
-    const webSocketFx = WebSocketClient({ url, send: message })
-    const { unsubscribe } = runFx(webSocketFx)
-
-    expect(mockWebSocket.addEventListener).toBeCalledWith(
-      "open",
-      expect.any(Function)
-    )
-    expect(mockWebSocket.send).not.toBeCalled()
-    expect(mockWebSocket.removeEventListener).not.toBeCalled()
-
-    const openListener = mockWebSocket.addEventListener.mock.calls[0][1]
-    openListener()
-    expect(mockWebSocket.send).toBeCalledWith(message)
-
-    unsubscribe()
-  })
   it("should listen for messages and remove the listener on unsubscribe", () => {
     const message = JSON.stringify({ some: "message value" })
-    const listen = jest.fn()
-    const webSocketFx = WebSocketClient({ url, listen })
+    const action = jest.fn()
+    const webSocketFx = WebSocketListen({ url, action })
     const { dispatch, unsubscribe } = runFx(webSocketFx)
 
     expect(mockWebSocket.addEventListener).toBeCalledWith(
@@ -79,7 +51,7 @@ describe("WebSocketClient", () => {
 
     const messageListener = mockWebSocket.addEventListener.mock.calls[0][1]
     messageListener(message)
-    expect(dispatch).toBeCalledWith(listen, message)
+    expect(dispatch).toBeCalledWith(action, message)
 
     unsubscribe()
     expect(mockWebSocket.removeEventListener).toBeCalledWith(
@@ -90,7 +62,7 @@ describe("WebSocketClient", () => {
   it("should handle errors and remove the listener on unsubscribe", () => {
     const errorMessage = new Error("uh oh!")
     const error = jest.fn()
-    const webSocketFx = WebSocketClient({ url, error })
+    const webSocketFx = WebSocketListen({ url, error })
     const { dispatch, unsubscribe } = runFx(webSocketFx)
 
     expect(mockWebSocket.addEventListener).toBeCalledWith(
@@ -99,7 +71,7 @@ describe("WebSocketClient", () => {
     )
     expect(mockWebSocket.removeEventListener).not.toBeCalled()
 
-    const errorListener = mockWebSocket.addEventListener.mock.calls[0][1]
+    const errorListener = mockWebSocket.addEventListener.mock.calls[1][1]
     errorListener(errorMessage)
     expect(dispatch).toBeCalledWith(error, errorMessage)
 
@@ -111,12 +83,12 @@ describe("WebSocketClient", () => {
   })
   it("should reuse an existing WebSocket and not close the socket if another socket is already listening", () => {
     const listen1 = jest.fn()
-    const webSocketFx1 = WebSocketClient({ url, listen: listen1 })
+    const webSocketFx1 = WebSocketListen({ url, listen: listen1 })
     const { unsubscribe: unsubscribe1 } = runFx(webSocketFx1)
 
     WebSocket.mockReset()
     const listen2 = jest.fn()
-    const webSocketFx2 = WebSocketClient({ url, listen: listen2 })
+    const webSocketFx2 = WebSocketListen({ url, listen: listen2 })
     const { unsubscribe: unsubscribe2 } = runFx(webSocketFx2)
     expect(WebSocket).not.toBeCalled()
 
