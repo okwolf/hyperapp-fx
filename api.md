@@ -167,7 +167,7 @@ Describes an effect that will send an HTTP request using [`fetch`](https://devel
 | --- | --- | --- |
 | props | <code>object</code> |  |
 | props.url | <code>string</code> | URL for sending HTTP request |
-| props.options | <code>string</code> | same [options as `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#Parameters) |
+| props.options | <code>object</code> | same [options as `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#Parameters) |
 | props.response | <code>string</code> | Specify which method to use on the response body, defaults to `"json"`, other [supported methods](https://developer.mozilla.org/en-US/docs/Web/API/Response#Methods) include `"text"` |
 | props.action | <code>\*</code> | Action to call with the results of a successful HTTP response |
 | props.error | <code>\*</code> | Action to call if there is a problem making the request or a not-ok HTTP response, defaults to the same action defined for success |
