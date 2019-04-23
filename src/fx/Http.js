@@ -25,7 +25,7 @@ function httpEffect(props, dispatch) {
  * @memberof module:fx
  * @param {object} props
  * @param {string} props.url - URL for sending HTTP request
- * @param {string} props.options - same [options as `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#Parameters)
+ * @param {object} props.options - same [options as `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#Parameters)
  * @param {string} props.response - Specify which method to use on the response body, defaults to `"json"`, other [supported methods](https://developer.mozilla.org/en-US/docs/Web/API/Response#Methods) include `"text"`
  * @param {*} props.action - Action to call with the results of a successful HTTP response
  * @param {*} props.error - Action to call if there is a problem making the request or a not-ok HTTP response, defaults to the same action defined for success
