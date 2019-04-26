@@ -36,6 +36,7 @@ export function getOpenWebSocket(props) {
 
 export function closeWebSocket(props) {
   var connection = getOpenWebSocket(props)
+  // FIXME: handle close on opening
   connection.socket.close()
   delete webSocketConnections[props.url]
 }
