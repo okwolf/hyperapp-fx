@@ -43,7 +43,7 @@ function randomEffect(props, dispatch) {
  *   state,
  *   Random({
  *     min: 1,
- *     max: 7,
+ *     max: 6,
  *     int: true,
  *     action: (_, roll) => {
  *       // roll will be an int from 1-6
