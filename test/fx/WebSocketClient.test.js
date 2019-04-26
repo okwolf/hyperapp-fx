@@ -12,6 +12,7 @@ describe("WebSocketSend effect", () => {
     mockWebSocket.removeEventListener = jest.fn()
     mockWebSocket.close = jest.fn()
     global.WebSocket = jest.fn(() => mockWebSocket)
+    global.WebSocket.CONNECTING = 0
   })
   afterEach(() => {
     global.WebSocket = defaultWebSocket

@@ -1,14 +1,12 @@
 import { getOpenWebSocket } from "../utils.js"
 
-var CONNECTING = 0
-
 function webSocketSendEffect(props) {
   var connection = getOpenWebSocket(props)
   function sendMessage() {
     connection.socket.send(props.data)
     connection.socket.removeEventListener("open", sendMessage)
   }
-  if (connection.socket.readyState === CONNECTING) {
+  if (connection.socket.readyState === WebSocket.CONNECTING) {
     connection.socket.addEventListener("open", sendMessage)
   } else {
     sendMessage()
