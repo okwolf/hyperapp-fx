@@ -14,6 +14,7 @@
 * [fx](#module_fx)
     * [.exports.Console(...args)](#module_fx.exports.Console)
     * [.exports.Debounce(props)](#module_fx.exports.Debounce)
+    * [.exports.Dispatch(action)](#module_fx.exports.Dispatch)
     * [.exports.HistoryPush(props)](#module_fx.exports.HistoryPush)
     * [.exports.HistoryReplace(props)](#module_fx.exports.HistoryReplace)
     * [.exports.Http(props)](#module_fx.exports.Http)
@@ -77,6 +78,27 @@ const DebouncedAction = state => [
       // This action will run after waiting for 500ms since the last call
     }
   })
+]
+```
+<a name="module_fx.exports.Dispatch"></a>
+
+### fx.exports.Dispatch(action)
+Describes an effect that will dispatch whatever action is passed to it. Useful for batching actions and FX together.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| action | <code>\*</code> | an action to dispatch |
+
+**Example**  
+```js
+import { Dispatch } from "hyperapp-fx"
+
+const BatchedFxAndActions = state => [
+  state,
+  SomeFx,
+  Dispatch(SomeAction)
 ]
 ```
 <a name="module_fx.exports.HistoryPush"></a>
@@ -173,6 +195,8 @@ const Login = state => [
 <a name="module_fx.exports.Merge"></a>
 
 ### fx.exports.Merge(action)
+Describes an effect that will shallow-merge the results from actions that return partial state.
+
 **Kind**: static method of [<code>fx</code>](#module_fx)  
 
 | Param | Type | Description |

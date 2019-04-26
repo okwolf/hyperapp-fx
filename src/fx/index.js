@@ -2,6 +2,7 @@
  * @module fx
  */
 
+export * from "./Dispatch.js"
 export * from "./Console.js"
 export * from "./Random.js"
 export * from "./Http.js"
