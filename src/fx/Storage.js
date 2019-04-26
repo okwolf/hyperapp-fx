@@ -90,6 +90,7 @@ export function ReadFromStorage(props) {
     assign(
       {
         converter: props.converter || JSON.parse,
+        // TODO: add coverage for default value
         error: props.error || function() {}
       },
       props
