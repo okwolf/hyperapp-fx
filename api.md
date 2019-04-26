@@ -12,7 +12,6 @@
 ## fx
 
 * [fx](#module_fx)
-    * [.exports.BatchFx(...fx)](#module_fx.exports.BatchFx)
     * [.exports.Console(...args)](#module_fx.exports.Console)
     * [.exports.Debounce(props)](#module_fx.exports.Debounce)
     * [.exports.HistoryPush(props)](#module_fx.exports.HistoryPush)
@@ -28,28 +27,6 @@
     * [.exports.Delay(props)](#module_fx.exports.Delay)
     * [.exports.WebSocketSend(props)](#module_fx.exports.WebSocketSend)
 
-<a name="module_fx.exports.BatchFx"></a>
-
-### fx.exports.BatchFx(...fx)
-**Kind**: static method of [<code>fx</code>](#module_fx)  
-
-| Param | Type | Description |
-| --- | --- | --- |
-| ...fx | <code>\*</code> | FX to run together in a batch |
-
-**Example**  
-```js
-import { BatchFx } from "hyperapp-fx"
-
-const BatchedAction = state => [
-  state,
-  BatchFx(
-    Effect1,
-    Effect2,
-    // ...
-  )
-]
-```
 <a name="module_fx.exports.Console"></a>
 
 ### fx.exports.Console(...args)
