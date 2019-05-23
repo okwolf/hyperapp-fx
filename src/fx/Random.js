@@ -19,7 +19,7 @@ function generateRandom(props) {
   return randomValue
 }
 
-function randomEffect(props, dispatch) {
+function randomEffect(dispatch, props) {
   var randomValue = generateRandom(props)
   dispatch(props.action, randomValue)
 }

@@ -1,4 +1,4 @@
-function consoleEffect(args) {
+function consoleEffect(_, args) {
   // eslint-disable-next-line no-console
   console.log.apply(null, args)
 }

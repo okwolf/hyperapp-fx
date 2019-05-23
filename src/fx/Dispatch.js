@@ -1,4 +1,4 @@
-function dispatchEffect(props, dispatch) {
+function dispatchEffect(dispatch, props) {
   dispatch(props.action)
 }
 

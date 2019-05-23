@@ -1,6 +1,6 @@
 import { assign } from "../utils.js"
 
-function httpEffect(props, dispatch) {
+function httpEffect(dispatch, props) {
   fetch(props.url, props.options)
     .then(function(response) {
       if (!response.ok) {

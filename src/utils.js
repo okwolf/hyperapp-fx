@@ -14,7 +14,7 @@ export function makeRemoveListener(attachTo, dispatch, action, eventName) {
   }
 }
 
-export function makeDispatchTime(props, dispatch) {
+export function makeDispatchTime(dispatch, props) {
   return function() {
     dispatch(props.action, props.asDate ? new Date() : performance.now())
   }

@@ -1,5 +1,5 @@
 var throttleLocks = []
-function throttleEffect(props, dispatch) {
+function throttleEffect(dispatch, props) {
   var lock = throttleLocks.find(function(nextLock) {
     return nextLock[0] === props.action
   })
