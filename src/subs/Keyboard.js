@@ -1,6 +1,6 @@
 import { makeRemoveListener } from "../utils.js"
 
-function keyboardEffect(props, dispatch) {
+function keyboardEffect(dispatch, props) {
   var removeListenerForEvent = makeRemoveListener.bind(
     null,
     document,

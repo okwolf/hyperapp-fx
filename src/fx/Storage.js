@@ -4,12 +4,12 @@ function storageArea(area) {
   return window[area + "Storage"] || localStorage
 }
 
-function writeToStorageEffect(props) {
+function writeToStorageEffect(_, props) {
   var value = props.converter(props.value)
   storageArea(props.area).setItem(props.key, value)
 }
 
-function readFromStorageEffect(props, dispatch) {
+function readFromStorageEffect(dispatch, props) {
   try {
     var value = props.converter(storageArea(props.area).getItem(props.key))
     var dispatchProps = assign({}, props.props || {})
@@ -20,7 +20,7 @@ function readFromStorageEffect(props, dispatch) {
   }
 }
 
-function removeFromStorageEffect(props) {
+function removeFromStorageEffect(_, props) {
   storageArea(props.area).removeItem(props.key)
 }
 

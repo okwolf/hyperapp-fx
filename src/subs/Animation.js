@@ -1,4 +1,4 @@
-function animationEffect(action, dispatch) {
+function animationEffect(dispatch, action) {
   var cancelId
 
   function frame(timestamp) {

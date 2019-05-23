@@ -1,6 +1,6 @@
 {
   "name": "hyperapp-fx",
-  "version": "2.0.0-alpha.7",
+  "version": "2.0.0-beta.1",
   "description": "Effects for use with Hyperapp",
   "main": "dist/hyperappFx.js",
   "module": "src/index.js",

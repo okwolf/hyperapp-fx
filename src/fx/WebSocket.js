@@ -1,6 +1,6 @@
 import { getOpenWebSocket } from "../utils.js"
 
-function webSocketSendEffect(props) {
+function webSocketSendEffect(dispatch, props) {
   var connection = getOpenWebSocket(props)
   function sendMessage() {
     connection.socket.send(props.data)

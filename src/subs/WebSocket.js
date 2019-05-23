@@ -4,7 +4,7 @@ import {
   closeWebSocket
 } from "../utils.js"
 
-function webSocketListenEffect(props, dispatch) {
+function webSocketListenEffect(dispatch, props) {
   var connection = getOpenWebSocket(props)
   var removeListen = makeRemoveListener(
     connection.socket,

@@ -1,7 +1,7 @@
 import { makeDispatchTime } from "../utils"
 
-function intervalEffect(props, dispatch) {
-  var dispatchTime = makeDispatchTime(props, dispatch)
+function intervalEffect(dispatch, props) {
+  var dispatchTime = makeDispatchTime(dispatch, props)
   var everyInterval = setInterval(dispatchTime, props.every)
   return function() {
     everyInterval && clearInterval(everyInterval)

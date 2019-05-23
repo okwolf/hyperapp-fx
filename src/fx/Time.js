@@ -1,11 +1,11 @@
 import { makeDispatchTime } from "../utils"
 
-function nowEffect(props, dispatch) {
-  makeDispatchTime(props, dispatch)()
+function nowEffect(dispatch, props) {
+  makeDispatchTime(dispatch, props)()
 }
 
-function delayEffect(props, dispatch) {
-  setTimeout(makeDispatchTime(props, dispatch), props.wait)
+function delayEffect(dispatch, props) {
+  setTimeout(makeDispatchTime(dispatch, props), props.wait)
 }
 
 /**
