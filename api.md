@@ -70,13 +70,15 @@ Describes an effect that will call an action after waiting for a delay to pass. 
 ```js
 import { Debounce } from "hyperapp-fx"
 
+const OriginalAction = state => {
+  // This action will run after waiting for 500ms since the last call
+}
+
 const DebouncedAction = state => [
   state,
   Debounce({
     wait: 500,
-    action() {
-      // This action will run after waiting for 500ms since the last call
-    }
+    action: OriginalAction
   })
 ]
 ```
@@ -348,13 +350,15 @@ Describes an effect that will call an action at a maximum rate. Where `rate` is 
 ```js
 import { Throttle } from "hyperapp-fx"
 
+const OriginalAction = state => {
+  // This action will only run once per 500ms
+}
+
 const ThrottledAction = state => [
   state,
   Throttle({
     rate: 500,
-    action() {
-      // This action will only run once per 500ms
-    }
+    action: OriginalAction
   })
 ]
 ```
