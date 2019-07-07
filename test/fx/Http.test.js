@@ -139,4 +139,27 @@ describe("Http effect", () => {
       done()
     })
   })
+  it("should allow response parser on error", done => {
+    const testUrl = "https://example.com/hello"
+    const response = {
+      ok: false,
+      json() {
+        return Promise.resolve({ msg: "Failed" })
+      }
+    }
+    global.fetch = (url, options) => {
+      expect(url).toBe(testUrl)
+      expect(options).toEqual({})
+      return Promise.resolve(response)
+    }
+    const action = jest.fn()
+    const httpFx = Http({ url: testUrl, errorResponse: "json", action })
+    const { dispatch } = runFx(httpFx)
+
+    process.nextTick(() => {
+      expect(dispatch).toBeCalledWith(action, { msg: "Failed" })
+      delete global.fetch
+      done()
+    })
+  })
 })
