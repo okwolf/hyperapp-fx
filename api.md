@@ -12,6 +12,7 @@
 ## fx
 
 * [fx](#module_fx)
+    * [.exports.Alert(...message)](#module_fx.exports.Alert)
     * [.exports.Console(...args)](#module_fx.exports.Console)
     * [.exports.Debounce(props)](#module_fx.exports.Debounce)
     * [.exports.Dispatch(action)](#module_fx.exports.Dispatch)
@@ -28,6 +29,26 @@
     * [.exports.Delay(props)](#module_fx.exports.Delay)
     * [.exports.WebSocketSend(props)](#module_fx.exports.WebSocketSend)
 
+<a name="module_fx.exports.Alert"></a>
+
+### fx.exports.Alert(...message)
+Describes an effect that will call [`window.alert`](https://developer.mozilla.org/en-US/docs/Web/API/Window/alert) to display a dialog window with the specified message and an "OK" button.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| ...message | <code>\*</code> | message to display in the alert dialog |
+
+**Example**  
+```js
+import { Alert } from "hyperapp-fx"
+
+const AlertAction = state => [
+  state,
+  Alert("Hello, world!")
+]
+```
 <a name="module_fx.exports.Console"></a>
 
 ### fx.exports.Console(...args)
