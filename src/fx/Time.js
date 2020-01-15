@@ -1,4 +1,4 @@
-import { makeDispatchTime } from "../utils"
+import { makeDispatchTime } from "../utils.js"
 
 function nowEffect(dispatch, props) {
   makeDispatchTime(dispatch, props)()

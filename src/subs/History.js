@@ -1,4 +1,4 @@
-import { makeRemoveListener } from "../utils"
+import { makeRemoveListener } from "../utils.js"
 
 function historyPopEffect(dispatch, props) {
   return makeRemoveListener(window, dispatch, props.action, "popstate")
