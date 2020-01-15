@@ -3,6 +3,8 @@ node_js:
   - "6"
   - "8"
   - "10"
+  - "12"
+  - "13"
 
 env:
   - NODE_ENV=development
