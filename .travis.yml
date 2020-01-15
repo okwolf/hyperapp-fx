@@ -8,7 +8,7 @@ env:
   - NODE_ENV=development
 
 before_install:
-  - npm i -g npx
+  - which npx || npm i -g npx
 
 cache:
   directories:
