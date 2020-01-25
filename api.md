@@ -272,7 +272,7 @@ import { WriteToStorage } from "hyperapp-fx"
 const SavePreferences = (state, preferences) => [
   state,
   WriteToStorage({
-    name: "preferences",
+    key: "preferences",
     value: preferences,
     storage: "local"
   })
