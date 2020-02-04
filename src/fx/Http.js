@@ -15,7 +15,17 @@ function httpEffect(dispatch, props) {
       dispatch(props.action, result)
     })
     .catch(function(error) {
-      dispatch(props.error, error)
+      if (props.errorResponse) {
+        return error[props.errorResponse]()
+          .then(function(result) {
+            dispatch(props.error, result)
+          })
+          .catch(function(error) {
+            dispatch(props.error, error)
+          })
+      } else {
+        dispatch(props.error, error)
+      }
     })
 }
 
@@ -27,6 +37,7 @@ function httpEffect(dispatch, props) {
  * @param {string} props.url - URL for sending HTTP request
  * @param {object} props.options - same [options as `fetch`](https://developer.mozilla.org/en-US/docs/Web/API/Window/fetch#Parameters)
  * @param {string} props.response - Specify which method to use on the response body, defaults to `"json"`, other [supported methods](https://developer.mozilla.org/en-US/docs/Web/API/Response#Methods) include `"text"`
+ * @param {string} props.errorResponse - Specify which method to use on the error response body, defaults to raw response with no parsing, other [supported methods](https://developer.mozilla.org/en-US/docs/Web/API/Response#Methods) include `"text"`
  * @param {*} props.action - Action to call with the results of a successful HTTP response
  * @param {*} props.error - Action to call if there is a problem making the request or a not-ok HTTP response, defaults to the same action defined for success
  * @example

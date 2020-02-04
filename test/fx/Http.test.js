@@ -19,6 +19,7 @@ describe("Http effect", () => {
 
     process.nextTick(() => {
       expect(dispatch).toBeCalledWith(action, { response: "data" })
+      expect(dispatch.mock.calls.length).toBe(1)
       delete global.fetch
       done()
     })
@@ -39,6 +40,7 @@ describe("Http effect", () => {
 
     process.nextTick(() => {
       expect(dispatch).toBeCalledWith(action, "hello world")
+      expect(dispatch.mock.calls.length).toBe(1)
       delete global.fetch
       done()
     })
@@ -72,6 +74,7 @@ describe("Http effect", () => {
 
     process.nextTick(() => {
       expect(dispatch).toBeCalledWith(action, { result: "authenticated" })
+      expect(dispatch.mock.calls.length).toBe(1)
       delete global.fetch
       done()
     })
@@ -97,6 +100,7 @@ describe("Http effect", () => {
 
     process.nextTick(() => {
       expect(dispatch).toBeCalledWith(errorAction, error)
+      expect(dispatch.mock.calls.length).toBe(1)
       delete global.fetch
       done()
     })
@@ -115,6 +119,7 @@ describe("Http effect", () => {
 
     process.nextTick(() => {
       expect(dispatch).toBeCalledWith(action, error)
+      expect(dispatch.mock.calls.length).toBe(1)
       delete global.fetch
       done()
     })
@@ -135,6 +140,55 @@ describe("Http effect", () => {
 
     process.nextTick(() => {
       expect(dispatch).toBeCalledWith(action, response)
+      expect(dispatch.mock.calls.length).toBe(1)
+      delete global.fetch
+      done()
+    })
+  })
+  it("should allow response parser on error", done => {
+    const testUrl = "https://example.com/hello"
+    const response = {
+      ok: false,
+      json() {
+        return Promise.resolve({ msg: "Failed" })
+      }
+    }
+    global.fetch = (url, options) => {
+      expect(url).toBe(testUrl)
+      expect(options).toEqual({})
+      return Promise.resolve(response)
+    }
+    const action = jest.fn()
+    const httpFx = Http({ url: testUrl, errorResponse: "json", action })
+    const { dispatch } = runFx(httpFx)
+
+    process.nextTick(() => {
+      expect(dispatch).toBeCalledWith(action, { msg: "Failed" })
+      expect(dispatch.mock.calls.length).toBe(1)
+      delete global.fetch
+      done()
+    })
+  })
+  it("should handle error in error response parser", done => {
+    const testUrl = "https://example.com/hello"
+    const response = {
+      ok: false,
+      json() {
+        return Promise.reject({ msg: "Failed" })
+      }
+    }
+    global.fetch = (url, options) => {
+      expect(url).toBe(testUrl)
+      expect(options).toEqual({})
+      return Promise.resolve(response)
+    }
+    const action = jest.fn()
+    const httpFx = Http({ url: testUrl, errorResponse: "json", action })
+    const { dispatch } = runFx(httpFx)
+
+    process.nextTick(() => {
+      expect(dispatch).toBeCalledWith(action, { msg: "Failed" })
+      expect(dispatch.mock.calls.length).toBe(1)
       delete global.fetch
       done()
     })
