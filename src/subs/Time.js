@@ -1,4 +1,4 @@
-import { makeDispatchTime } from "../utils"
+import { makeDispatchTime } from "../utils.js"
 
 function intervalEffect(dispatch, props) {
   var dispatchTime = makeDispatchTime(dispatch, props)
