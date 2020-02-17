@@ -1,8 +1,8 @@
 # Hyperapp FX
 
-[![Build Status](https://travis-ci.org/okwolf/hyperapp-fx.svg?branch=HAv2)](https://travis-ci.org/okwolf/hyperapp-fx)
-[![codecov](https://codecov.io/gh/okwolf/hyperapp-fx/branch/HAv2/graph/badge.svg)](https://codecov.io/gh/okwolf/hyperapp-fx/branch/HAv2)
-[![npm](https://img.shields.io/npm/v/hyperapp-fx/next.svg)](https://www.npmjs.com/package/hyperapp-fx/v/next)
+[![Build Status](https://travis-ci.org/okwolf/hyperapp-fx.svg?branch=master)](https://travis-ci.org/okwolf/hyperapp-fx)
+[![codecov](https://codecov.io/gh/okwolf/hyperapp-fx/branch/master/graph/badge.svg)](https://codecov.io/gh/okwolf/hyperapp-fx)
+[![npm](https://img.shields.io/npm/v/hyperapp-fx.svg)](https://www.npmjs.org/package/hyperapp-fx)
 [![Slack](https://hyperappjs.herokuapp.com/badge.svg)](https://hyperappjs.herokuapp.com "Join us")
 
 A handy set of effects for use with [Hyperapp](https://github.com/jorgebucaran/hyperapp).
