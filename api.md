@@ -563,7 +563,7 @@ A relative timestamp will be provided as the action `data`.
 **Example**  
 ```js
 import { h, app } from "hyperapp"
-import { Animation, BatchFx, Merge } from "hyperapp-fx"
+import { Animation, Merge } from "hyperapp-fx"
 
 const UpdateTime = time => ({ time: lastTime, delta: lastDelta }) => ({
   time,
@@ -572,12 +572,10 @@ const UpdateTime = time => ({ time: lastTime, delta: lastDelta }) => ({
 
 const AnimationFrame = (state, time) => [
   state,
-  BatchFx(
-    Merge(UpdateTime(time)),
-    Merge(UpdateStateForDelta),
-    Merge(UpdateMoreStateForDelta),
-    // ...
-  )
+  Merge(UpdateTime(time)),
+  Merge(UpdateStateForDelta),
+  Merge(UpdateMoreStateForDelta),
+  // ...
 ]
 
 app({

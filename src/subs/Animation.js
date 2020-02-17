@@ -20,7 +20,7 @@ function animationEffect(dispatch, action) {
  * @param {*} action - action to call inside a requestAnimationFrame loop
  * @example
  * import { h, app } from "hyperapp"
- * import { Animation, BatchFx, Merge } from "hyperapp-fx"
+ * import { Animation, Merge } from "hyperapp-fx"
  *
  * const UpdateTime = time => ({ time: lastTime, delta: lastDelta }) => ({
  *   time,
@@ -29,12 +29,10 @@ function animationEffect(dispatch, action) {
  *
  * const AnimationFrame = (state, time) => [
  *   state,
- *   BatchFx(
- *     Merge(UpdateTime(time)),
- *     Merge(UpdateStateForDelta),
- *     Merge(UpdateMoreStateForDelta),
- *     // ...
- *   )
+ *   Merge(UpdateTime(time)),
+ *   Merge(UpdateStateForDelta),
+ *   Merge(UpdateMoreStateForDelta),
+ *   // ...
  * ]
  *
  * app({
