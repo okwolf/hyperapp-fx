@@ -35,7 +35,7 @@ function randomEffect(dispatch, props) {
  * @param {number} props.max - maximum random number to generate
  * @param {boolean} props.int - round number to nearest integer
  * @param {boolean} props.bool - generate a boolean instead of a number (ignores numeric options)
- * @param {object[]} props.values - generate an array of values (ignores other options, each object accepts same props as the root)
+ * @param {array(object)} props.values - generate an array of values (ignores other options, each object accepts same props as the root)
  * @example
  * import { Random } from "hyperapp-fx"
  *

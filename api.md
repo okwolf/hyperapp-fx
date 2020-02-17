@@ -323,7 +323,7 @@ If provided the range for [random numeric values](https://developer.mozilla.org/
 | props.max | <code>number</code> | maximum random number to generate |
 | props.int | <code>boolean</code> | round number to nearest integer |
 | props.bool | <code>boolean</code> | generate a boolean instead of a number (ignores numeric options) |
-| props.values | <code>Array.&lt;object&gt;</code> | generate an array of values (ignores other options, each object accepts same props as the root) |
+| props.values | <code>array(object)</code> | generate an array of values (ignores other options, each object accepts same props as the root) |
 
 **Example**  
 ```js
@@ -365,7 +365,7 @@ import { WriteToStorage } from "hyperapp-fx"
 const SavePreferences = (state, preferences) => [
   state,
   WriteToStorage({
-    name: "preferences",
+    key: "preferences",
     value: preferences,
     storage: "local"
   })

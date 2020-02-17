@@ -39,7 +39,7 @@ function removeFromStorageEffect(_, props) {
  * const SavePreferences = (state, preferences) => [
  *   state,
  *   WriteToStorage({
- *     name: "preferences",
+ *     key: "preferences",
  *     value: preferences,
  *     storage: "local"
  *   })
