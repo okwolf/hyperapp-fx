@@ -18,6 +18,7 @@
     * [.exports.DeleteCookie(props)](#module_fx.exports.DeleteCookie)
     * [.exports.Debounce(props)](#module_fx.exports.Debounce)
     * [.exports.Dispatch(action)](#module_fx.exports.Dispatch)
+    * [.exports.GetCurrentPosition(props)](#module_fx.exports.GetCurrentPosition)
     * [.exports.HistoryPush(props)](#module_fx.exports.HistoryPush)
     * [.exports.HistoryReplace(props)](#module_fx.exports.HistoryReplace)
     * [.exports.Http(props)](#module_fx.exports.Http)
@@ -194,6 +195,36 @@ const BatchedFxAndActions = state => [
   state,
   SomeFx,
   Dispatch(SomeAction)
+]
+```
+<a name="module_fx.exports.GetCurrentPosition"></a>
+
+### fx.exports.GetCurrentPosition(props)
+Describes an effect that will get the current user's location using the [Geolocation API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API) and then call an action with the coordinates.
+
+**Kind**: static method of [<code>fx</code>](#module_fx)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.action | <code>\*</code> | Action to call with the position |
+| props.error | <code>\*</code> | Action to call if there is a problem getting the position |
+| props.options | <code>object</code> | An optional [`PositionOptions`](https://developer.mozilla.org/en-US/docs/Web/API/PositionOptions) object |
+
+**Example**  
+```js
+import { GetCurrentPosition } from "hyperapp-fx"
+
+const WhereAmI = state => [
+  state,
+  GetCurrentPosition({
+    action(state, position) {
+      console.log(position);
+    },
+    error(state, error) {
+      // please handle your errors...
+    }
+  })
 ]
 ```
 <a name="module_fx.exports.HistoryPush"></a>
