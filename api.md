@@ -543,6 +543,7 @@ import { WebSocketSend } from "hyperapp-fx"
 
 * [subs](#module_subs)
     * [.exports.Animation(action)](#module_subs.exports.Animation)
+    * [.exports.WatchPosition(props)](#module_subs.exports.WatchPosition)
     * [.exports.HistoryPop(action)](#module_subs.exports.HistoryPop)
     * [.exports.Keyboard(props)](#module_subs.exports.Keyboard)
     * [.exports.Interval(props)](#module_subs.exports.Interval)
@@ -586,6 +587,30 @@ app({
   }
   // ...
   subscriptions: ({ running }) => (running ? [Animation(AnimationFrame)] : [])
+})
+```
+<a name="module_subs.exports.WatchPosition"></a>
+
+### subs.exports.WatchPosition(props)
+Describes an effect that can monitor geolocation using the [Geolocation API](https://developer.mozilla.org/en-US/docs/Web/API/Geolocation_API), sending updates each time the location is updated
+
+**Kind**: static method of [<code>subs</code>](#module_subs)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| props | <code>object</code> |  |
+| props.action | <code>\*</code> | required action to call each time the location changes |
+| props.error | <code>\*</code> | optional action to call on error |
+| props.options | <code>object</code> | An optional [`PositionOptions`](https://developer.mozilla.org/en-US/docs/Web/API/PositionOptions) object |
+
+**Example**  
+```js
+import { WatchPosition } from "hyperapp-fx"
+
+const GeoSub = WatchPosition({
+  action: (state, position) => {
+    state.user_location = position.coords,
+  }
 })
 ```
 <a name="module_subs.exports.HistoryPop"></a>
