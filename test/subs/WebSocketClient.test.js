@@ -82,13 +82,26 @@ describe("WebSocketListen subscription", () => {
     )
   })
   it("should reuse an existing WebSocket and not close the socket if another socket is already listening", () => {
+    const onopen = jest.fn()
+    const onclose = jest.fn()
+
     const listen1 = jest.fn()
-    const webSocketFx1 = WebSocketListen({ url, listen: listen1 })
+    const webSocketFx1 = WebSocketListen({
+      url,
+      listen: listen1,
+      open: onopen,
+      close: onclose
+    })
     const { unsubscribe: unsubscribe1 } = runFx(webSocketFx1)
 
     WebSocket.mockReset()
     const listen2 = jest.fn()
-    const webSocketFx2 = WebSocketListen({ url, listen: listen2 })
+    const webSocketFx2 = WebSocketListen({
+      url,
+      listen: listen2,
+      open: onopen,
+      close: onclose
+    })
     const { unsubscribe: unsubscribe2 } = runFx(webSocketFx2)
     expect(WebSocket).not.toBeCalled()
 

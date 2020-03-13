@@ -755,6 +755,8 @@ Describes an effect that will open a [`WebSocket`](https://developer.mozilla.org
 | props.protocols | <code>string</code> \| <code>Array.&lt;string&gt;</code> | Either a single protocol string or an array of protocol strings. These strings are used to indicate sub-protocols, so that a single server can implement multiple WebSocket sub-protocols (for example, you might want one server to be able to handle different types of interactions depending on the specified `protocol`). If you don't specify a protocol string, an empty string is assumed. |
 | props.action | <code>\*</code> | action to call with new incoming messages |
 | props.error | <code>\*</code> | action to call if an error occurs |
+| props.open | <code>\*</code> | action to call when the socket is opened |
+| props.close | <code>\*</code> | action to call when the socket is closed |
 
 **Example**  
 ```js

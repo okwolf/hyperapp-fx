@@ -23,12 +23,39 @@ function webSocketListenEffect(dispatch, props) {
     )
     connection.listeners.push(removeError)
   }
+  var removeOpen
+  if (props.open) {
+    removeOpen = makeRemoveListener(
+      connection.socket,
+      dispatch,
+      props.open,
+      "open"
+    )
+    connection.listeners.push(removeOpen)
+  }
+  var removeClose
+  if (props.close) {
+    removeClose = makeRemoveListener(
+      connection.socket,
+      dispatch,
+      props.close,
+      "close"
+    )
+    connection.listeners.push(removeClose)
+  }
 
   return function() {
     removeListen && removeListen()
     removeError && removeError()
+    removeOpen && removeOpen()
+    removeClose && removeClose()
     connection.listeners = connection.listeners.filter(function(listener) {
-      return listener !== removeListen && listener !== removeError
+      return (
+        listener !== removeListen &&
+        listener !== removeError &&
+        listener !== removeOpen &&
+        listener !== removeClose
+      )
     })
     if (connection.listeners.length === 0) {
       closeWebSocket(props)
@@ -45,6 +72,8 @@ function webSocketListenEffect(dispatch, props) {
  * @param {string | string[]} props.protocols - Either a single protocol string or an array of protocol strings. These strings are used to indicate sub-protocols, so that a single server can implement multiple WebSocket sub-protocols (for example, you might want one server to be able to handle different types of interactions depending on the specified `protocol`). If you don't specify a protocol string, an empty string is assumed.
  * @param {*} props.action - action to call with new incoming messages
  * @param {*} props.error - action to call if an error occurs
+ * @param {*} props.open - action to call when the socket is opened
+ * @param {*} props.close - action to call when the socket is closed
  * @example
  * import { WebSocketListen } from "hyperapp-fx"
  *
