@@ -45,6 +45,7 @@ function webSocketListenEffect(dispatch, props) {
  * @param {string | string[]} props.protocols - Either a single protocol string or an array of protocol strings. These strings are used to indicate sub-protocols, so that a single server can implement multiple WebSocket sub-protocols (for example, you might want one server to be able to handle different types of interactions depending on the specified `protocol`). If you don't specify a protocol string, an empty string is assumed.
  * @param {*} props.action - action to call with new incoming messages
  * @param {*} props.error - action to call if an error occurs
+ * @param {*} props.ws_constructor - an optional replacement for the WebSocket constructor
  * @example
  * import { WebSocketListen } from "hyperapp-fx"
  *

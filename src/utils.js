@@ -25,8 +25,11 @@ var webSocketConnections = {}
 export function getOpenWebSocket(props) {
   var connection = webSocketConnections[props.url]
   if (!connection) {
+    var socket = props.ws_constructor
+      ? new props.ws_constructor(props.url, props.protocols)
+      : new WebSocket(props.url, props.protocols)
     connection = {
-      socket: new WebSocket(props.url, props.protocols),
+      socket: socket,
       listeners: []
     }
     webSocketConnections[props.url] = connection
