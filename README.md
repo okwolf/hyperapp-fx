@@ -18,16 +18,15 @@ import { Http } from "hyperapp-fx"
 const GetQuote = () => [
   "...",
   Http({
-    url:
-      "https://quotesondesign.com/wp-json/posts?filter[orderby]=rand&filter[posts_per_page]=1",
-    action: (_, [{ content }]) => content
+    url: "https://api.quotable.io/random",
+    action: (_, { content }) => content
   })
 ]
 
 app({
   init: "Click here for quotes",
   view: quote => <h1 onclick={GetQuote}>{quote}</h1>,
-  container: document.body
+  node: document.getElementById("app")
 })
 ```
 
