@@ -12,7 +12,7 @@ A handy set of effects for use with [Hyperapp](https://github.com/jorgebucaran/h
 Here's a taste of how to use a common effect for making HTTP requests. The app displays inspiring quotes about design, fetching a new quote each time the user clicks on the current one. Go ahead and [try it online here](https://codepen.io/okwolf/pen/vPbMaa?editors=0010).
 
 ```js
-import { h, app } from "hyperapp"
+import { app, h, text } from "hyperapp"
 import { Http } from "hyperapp-fx"
 
 const GetQuote = () => [
@@ -25,12 +25,12 @@ const GetQuote = () => [
 
 app({
   init: "Click here for quotes",
-  view: quote => <h1 onclick={GetQuote}>{quote}</h1>,
+  view: quote => h("h1", { onclick: GetQuote }, text(quote)),
   node: document.getElementById("app")
 })
 ```
 
-More [examples](https://codepen.io/collection/ArmxQj) are available to show other effects in action.
+More [examples](https://github.com/okwolf/hyperapp-playground) are available to show other effects in action.
 
 ## Installation
 
