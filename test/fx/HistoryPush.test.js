@@ -2,7 +2,7 @@ import { runFx } from "../utils"
 import { HistoryPush } from "../../src"
 
 describe("HistoryPush effect", () => {
-  it("pushing to state should update location and state, and increment history length", () => {
+  it("should update location and state, and increment history length", () => {
     const historyPush = HistoryPush({
       state: {},
       title: "new title",
@@ -16,7 +16,7 @@ describe("HistoryPush effect", () => {
     expect(history.state).toEqual({})
   })
 
-  it("pushing to state should send correct params", () => {
+  it("should call history.pushState with correct params", () => {
     history.pushState = jest.fn()
     const historyPush = HistoryPush({
       state: {},
@@ -25,5 +25,20 @@ describe("HistoryPush effect", () => {
     })
     runFx(historyPush)
     expect(history.pushState).toHaveBeenCalledWith({}, "new title", "#foo")
+  })
+
+  it("should call history.pushState with default title and url", () => {
+    history.pushState = jest.fn()
+    document.title = "another title"
+    location.href = "http://localhost/#bar"
+    const historyPush = HistoryPush({
+      state: {}
+    })
+    runFx(historyPush)
+    expect(history.pushState).toHaveBeenCalledWith(
+      {},
+      "another title",
+      "http://localhost/#bar"
+    )
   })
 })

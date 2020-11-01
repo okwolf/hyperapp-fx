@@ -21,13 +21,13 @@ describe("WriteToStorage effect", () => {
     mockStorage()
   })
 
-  it("writes to storage", () => {
+  it("should write to storage", () => {
     const writeToStorageFx = WriteToStorage({ key: "bar", value: "123" })
     runFx(writeToStorageFx)
     expect(sessionStorage.setItem).toBeCalledWith("bar", '"123"')
   })
 
-  it("can use a custom converter", () => {
+  it("should support a custom converter", () => {
     const writeToStorageFx = WriteToStorage({
       key: "bar",
       value: "foo",
@@ -43,7 +43,7 @@ describe("ReadFromStorage effect", () => {
     mockStorage({ foo: '"bar"', soo: '"cat"' })
   })
 
-  it("reads from storage", () => {
+  it("should read from storage", () => {
     const action = jest.fn()
     const readFromStorageFx = ReadFromStorage({ key: "soo", action })
     const { dispatch } = runFx(readFromStorageFx)
@@ -60,7 +60,7 @@ describe("ReadFromStorage effect", () => {
     expect(sessionStorage.getItem).toBeCalledWith("soo")
   })
 
-  it("can use a custom converter to read", () => {
+  it("should support a custom converter to read", () => {
     mockStorage({ foo: "rab" })
     const action = jest.fn()
     const readFromStorageFx = ReadFromStorage({
@@ -73,7 +73,7 @@ describe("ReadFromStorage effect", () => {
     expect(sessionStorage.getItem).toBeCalledWith("foo")
   })
 
-  it("can specify which action prop receives the value", () => {
+  it("should support action prop", () => {
     const action = jest.fn()
     const readFromStorageFx = ReadFromStorage({
       key: "foo",
@@ -87,7 +87,7 @@ describe("ReadFromStorage effect", () => {
 })
 
 describe("DeleteFromStorage effect", () => {
-  it("can remove from storage", () => {
+  it("should remove from storage", () => {
     mockStorage({ foo: "bar" })
     const removeFromStorageFx = RemoveFromStorage({ key: "foo" })
     runFx(removeFromStorageFx)

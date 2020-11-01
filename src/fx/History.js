@@ -1,5 +1,4 @@
 function historyPushEffect(dispatch, props) {
-  // TODO: add coverage for default values
   var title = props.title || document.title
   var url = props.url || location.href
 
@@ -7,7 +6,6 @@ function historyPushEffect(dispatch, props) {
 }
 
 function historyReplaceEffect(dispatch, props) {
-  // TODO: add coverage for default values
   var title = props.title || document.title
   var url = props.url || location.href
 

@@ -13,8 +13,8 @@ describe("Cookie effect", () => {
     })
   })
 
-  describe("Should be able to read cookies", () => {
-    it("read a cookie", () => {
+  describe("for reading cookies", () => {
+    it("should read a cookie", () => {
       document.cookie = "a=cookie"
 
       const action = jest.fn()
@@ -24,7 +24,15 @@ describe("Cookie effect", () => {
       expect(dispatch).toBeCalledWith(action, { value: "cookie" })
     })
 
-    it("name contains a reserved character", () => {
+    it("should handle missing cookies", () => {
+      const action = jest.fn()
+      const readCookie = ReadCookie({ action, name: "missing" })
+      const { dispatch } = runFx(readCookie)
+
+      expect(dispatch).not.toHaveBeenCalled()
+    })
+
+    it("should handle names containing reserved characters", () => {
       document.cookie = "a%3Db=cookie"
 
       const action = jest.fn()
@@ -34,7 +42,7 @@ describe("Cookie effect", () => {
       expect(dispatch).toBeCalledWith(action, { value: "cookie" })
     })
 
-    it("value contains a reserved character", () => {
+    it("should handle values contains reserved characters", () => {
       document.cookie = "a=b%3Bc"
 
       const action = jest.fn()
@@ -44,7 +52,7 @@ describe("Cookie effect", () => {
       expect(dispatch).toBeCalledWith(action, { value: "b;c" })
     })
 
-    it("multiple cookies are set", () => {
+    it("should handle multiple cookies", () => {
       document.cookie = "a=cookie"
       document.cookie = "b=another%20cookie"
 
@@ -54,19 +62,9 @@ describe("Cookie effect", () => {
 
       expect(dispatch).toBeCalledWith(action, { value: "another cookie" })
     })
-
-    it("name contains reserved characters", () => {
-      document.cookie = "a=new%3B%20cookie"
-
-      const action = jest.fn()
-      const readCookie = ReadCookie({ action, name: "a" })
-      const { dispatch } = runFx(readCookie)
-
-      expect(dispatch).toBeCalledWith(action, { value: "new; cookie" })
-    })
   })
 
-  describe("Should be able to write cookies", () => {
+  describe("for writing cookies", () => {
     it("should be able to write a cookie", () => {
       const writeCookie = WriteCookie({ name: "a", value: "new cookie" })
       runFx(writeCookie)
@@ -74,14 +72,14 @@ describe("Cookie effect", () => {
       expect(document.cookie).toEqual("a=new%20cookie")
     })
 
-    it("name contains a reserved character", () => {
+    it("should handle names contains reserved characters", () => {
       const writeCookie = WriteCookie({ name: "a=b", value: "new cookie" })
       runFx(writeCookie)
 
       expect(document.cookie).toEqual("a%3Db=new%20cookie")
     })
 
-    it("value contains reserved characters", () => {
+    it("should handle values containing reserved characters", () => {
       const writeCookie = WriteCookie({ name: "a", value: "new; cookie" })
       runFx(writeCookie)
 
