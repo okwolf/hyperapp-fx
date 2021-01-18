@@ -1,6 +1,6 @@
 {
   "name": "hyperapp-fx",
-  "version": "2.0.0-beta.1",
+  "version": "2.0.0-beta.2",
   "description": "Effects for use with Hyperapp",
   "main": "dist/hyperappFx.js",
   "module": "src/index.js",
@@ -19,7 +19,7 @@
     "uglify-js": "=3.5.2"
   },
   "scripts": {
-    "clean": "npx rimraf coverage dist node_modules",
+    "clean": "npx --ignore-existing --quiet rimraf coverage dist node_modules",
     "format": "prettier --write '{src,test}/**/*.js'",
     "format:check": "prettier --list-different {src,test}/**/*.js",
     "lint": "eslint {src,test}/**/*.js",
@@ -29,8 +29,8 @@
     "minify": "uglifyjs dist/hyperappFx.js -o dist/hyperappFx.js -mc pure_funcs=['Object.defineProperty'] --source-map includeSources,url=hyperappFx.js.map",
     "check": "npm run format:check && npm run lint && npm t",
     "build": "npm run check && npm run bundle && npm run minify",
-    "prepare": "npm run build && npm run doc",
-    "release": "./pre-flight-tests && npm run clean && npm i && ./pre-flight-tests && git tag $npm_package_version && git push && git push --tags && npm publish --tag next"
+    "release:dry": "npm run clean && npm i && npm run check && npm run build && npm run doc",
+    "release": "node release"
   },
   "prettier": {
     "semi": false
