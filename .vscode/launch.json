@@ -14,7 +14,8 @@
         "--watch"
       ],
       "runtimeArgs": [
-        "--nolazy"
+        "--nolazy",
+        "--experimental-vm-modules"
       ],
       "console": "integratedTerminal",
       "internalConsoleOptions": "neverOpen"

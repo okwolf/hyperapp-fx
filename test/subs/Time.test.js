@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals"
 import { runFx } from "../utils"
 import { Interval } from "../../src"
 
@@ -6,7 +7,8 @@ describe("Interval subscription", () => {
     jest.useFakeTimers()
     const every = 1000
     let now = 0
-    global.performance.now = () => (now += every)
+    const defaultPerformance = global.performance
+    global.performance = { now: () => (now += every) }
     try {
       const action = jest.fn()
       const intervalSub = Interval({ every, action })
@@ -24,7 +26,7 @@ describe("Interval subscription", () => {
       jest.runOnlyPendingTimers()
       expect(dispatch).not.toBeCalled()
     } finally {
-      delete global.performance.now
+      global.performance = defaultPerformance
       jest.useRealTimers()
     }
   })
@@ -33,7 +35,9 @@ describe("Interval subscription", () => {
     const every = 1000
     let now = 0
     const defaultDate = global.Date
-    global.Date = () => ({ now: (now += every) })
+    global.Date = function () {
+      return { now: (now += every) }
+    }
     try {
       const action = jest.fn()
       const intervalSub = Interval({ every, asDate: true, action })

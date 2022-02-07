@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals"
 import { runFx } from "../utils"
 import { Random } from "../../src"
 

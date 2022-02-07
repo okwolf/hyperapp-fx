@@ -1,9 +1,8 @@
 # Hyperapp FX
 
-[![Build Status](https://travis-ci.org/okwolf/hyperapp-fx.svg?branch=master)](https://travis-ci.org/okwolf/hyperapp-fx)
-[![codecov](https://codecov.io/gh/okwolf/hyperapp-fx/branch/master/graph/badge.svg)](https://codecov.io/gh/okwolf/hyperapp-fx)
-[![npm](https://img.shields.io/npm/v/hyperapp-fx.svg)](https://www.npmjs.org/package/hyperapp-fx)
-[![Slack](https://hyperappjs.herokuapp.com/badge.svg)](https://hyperappjs.herokuapp.com "Join us")
+[![Build Status](https://github.com/okwolf/hyperapp-fx/actions/workflows/ci.yml/badge.svg)](https://github.com/okwolf/hyperapp-fx/actions)
+[![Codecov](https://img.shields.io/codecov/c/github/okwolf/hyperapp-fx/master.svg)](https://codecov.io/gh/okwolf/hyperapp-fx)
+[![npm](https://img.shields.io/npm/v/hyperapp-fx.svg?maxAge=2592000?style=plastic)](https://www.npmjs.com/package/hyperapp-fx)
 
 A handy set of effects for use with [Hyperapp](https://github.com/jorgebucaran/hyperapp).
 
@@ -35,7 +34,7 @@ More [examples](https://github.com/okwolf/hyperapp-playground) are available to 
 ## Installation
 
 <pre>
-npm i <a href=https://www.npmjs.com/package/hyperapp-fx/v/next>hyperapp-fx@next</a>
+npm i <a href=https://www.npmjs.com/package/hyperapp-fx>hyperapp-fx</a>
 </pre>
 
 Then with a module bundler like [Rollup](https://rollupjs.org) or [Webpack](https://webpack.js.org), use as you would anything else.
@@ -44,10 +43,10 @@ Then with a module bundler like [Rollup](https://rollupjs.org) or [Webpack](http
 import { Http } from "hyperapp-fx"
 ```
 
-If you don't want to set up a build environment, you can download Hyperapp FX from a CDN like [unpkg.com](https://unpkg.com/hyperapp-fx@next) and it will be globally available through the <samp>window.hyperappFx</samp> object. We support all ES5-compliant browsers, including Internet Explorer 10 and above. Use of the [`Http`](api.md#module_fx.exports.Http) effect requires a polyfill.
+If you don't want to set up a build environment, you can download Hyperapp FX from a CDN like [unpkg.com](https://unpkg.com/hyperapp-fx) and it will be globally available through the <samp>window.hyperappFx</samp> object. We support all ES5-compliant browsers, including Internet Explorer 10 and above. Use of the [`Http`](api.md#module_fx.exports.Http) effect requires a polyfill.
 
 ```html
-<script src="https://unpkg.com/hyperapp-fx@next"></script>
+<script src="https://unpkg.com/hyperapp-fx"></script>
 ```
 
 ## [API documentation](api.md)

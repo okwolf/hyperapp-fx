@@ -3,7 +3,7 @@ import { makeDispatchTime } from "../utils.js"
 function intervalEffect(dispatch, props) {
   var dispatchTime = makeDispatchTime(dispatch, props)
   var everyInterval = setInterval(dispatchTime, props.every)
-  return function() {
+  return function () {
     everyInterval && clearInterval(everyInterval)
   }
 }
