@@ -7,7 +7,7 @@ function animationEffect(dispatch, action) {
   }
 
   cancelId = requestAnimationFrame(frame)
-  return function() {
+  return function () {
     cancelAnimationFrame(cancelId)
   }
 }

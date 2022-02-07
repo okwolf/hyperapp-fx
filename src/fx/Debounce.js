@@ -1,6 +1,6 @@
 var debounceTimeouts = []
 function debounceEffect(dispatch, props) {
-  var timeout = debounceTimeouts.find(function(nextTimeout) {
+  var timeout = debounceTimeouts.find(function (nextTimeout) {
     return nextTimeout[0] === props.action
   })
   if (!timeout) {
@@ -10,7 +10,7 @@ function debounceEffect(dispatch, props) {
     clearTimeout(timeout[1])
   }
 
-  timeout[1] = setTimeout(function() {
+  timeout[1] = setTimeout(function () {
     dispatch(props.action)
   }, props.wait)
 }

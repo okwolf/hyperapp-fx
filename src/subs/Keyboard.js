@@ -10,7 +10,7 @@ function keyboardEffect(dispatch, props) {
   var removeDown = props.downs ? removeListenerForEvent("keydown") : null
   var removeUp = props.ups ? removeListenerForEvent("keyup") : null
   var removePress = props.presses ? removeListenerForEvent("keypress") : null
-  return function() {
+  return function () {
     removeDown && removeDown()
     removeUp && removeUp()
     removePress && removePress()

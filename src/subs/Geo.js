@@ -1,15 +1,15 @@
 function watchPositionEffect(dispatch, props) {
   var cancelId = navigator.geolocation.watchPosition(
-    function(result) {
+    function (result) {
       return dispatch(props.action, result)
     },
-    function(error) {
+    function (error) {
       return dispatch(props.error, error)
     },
     props.options
   )
 
-  return function() {
+  return function () {
     navigator.geolocation.clearWatch(cancelId)
   }
 }

@@ -1,9 +1,9 @@
 function getCurrentPositionEffect(dispatch, props) {
   navigator.geolocation.getCurrentPosition(
-    function(result) {
+    function (result) {
       return dispatch(props.action, result)
     },
-    function(error) {
+    function (error) {
       return dispatch(props.error, error)
     },
     props.options

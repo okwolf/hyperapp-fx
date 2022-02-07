@@ -1,6 +1,6 @@
 var throttleLocks = []
 function throttleEffect(dispatch, props) {
-  var lock = throttleLocks.find(function(nextLock) {
+  var lock = throttleLocks.find(function (nextLock) {
     return nextLock[0] === props.action
   })
   if (!lock) {
@@ -11,7 +11,7 @@ function throttleEffect(dispatch, props) {
   if (!lock[1]) {
     dispatch(props.action)
     lock[1] = true
-    setTimeout(function() {
+    setTimeout(function () {
       lock[1] = false
     }, props.rate)
   }

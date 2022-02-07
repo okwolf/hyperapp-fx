@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals"
 import { runFx } from "../utils"
 import { ReadCookie, WriteCookie, DeleteCookie } from "../../src"
 

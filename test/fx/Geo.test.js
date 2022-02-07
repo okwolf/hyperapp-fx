@@ -1,10 +1,11 @@
+import { jest } from "@jest/globals"
 import { runFx } from "../utils"
 import { GetCurrentPosition } from "../../src"
 
 describe("GetCurrentPosition effect", () => {
   it("should return coords on success", () => {
     navigator.geolocation = {
-      getCurrentPosition: function(successCallback) {
+      getCurrentPosition: function (successCallback) {
         successCallback({ coords: { longitude: 42.0, latitude: 42.1 } })
       }
     }
@@ -17,7 +18,7 @@ describe("GetCurrentPosition effect", () => {
   })
   it("should call error handler on error", () => {
     navigator.geolocation = {
-      getCurrentPosition: function(successCallback, errorCallback) {
+      getCurrentPosition: function (successCallback, errorCallback) {
         errorCallback("things went wrong")
       }
     }

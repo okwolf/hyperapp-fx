@@ -3,42 +3,34 @@
   "version": "2.0.0-beta.2",
   "description": "Effects for use with Hyperapp",
   "main": "dist/hyperappFx.js",
+  "type": "module",
   "module": "src/index.js",
   "peerDependencies": {
     "hyperapp": "^2.0.0"
   },
   "devDependencies": {
-    "@babel/preset-env": "=7.4.2",
-    "eslint": "=5.15.3",
-    "eslint-plugin-compat": "=3.0.1",
-    "jest": "=24.5.0",
-    "jsdoc-to-markdown": "=4.0.1",
-    "jsdom": "=14.0.0",
-    "prettier": "=1.16.4",
-    "rollup": "=1.7.2",
-    "uglify-js": "=3.5.2"
+    "eslint": "=8.8.0",
+    "eslint-plugin-compat": "=4.0.2",
+    "jest": "=27.5.0",
+    "jsdoc-to-markdown": "=7.1.1",
+    "jsdom": "=19.0.0",
+    "prettier": "=2.5.1",
+    "rollup": "=2.67.0",
+    "uglify-js": "=3.15.0"
   },
   "scripts": {
     "clean": "npx --ignore-existing --quiet rimraf coverage dist node_modules",
-    "format": "prettier --write '{src,test}/**/*.js'",
-    "format:check": "prettier --list-different {src,test}/**/*.js",
+    "format": "prettier --write \"{src,test}/**/*.js\"",
+    "format:check": "prettier --list-different \"{src,test}/**/*.js\"",
     "lint": "eslint {src,test}/**/*.js",
-    "test": "jest --coverage --no-cache",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --no-cache",
     "doc": "jsdoc2md src/fx/*.js src/subs/*.js > api.md",
     "bundle": "rollup -i src/index.js -o dist/hyperappFx.js -m -f umd -n hyperappFx",
     "minify": "uglifyjs dist/hyperappFx.js -o dist/hyperappFx.js -mc pure_funcs=['Object.defineProperty'] --source-map includeSources,url=hyperappFx.js.map",
     "check": "npm run format:check && npm run lint && npm t",
     "build": "npm run check && npm run bundle && npm run minify",
     "release:dry": "npm run clean && npm i && npm run check && npm run build && npm run doc",
-    "release": "node release"
-  },
-  "prettier": {
-    "semi": false
-  },
-  "babel": {
-    "presets": [
-      "@babel/env"
-    ]
+    "release": "node --experimental-json-modules release"
   },
   "eslintConfig": {
     "extends": "eslint:recommended",
@@ -46,6 +38,7 @@
       "compat"
     ],
     "parserOptions": {
+      "ecmaVersion": "latest",
       "sourceType": "module"
     },
     "env": {
@@ -64,6 +57,10 @@
   "browserslist": [
     "IE 10"
   ],
+  "jest": {
+    "testEnvironment": "jsdom",
+    "transform": {}
+  },
   "author": "Wolfgang Wedemeyer <wolf@okwolf.com>",
   "license": "MIT",
   "repository": "okwolf/hyperapp-fx",

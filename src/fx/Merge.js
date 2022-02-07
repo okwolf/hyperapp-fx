@@ -1,7 +1,7 @@
 import { assign } from "../utils.js"
 
 function mergeEffect(dispatch, props) {
-  dispatch(function(state) {
+  dispatch(function (state) {
     return assign(state, props.action(state))
   })
 }

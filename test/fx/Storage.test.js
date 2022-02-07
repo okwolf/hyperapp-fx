@@ -1,3 +1,4 @@
+import { jest } from "@jest/globals"
 import { runFx } from "../utils"
 import { WriteToStorage, ReadFromStorage } from "../../src"
 import { RemoveFromStorage } from "../../src/fx/Storage"
@@ -10,11 +11,7 @@ const mockStorage = (store = {}) => {
   jest.spyOn(Storage.prototype, "removeItem").mockImplementation(jest.fn())
 }
 
-const reverser = s =>
-  s
-    .split("")
-    .reverse()
-    .join("")
+const reverser = s => s.split("").reverse().join("")
 
 describe("WriteToStorage effect", () => {
   beforeEach(() => {

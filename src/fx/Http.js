@@ -2,19 +2,19 @@ import { assign } from "../utils.js"
 
 function httpEffect(dispatch, props) {
   fetch(props.url, props.options)
-    .then(function(response) {
+    .then(function (response) {
       if (!response.ok) {
         throw response
       }
       return response
     })
-    .then(function(response) {
+    .then(function (response) {
       return response[props.response]()
     })
-    .then(function(result) {
+    .then(function (result) {
       dispatch(props.action, result)
     })
-    .catch(function(error) {
+    .catch(function (error) {
       dispatch(props.error, error)
     })
 }
