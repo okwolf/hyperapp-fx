@@ -11,8 +11,8 @@ A handy set of effects for use with [Hyperapp](https://github.com/jorgebucaran/h
 Here's a taste of how to use a common effect for making HTTP requests. The app displays inspiring quotes about design, fetching a new quote each time the user clicks on the current one. Go ahead and [try it online here](https://codepen.io/okwolf/pen/vPbMaa?editors=0010).
 
 ```js
-import { app, h, text } from "hyperapp"
-import { Http } from "hyperapp-fx"
+import { app, h, text } from "hyperapp";
+import { Http } from "hyperapp-fx";
 
 const GetQuote = () => [
   "...",
@@ -20,13 +20,13 @@ const GetQuote = () => [
     url: "https://api.quotable.io/random",
     action: (_, { content }) => content
   })
-]
+];
 
 app({
   init: "Click here for quotes",
   view: quote => h("h1", { onclick: GetQuote }, text(quote)),
   node: document.getElementById("app")
-})
+});
 ```
 
 More [examples](https://github.com/okwolf/hyperapp-playground) are available to show other effects in action.
@@ -40,13 +40,13 @@ npm i <a href=https://www.npmjs.com/package/hyperapp-fx>hyperapp-fx</a>
 Then with a module bundler like [Rollup](https://rollupjs.org) or [Webpack](https://webpack.js.org), use as you would anything else.
 
 ```js
-import { Http } from "hyperapp-fx"
+import { Http } from "hyperapp-fx";
 ```
 
-If you don't want to set up a build environment, you can download Hyperapp FX from a CDN like [unpkg.com](https://unpkg.com/hyperapp-fx) and it will be globally available through the <samp>window.hyperappFx</samp> object. We support all ES5-compliant browsers, including Internet Explorer 10 and above. Use of the [`Http`](api.md#module_fx.exports.Http) effect requires a polyfill.
+If you don't want to set up a build environment, you can import Hyperapp FX from a CDN like [esm.sh](https://esm.sh/hyperapp-fx). We support all modern browsers used by at least 1% of the world.
 
-```html
-<script src="https://unpkg.com/hyperapp-fx"></script>
+```js
+import { Http } from "https://esm.sh/hyperapp-fx";
 ```
 
 ## [API documentation](api.md)

@@ -1,20 +1,20 @@
-import { jest } from "@jest/globals"
-import { runFx } from "../utils"
-import { Console } from "../../src"
+import { jest } from "@jest/globals";
+import { runFx } from "../utils";
+import { Console } from "../../src";
 
 /* eslint-disable no-console */
 describe("Console effect", () => {
   it("should log to console", () => {
-    const defaultLog = console.log
+    const defaultLog = console.log;
     try {
-      const testArgs = ["bar", { some: "data" }, ["list", "of", "data"]]
-      console.log = jest.fn()
-      const consoleFx = Console(...testArgs)
-      runFx(consoleFx)
-      expect(console.log).toBeCalledWith(...testArgs)
+      const testArgs = ["bar", { some: "data" }, ["list", "of", "data"]];
+      console.log = jest.fn();
+      const consoleFx = Console(...testArgs);
+      runFx(consoleFx);
+      expect(console.log).toBeCalledWith(...testArgs);
     } finally {
-      console.log = defaultLog
+      console.log = defaultLog;
     }
-  })
-})
+  });
+});
 /* eslint-enable no-console */

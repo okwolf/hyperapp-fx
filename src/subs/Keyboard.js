@@ -1,20 +1,20 @@
-import { makeRemoveListener } from "../utils.js"
+import { makeRemoveListener } from "../utils.js";
 
 function keyboardEffect(dispatch, props) {
-  var removeListenerForEvent = makeRemoveListener.bind(
+  const removeListenerForEvent = makeRemoveListener.bind(
     null,
     document,
     dispatch,
     props.action
-  )
-  var removeDown = props.downs ? removeListenerForEvent("keydown") : null
-  var removeUp = props.ups ? removeListenerForEvent("keyup") : null
-  var removePress = props.presses ? removeListenerForEvent("keypress") : null
+  );
+  const removeDown = props.downs ? removeListenerForEvent("keydown") : null;
+  const removeUp = props.ups ? removeListenerForEvent("keyup") : null;
+  const removePress = props.presses ? removeListenerForEvent("keypress") : null;
   return function () {
-    removeDown && removeDown()
-    removeUp && removeUp()
-    removePress && removePress()
-  }
+    removeDown && removeDown();
+    removeUp && removeUp();
+    removePress && removePress();
+  };
 }
 
 /**
@@ -39,5 +39,5 @@ function keyboardEffect(dispatch, props) {
  * })
  */
 export function Keyboard(props) {
-  return [keyboardEffect, props]
+  return [keyboardEffect, props];
 }

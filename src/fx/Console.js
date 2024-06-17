@@ -1,6 +1,6 @@
 function consoleEffect(_, args) {
   // eslint-disable-next-line no-console
-  console.log.apply(null, args)
+  console.log.apply(null, args);
 }
 
 /**
@@ -22,5 +22,5 @@ function consoleEffect(_, args) {
  * ]
  */
 export function Console() {
-  return [consoleEffect, arguments]
+  return [consoleEffect, arguments];
 }

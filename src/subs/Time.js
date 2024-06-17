@@ -1,11 +1,11 @@
-import { makeDispatchTime } from "../utils.js"
+import { makeDispatchTime } from "../utils.js";
 
 function intervalEffect(dispatch, props) {
-  var dispatchTime = makeDispatchTime(dispatch, props)
-  var everyInterval = setInterval(dispatchTime, props.every)
+  const dispatchTime = makeDispatchTime(dispatch, props);
+  const everyInterval = setInterval(dispatchTime, props.every);
   return function () {
-    everyInterval && clearInterval(everyInterval)
-  }
+    everyInterval && clearInterval(everyInterval);
+  };
 }
 
 /**
@@ -46,5 +46,5 @@ function intervalEffect(dispatch, props) {
  * })
  */
 export function Interval(props) {
-  return [intervalEffect, props]
+  return [intervalEffect, props];
 }

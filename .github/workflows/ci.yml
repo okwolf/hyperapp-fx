@@ -2,18 +2,18 @@ name: CI
 on: [push, pull_request]
 jobs:
   test:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        node: [18, 20, 22]
     steps:
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v1
+      - uses: actions/checkout@v4
+      - name: Use Node.js ${{ matrix.node }}
+        uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
-      - run: |
-          npm i -g codecov
-          npm i
-          npm run check
-          codecov
+          node-version: ${{ matrix.node }}
+      - run: npm run release:dry
+      - uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
