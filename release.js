@@ -1,7 +1,7 @@
 import { execSync } from "child_process";
-import packageJson from "./package.json";
 import { fileURLToPath } from "url";
-import { dirname } from "path";
+import { dirname, resolve } from "path";
+import fs from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,6 +21,10 @@ const workingCopyChanges = exec("git status --porcelain");
 if (workingCopyChanges) {
   exitWithError("please commit your changes before making a release!");
 }
+
+const packagePath = resolve(__dirname, "package.json");
+const packageText = fs.readFileSync(packagePath);
+const packageJson = JSON.parse(packageText);
 
 const tagExists = exec(`git tag -l "${packageJson.version}"`);
 if (tagExists) {
