@@ -18,15 +18,15 @@
     "uglify-js": "=3.18.0"
   },
   "scripts": {
-    "clean": "npx --quiet rimraf coverage dist node_modules",
+    "clean": "npx --yes --quiet rimraf coverage node_modules",
     "format": "prettier --write \"**/*.js\"",
     "format:check": "prettier --list-different \"**/*.js\"",
-    "lint": "eslint . --ignore-pattern dist",
+    "lint": "eslint .",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage --no-cache",
     "doc": "jsdoc2md src/fx/*.js src/subs/*.js > api.md",
     "check": "npm run format:check && npm run lint && npm t",
     "release:dry": "npm run clean && npm i && npm run check && npm run doc",
-    "release": "node --experimental-json-modules release"
+    "release": "node release"
   },
   "prettier": {
     "trailingComma": "none",
