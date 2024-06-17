@@ -1,15 +1,15 @@
 function animationEffect(dispatch, action) {
-  var cancelId
+  let cancelId;
 
   function frame(timestamp) {
-    dispatch(action, timestamp)
-    cancelId = requestAnimationFrame(frame)
+    dispatch(action, timestamp);
+    cancelId = requestAnimationFrame(frame);
   }
 
-  cancelId = requestAnimationFrame(frame)
+  cancelId = requestAnimationFrame(frame);
   return function () {
-    cancelAnimationFrame(cancelId)
-  }
+    cancelAnimationFrame(cancelId);
+  };
 }
 
 /**
@@ -46,5 +46,5 @@ function animationEffect(dispatch, action) {
  * })
  */
 export function Animation(action) {
-  return [animationEffect, action]
+  return [animationEffect, action];
 }

@@ -1,11 +1,11 @@
-import { makeDispatchTime } from "../utils.js"
+import { makeDispatchTime } from "../utils.js";
 
 function nowEffect(dispatch, props) {
-  makeDispatchTime(dispatch, props)()
+  makeDispatchTime(dispatch, props)();
 }
 
 function delayEffect(dispatch, props) {
-  setTimeout(makeDispatchTime(dispatch, props), props.wait)
+  setTimeout(makeDispatchTime(dispatch, props), props.wait);
 }
 
 /**
@@ -28,7 +28,7 @@ function delayEffect(dispatch, props) {
  * ]
  */
 export function Now(props) {
-  return [nowEffect, props]
+  return [nowEffect, props];
 }
 
 /**
@@ -53,5 +53,5 @@ export function Now(props) {
  * ]
  */
 export function Delay(props) {
-  return [delayEffect, props]
+  return [delayEffect, props];
 }

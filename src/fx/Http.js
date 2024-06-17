@@ -1,22 +1,22 @@
-import { assign } from "../utils.js"
+import { assign } from "../utils.js";
 
 function httpEffect(dispatch, props) {
   fetch(props.url, props.options)
     .then(function (response) {
       if (!response.ok) {
-        throw response
+        throw response;
       }
-      return response
+      return response;
     })
     .then(function (response) {
-      return response[props.response]()
+      return response[props.response]();
     })
     .then(function (result) {
-      dispatch(props.action, result)
+      dispatch(props.action, result);
     })
     .catch(function (error) {
-      dispatch(props.error, error)
-    })
+      dispatch(props.error, error);
+    });
 }
 
 /**
@@ -60,5 +60,5 @@ export function Http(props) {
       },
       props
     )
-  ]
+  ];
 }

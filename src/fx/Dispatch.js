@@ -1,5 +1,5 @@
 function dispatchEffect(dispatch, props) {
-  dispatch(props.action)
+  dispatch(props.action);
 }
 
 /**
@@ -17,5 +17,5 @@ function dispatchEffect(dispatch, props) {
  * ]
  */
 export function Dispatch(action) {
-  return [dispatchEffect, { action: action }]
+  return [dispatchEffect, { action: action }];
 }

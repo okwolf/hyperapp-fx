@@ -1,15 +1,15 @@
-import { getOpenWebSocket } from "../utils.js"
+import { getOpenWebSocket } from "../utils.js";
 
 function webSocketSendEffect(dispatch, props) {
-  var connection = getOpenWebSocket(props)
+  const connection = getOpenWebSocket(props);
   function sendMessage() {
-    connection.socket.send(props.data)
-    connection.socket.removeEventListener("open", sendMessage)
+    connection.socket.send(props.data);
+    connection.socket.removeEventListener("open", sendMessage);
   }
   if (connection.socket.readyState === WebSocket.CONNECTING) {
-    connection.socket.addEventListener("open", sendMessage)
+    connection.socket.addEventListener("open", sendMessage);
   } else {
-    sendMessage()
+    sendMessage();
   }
 }
 
@@ -35,5 +35,5 @@ function webSocketSendEffect(dispatch, props) {
  * ]
  */
 export function WebSocketSend(props) {
-  return [webSocketSendEffect, props]
+  return [webSocketSendEffect, props];
 }

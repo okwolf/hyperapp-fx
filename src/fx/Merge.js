@@ -1,9 +1,9 @@
-import { assign } from "../utils.js"
+import { assign } from "../utils.js";
 
 function mergeEffect(dispatch, props) {
   dispatch(function (state) {
-    return assign(state, props.action(state))
-  })
+    return assign(state, props.action(state));
+  });
 }
 
 /**
@@ -20,5 +20,5 @@ function mergeEffect(dispatch, props) {
  * ]
  */
 export function Merge(action) {
-  return [mergeEffect, { action: action }]
+  return [mergeEffect, { action: action }];
 }
