@@ -14,7 +14,7 @@
     "jest-environment-jsdom": "=29.7.0",
     "jsdoc-to-markdown": "=8.0.1",
     "prettier": "=3.3.2",
-    "rollup": "=4.18.0",
+    "rollup": "=4.59.0",
     "uglify-js": "=3.18.0"
   },
   "scripts": {
